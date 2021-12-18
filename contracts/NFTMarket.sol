@@ -37,7 +37,7 @@ contract NFTMarket is ReentrancyGuard {
         address payable owner;
         uint256 price;
         bool sold;
-    };
+    }
     /* 
         We want to create a mapping for our market item. Want to keep up with itewms that have been created.
         We can have mapping where we pass integer that is itemid expected to return a market item object. I want
@@ -66,7 +66,7 @@ contract NFTMarket is ReentrancyGuard {
 
     function getListingPrice() public view returns (uint256) {
         return listingPrice;
-    };
+    }
 
     function createMarketItem(
         address nftContract,
@@ -106,15 +106,16 @@ contract NFTMarket is ReentrancyGuard {
             address(0),
             price,
             false
-        )
-    };
+        );
+    }
 
     function createMarketSale(
         address nftContract,
-        uint256 tokenId
+        uint256 itemId
+        //uint256 tokenId
     ) public payable nonReentrant {
         uint price = idToMarketItem[itemId].price;
-        uint token = idToMarketItem[itemId].tokenId;
+        uint tokenId = idToMarketItem[itemId].tokenId;
 
         require(msg.value == price, "Please submit the asking price in order to complete the purchase");
 
@@ -125,7 +126,7 @@ contract NFTMarket is ReentrancyGuard {
         idToMarketItem[itemId].sold = true;
         _itemsSold.increment();
         payable(owner).transfer(listingPrice);
-    };
+    }
 
     /* 
         We want to have functions that return unsold items, items I've purchased, and items I've created. 
@@ -137,7 +138,7 @@ contract NFTMarket is ReentrancyGuard {
         uint currentIndex = 0;
 
         MarketItem[] memory items = new MarketItem[](unsoldItemCount);
-        for (unit i = 0; i < itemCount; i++) {
+        for (uint i = 0; i < itemCount; i++) {
             if (idToMarketItem[i+1].owner == address(0)) {
                 uint currentId = idToMarketItem[i+1].itemId;
                 MarketItem storage currentItem = idToMarketItem[currentId];
@@ -153,14 +154,14 @@ contract NFTMarket is ReentrancyGuard {
         uint itemCount = 0;
         uint currentIndex = 0;
 
-        for (unit i = 0; i < totalItemCount; i++) {
+        for (uint i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i+1].owner == msg.sender) {
                 itemCount++;
             }
         }
 
         MarketItem[] memory items = new MarketItem[](itemCount);
-        for (unit i = 0; i < totalItemCount; i++) {
+        for (uint i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i+1].owner == msg.sender) {
                 uint currentId = idToMarketItem[i+1].itemId;
                 MarketItem storage currentItem = idToMarketItem[currentId];
@@ -176,14 +177,14 @@ contract NFTMarket is ReentrancyGuard {
         uint itemCount = 0;
         uint currentIndex = 0;
 
-        for (unit i = 0; i < totalItemCount; i++) {
+        for (uint i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i+1].seller == msg.sender) {
                 itemCount++;
             }
         }
 
         MarketItem[] memory items = new MarketItem[](itemCount);
-        for (unit i = 0; i < totalItemCount; i++) {
+        for (uint i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i+1].seller == msg.sender) {
                 uint currentId = idToMarketItem[i+1].itemId;
                 MarketItem storage currentItem = idToMarketItem[currentId];
