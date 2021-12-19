@@ -5,6 +5,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+/*
+    https://dev.to/mateusasferreira/how-to-create-a-resell-token-functionality-in-your-nft-marketplace-smart-contract-ha
+*/
+
 contract NFT is ERC721URIStorage {
     using Counters for Counters.Counter;
     /*

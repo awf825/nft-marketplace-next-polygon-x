@@ -9,7 +9,7 @@ function Marketplace({ Component, pageProps }) {
         <div className="flex mt-4">
           <Link href="/">
             <a className="mr-4 text-pink-500">
-              `process.env.NEXT_PUBLIC_HELLO`
+              {process.env.test}
             </a>
           </Link>
           <Link href="/create-item">
