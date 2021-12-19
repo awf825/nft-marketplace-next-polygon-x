@@ -9,8 +9,8 @@
 require("@nomiclabs/hardhat-waffle");
 const fs = require("fs");
 // const privateKey = fs.readFileSync(".env").toString();
-const privateKey = process.env.MM_TEST_ACCOUNT_1.toString();
-const projectId = "5ae4b97d4ee44b838e88224cb474d9bf";
+const privateKey = process.env.metamaskTestAccount.toString();
+const projectId = process.env.infuraProjectId;
 
 module.exports = {
   // the name of app, config different networks here
