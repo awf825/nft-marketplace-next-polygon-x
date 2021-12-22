@@ -40,7 +40,7 @@ function Marketplace({ Component, pageProps }) {
               Home
             </a>
           </Link>
-          <Link href="/create-item">
+          {/* <Link href="/create-item">
             <a className="mr-4 text-pink-500">
               Sell Digital Asset
             </a>
@@ -54,7 +54,7 @@ function Marketplace({ Component, pageProps }) {
             <a className="mr-6 text-pink-500">
               Creator Dashboard
             </a>
-          </Link>
+          </Link> */}
           <Link href="/minter-page">
             <a className="mr-6 text-pink-500">
               Mint

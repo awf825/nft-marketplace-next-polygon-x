@@ -8,9 +8,8 @@
 
 require("@nomiclabs/hardhat-waffle");
 const fs = require("fs");
-// const privateKey = fs.readFileSync(".env").toString();
-// const privateKey = process.env.metamaskTestAccount.toString();
-// const projectId = process.env.infuraProjectId;
+const privatePayload = fs.readFileSync(".secret").toString();
+const [privateKey, alchemyApiId] = privatePayload.split("@")
 
 module.exports = {
   // the name of app, config different networks here
@@ -18,6 +17,10 @@ module.exports = {
     hardhat: {
       // hardhat specific, will inject and use accounts for us when playing locally
       chainId: 31337
+    },
+    ropsten: {
+      url: `https://eth-ropsten.alchemyapi.io/v2/${alchemyApiId}`,
+      accounts: [privateKey]
     }
     // mumbai: {
     //   url: `https://polygon-mumbai.infura.io/v3/${projectId}`,

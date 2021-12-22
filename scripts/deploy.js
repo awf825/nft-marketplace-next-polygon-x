@@ -4,7 +4,11 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
-
+/*
+  Capture the address of the wallet to be send funds to 
+*/
+const fs = require("fs");
+const wallet = fs.readFileSync(".wallet").toString();
 /*
   see https://hardhat.org/hardhat-network/
   npx hardhat node
@@ -18,18 +22,6 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
-  // We get the contract to deploy
-  // const NFTMarket = await hre.ethers.getContractFactory("NFTMarket");
-  // const nftMarket = await NFTMarket.deploy();
-  // await nftMarket.deployed();
-  // console.log("nftMarket deployed to:", nftMarket.address)
-
-  // const NFT = await hre.ethers.getContractFactory("NFT");
-  // const nft = await NFT.deploy(nftMarket.address);
-  // await nft.deployed();
-  // console.log("nft deployed to:", nft.address)
-  const wallet = "0xB154Dc24df1404946F304FFcDA78378BdF6501AA";
-
   const Biz = await hre.ethers.getContractFactory("Biz");
   const biz = await Biz.deploy(wallet);
   await biz.deployed()
@@ -39,7 +31,6 @@ async function main() {
   const turtleMinter = await TurtleMinter.deploy(biz.address);
   await turtleMinter.deployed()
   console.log("deployed turtleMinter to:", turtleMinter.address)
-
 }
 
 // We recommend this pattern to be able to use async/await everywhere

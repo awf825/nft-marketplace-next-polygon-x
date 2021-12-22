@@ -14,6 +14,10 @@ import Biz from '../artifacts/contracts/Biz.sol/Biz.json';
 
 const nftAddress = process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS
 const nftMarketAddress = process.env.NEXT_PUBLIC_MARKET_CONTRACT_ADDRESS
+
+// const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS_ROPSTEN
+// const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS_ROPSTEN
+
 const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS
 const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS
 
@@ -130,7 +134,7 @@ export default function MinterPage() {
         // console.log('web3Modal @ createSale: ', web3Modal);
         // console.log('connection @ createSale: ', connection);
         // console.log('provider @ createSale: ', provider);
-        // console.log('signer @ createSale: ', signer);
+        console.log('signer @ createSale: ', signer);
 
         const turleMinterContract = new ethers.Contract(turtleMinterAddress, TurtleMinter.abi, signer);
         let transaction = await turleMinterContract.mintToken(url);
@@ -156,13 +160,9 @@ export default function MinterPage() {
         transaction = await bizContract.createTurtle(
             turtleMinterAddress, tokenId, { value: priceToMint }
         )
-        await transaction.wait()
+        await transaction.wait();
 
-        // transaction = await contract.createTurtleSale(
-        //     turtleMinterAddress, 
-        // )
-
-        alert('done.')
+        alert('done')
     }
 
     return (

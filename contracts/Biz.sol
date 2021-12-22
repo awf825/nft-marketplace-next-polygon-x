@@ -34,21 +34,11 @@ contract Biz is ReentrancyGuard {
         uint itemId;
         address turtleMinterContract;
         uint256 tokenId;
-        address payable seller;
         address owner;
         bool sold;
     }
 
     mapping(uint256 => Turtle) private idToTurtle;
-
-    event TurtleCreated (
-        uint indexed itemId,
-        address indexed turtleMinterContract,
-        uint256 indexed tokenId,
-        address seller, 
-        address owner,
-        bool sold
-    );
 
     function getPriceToMint() public view returns (uint256) {
         // NEED LOGIC FOR DISCORD WHITELIST
@@ -68,47 +58,16 @@ contract Biz is ReentrancyGuard {
             itemId,
             turtleMinterContract,
             tokenId,
-            payable(msg.sender),
-            /* owner is set to empty address */
-            address(0),
+            owner,
             false
         );
 
-        IERC721(turtleMinterContract).transferFrom(msg.sender, address(this), tokenId);
-        IERC721(turtleMinterContract).transferFrom(address(this), msg.sender, tokenId);
-        
-        idToTurtle[itemId].owner = msg.sender;
+        //IERC721(turtleMinterContract).transferFrom(msg.sender, address(this), tokenId);
+        // IERC721(turtleMinterContract).transferFrom(turtleMinterContract, owner, tokenId);
+
+        // idToTurtle[itemId].owner = msg.sender;
         idToTurtle[itemId].sold = true;
         _itemsSold.increment();
         payable(bizWallet).transfer(priceToMint);
-        // emit TurtleCreated(
-        //     itemId,
-        //     turtleMinterContract,
-        //     tokenId,
-        //     msg.sender,
-        //     address(0),
-        //     false
-        // );
     }
-
-    // function createTurtleSale(
-    //     address turtleMinterContract,
-    //     uint256 itemId
-    // ) public payable nonReentrant {
-    //     /*
-    //         Transfer ownership of turtle from mintingContract to the minter.
-    //         Transfer minting fee to bizWallet.
-    //     */
-    //     uint tokenId = idToTurtle[itemId].tokenId;
-
-    //     require(msg.value == priceToMint, "Please submit the minting fee in order to complete the purchase");
-
-    //     idToTurtle[itemId].seller.transfer(msg.value);
-
-    //     IERC721(turtleMinterContract).transferFrom(address(this), msg.sender, tokenId);
-    //     idToTurtle[itemId].owner = msg.sender;
-    //     idToTurtle[itemId].sold = true;
-    //     _itemsSold.increment();
-    //     payable(bizWallet).transfer(priceToMint);
-    // }
 }
