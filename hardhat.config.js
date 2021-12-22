@@ -21,8 +21,8 @@ module.exports = {
       chainId: 31337
     },
     ropsten: {
-      url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.METAMASK_PRIVATE_KEY_TEST}`,
-      accounts: [process.env.ALCHEMY_API_KEY]
+      url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
+      accounts: [process.env.METAMASK_PRIVATE_KEY_TEST]
     }
     // mumbai: {
     //   url: `https://polygon-mumbai.infura.io/v3/${projectId}`,
