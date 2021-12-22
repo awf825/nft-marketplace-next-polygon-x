@@ -5,6 +5,14 @@ import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { useRouter } from 'next/router';
 import Web3Modal from 'web3modal';
 
+/*
+  https://allcode.com/upload-nft-content-to-ipfs-via-pinata/
+  Before you mint an NFT, you’ll want to upload the file to the InterPlanetary File System (IPFS).
+  In general, blockchains do not store large quantities of data well. Instead of storing the 
+  content of your image or video into the blockchain, you’ll want to store the content on IPFS, 
+  and provide the hash to your content in the metadata of the NFT token.
+*/
+
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 import {
@@ -42,9 +50,14 @@ export default function CreateItem () {
         const data = JSON.stringify({
             name, description, image: fileUrl
         })
+        console.log(
+          'data @ createItem: ', data
+        )
 
         try {
+            // TODO: figure out where to host ipfs (Pinata, infura, etc)
             const added = await client.add(data)
+            console.log('added @ createSale: ', added)
             const url = `https://ipfs.infura.io/ipfs/${added.path}`
             /* after file isn uploaded to IPFS, pass the url and save it to polygon */
             createSale(url)
@@ -60,6 +73,10 @@ export default function CreateItem () {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
+        console.log('web3Modal @ createSale: ', web3Modal);
+        console.log('connection @ createSale: ', connection);
+        console.log('provider @ createSale: ', provider);
+        console.log('signer @ createSale: ', signer);
         /* 
             Interactying with two contracts. 
             Create ref to nft contract and call createToken async
@@ -71,7 +88,9 @@ export default function CreateItem () {
         let transaction = await contract.createToken(url);
         let tx = await transaction.wait();
 
-        console.log('tx: ', tx)
+        console.log('contract @ createSale: ', contract);
+        console.log('transaction @ createSale: ', transaction);
+        console.log('tx @ createSale: ', tx);
 
         let event = tx.events[0]
         let value = event.args[2]
