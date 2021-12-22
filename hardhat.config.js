@@ -7,9 +7,13 @@
 */
 
 require("@nomiclabs/hardhat-waffle");
+
+import { config as dotenvConfig } from "dotenv";
+dotenvConfig({ path: resolve(__dirname, "./.env.local") });
+
 const fs = require("fs");
-const privatePayload = fs.readFileSync(".secret").toString();
-const [privateKey, alchemyApiId] = privatePayload.split("@")
+// const privatePayload = fs.readFileSync(".secret").toString();
+// const [privateKey, alchemyApiId] = privatePayload.split("@");
 
 module.exports = {
   // the name of app, config different networks here
@@ -19,8 +23,8 @@ module.exports = {
       chainId: 31337
     },
     ropsten: {
-      url: `https://eth-ropsten.alchemyapi.io/v2/${alchemyApiId}`,
-      accounts: [privateKey]
+      url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.METAMASK_PRIVATE_KEY_TEST}`,
+      accounts: [process.env.ALCHEMY_API_KEY]
     }
     // mumbai: {
     //   url: `https://polygon-mumbai.infura.io/v3/${projectId}`,
