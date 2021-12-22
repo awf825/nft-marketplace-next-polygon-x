@@ -7,10 +7,7 @@
 */
 
 require("@nomiclabs/hardhat-waffle");
-require('dotenv').config()
-
-import { config as dotenvConfig } from "dotenv";
-dotenvConfig({ path: resolve(__dirname, "./.env") });
+require('dotenv').config({ path: resolve(__dirname, "./.env") });
 
 const fs = require("fs");
 // const privatePayload = fs.readFileSync(".secret").toString();
