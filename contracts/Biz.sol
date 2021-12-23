@@ -38,6 +38,14 @@ contract Biz is ReentrancyGuard {
         bool sold;
     }
 
+    event TurtleCreated (
+        uint indexed itemId,
+        address indexed turtleMinterContract,
+        uint256 indexed tokenId,
+        address owner,
+        bool sold
+    );
+
     mapping(uint256 => Turtle) private idToTurtle;
 
     function getPriceToMint() public view returns (uint256) {
@@ -49,7 +57,7 @@ contract Biz is ReentrancyGuard {
         address turtleMinterContract,
         uint256 tokenId
     ) public payable nonReentrant {
-        require(msg.value == priceToMint, "Price must be equal to price to mint");
+        // require(msg.value == priceToMint, "Price must be equal to price to mint");
 
         _itemIds.increment();
         uint256 itemId = _itemIds.current();
@@ -62,12 +70,34 @@ contract Biz is ReentrancyGuard {
             false
         );
 
-        //IERC721(turtleMinterContract).transferFrom(msg.sender, address(this), tokenId);
+        IERC721(turtleMinterContract).transferFrom(msg.sender, address(this), tokenId);
         // IERC721(turtleMinterContract).transferFrom(turtleMinterContract, owner, tokenId);
 
-        // idToTurtle[itemId].owner = msg.sender;
         idToTurtle[itemId].sold = true;
         _itemsSold.increment();
         payable(bizWallet).transfer(priceToMint);
+
+        emit TurtleCreated(
+            itemId,
+            turtleMinterContract,
+            tokenId,
+            address(0),
+            false
+        );
     }
+
+    // function finishSale(
+    //     address turtleMinterContract,
+    //     uint itemId
+    // ) public payable nonReentrant {
+    //     uint tokenId = idToTurtle[itemId].tokenId;
+        
+    //     require(msg.value == priceToMint, "Price must be equal to price to mint");
+
+    //     IERC721(turtleMinterContract).transferFrom(address(this), owner, tokenId);
+    //     idToTurtle[itemId].owner = msg.sender;
+    //     idToTurtle[itemId].sold = true;
+    //     _itemsSold.increment();
+    //     payable(bizWallet).transfer(priceToMint);
+    // }
 }

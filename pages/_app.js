@@ -5,7 +5,7 @@
 
 import '../styles/globals.css'
 import Link from 'next/link';
-import { MoralisProvider } from "react-moralis";
+// import { MoralisProvider } from "react-moralis";
 // import { DAppProvider } from '@usedapp/core'
 // import { Mainnet } from '@usedapp/core/src/model/chain/ethereum.ts'
 // import { Local } from '@usedapp/core/src/model/chain/local.ts'
@@ -33,7 +33,7 @@ function Marketplace({ Component, pageProps }) {
     // >
     <div>
       <nav className="border-b p-6">
-        <p className="text-4xl font-bold">Marketplace</p>
+        <p className="text-4xl font-bold">TURTLEVERSE</p>
         <div className="flex mt-4">
           <Link href="/">
             <a className="mr-4 text-pink-500">

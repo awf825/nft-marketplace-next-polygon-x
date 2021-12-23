@@ -7,26 +7,18 @@ import Web3Modal from 'web3modal';
 import axios from 'axios';
 
 // json rep of smart contracts for client side interaction (see artifcats dir)
-import NFT from '../artifacts/contracts/NFT.sol/NFT.json';
-import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json';
 import TurtleMinter from '../artifacts/contracts/TurtleMinter.sol/TurtleMinter.json';
 import Biz from '../artifacts/contracts/Biz.sol/Biz.json';
 
-const nftAddress = process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS
-const nftMarketAddress = process.env.NEXT_PUBLIC_MARKET_CONTRACT_ADDRESS
-
 // const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS_ROPSTEN
 // const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS_ROPSTEN
-
 const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS
 const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS
 
-console.log(nftAddress);
-console.log(nftMarketAddress);
 console.log(turtleMinterAddress);
 
-const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
-const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
+// const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
+// const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
@@ -128,18 +120,15 @@ export default function MinterPage() {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
-        // signer is the user identified by their metamask wallet
-        // TEST ACCOUNT 1 ADDRESS = 0xB154Dc24df1404946F304FFcDA78378BdF6501AA
-
         // console.log('web3Modal @ createSale: ', web3Modal);
         // console.log('connection @ createSale: ', connection);
         // console.log('provider @ createSale: ', provider);
-        console.log('signer @ createSale: ', signer);
+        // console.log('signer @ createSale: ', signer);
 
-        const turleMinterContract = new ethers.Contract(turtleMinterAddress, TurtleMinter.abi, signer);
-        let transaction = await turleMinterContract.mintToken(url);
+        const turtleMinterContract = new ethers.Contract(turtleMinterAddress, TurtleMinter.abi, signer);
+        let transaction = await turtleMinterContract.mintToken(url);
         let tx = await transaction.wait(); 
-
+        
         // console.log('contract @ createSale: ', contract);
         // console.log('transaction @ createSale: ', transaction);
         // console.log('tx @ createSale: ', tx);
@@ -161,6 +150,17 @@ export default function MinterPage() {
             turtleMinterAddress, tokenId, { value: priceToMint }
         )
         await transaction.wait();
+        
+        // let turtleCreated = await bizContract.createTurtle(
+        //     turtleMinterAddress, tokenId
+        // )
+        // debugger
+        // turtleCreated = turtleCreated.toValue();
+        // //debugger
+
+        // transaction = await bizContract.finishSale(
+        //     turtleMinterAddress, turtleCreated, { value: priceToMint }
+        // )
 
         alert('done')
     }
