@@ -3,7 +3,9 @@ import { ethers } from 'ethers';
 // this is a way for us to interact with ipfs for uploading and downloading
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { useRouter } from 'next/router';
+import Moralis from 'moralis';
 import Web3Modal from 'web3modal';
+import Image from 'next/image';
 import axios from 'axios';
 
 // json rep of smart contracts for client side interaction (see artifcats dir)
@@ -27,11 +29,19 @@ console.log(turtleMinterAddress);
 
 const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
+const serverUrl = process.env.MORALIS_SERVER_URL;
+const appId = process.env.MORALIS_APP_ID;
+Moralis.start({ serverUrl, appId });
+
+// const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
+// const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 export default function MinterPage() {
     const [fileUrl, setFileUrl] = useState(null)
+    const [user, setUser] = useState(null);
+    const [nftPinHashes, setNftPinHashes] = useState([]);
     const [formInput, updateFormInput] = useState({ price: '', name: '', description: ''})
     const router = useRouter();
 
@@ -50,6 +60,54 @@ export default function MinterPage() {
             console.log(err)
         }
     }
+
+    async function login() {
+      let user = Moralis.User.current();
+      if (!user) {
+          user = await Moralis.authenticate();
+          setUser(user);
+      }
+      console.log("logged in user:", user);
+    }
+
+    async function logout() {
+      await Moralis.User.logOut();
+      setUser(null);
+      console.log("logged out");
+    }
+
+    const axios = require('axios');
+
+    useEffect(() => {
+      const queryString = '?' + `metadata[name]='GNR'&`;
+      const url = `https://api.pinata.cloud/data/pinList`;
+      return axios
+          .get(url, {
+              headers: {
+                  pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
+                  pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET
+              }
+          })
+          .then(function (response) {
+            console.log(response.data.rows)
+            if (response.data.rows) {
+              const hashes = response.data.rows.map(r => {
+                console.log(r.metadata.valueOf())
+                return r.ipfs_pin_hash
+              })
+              setNftPinHashes(hashes);
+            }
+              //handle response here
+          })
+          .catch(function (error) {
+              //handle error here
+          });
+    }, [])
+
+    // useEffect(() => {
+    //   console.log('nftPinHashes: ', nftPinHashes)
+    // }, [nftPinHashes])
+
 
     // useEffect(() => {
     //     const url = `https://api.pinata.cloud/data/testAuthentication`;
@@ -166,7 +224,8 @@ export default function MinterPage() {
     }
 
     return (
-        <div className="flex justify-center">
+        ( user ? 
+          <div className="flex justify-center">
           <div className="w-1/2 flex flex-col pb-12">
             <input 
               placeholder="Asset Name"
@@ -194,5 +253,16 @@ export default function MinterPage() {
             </button>
           </div>
         </div>
+        : 
+        <div className="flex justify-center">
+          <button id="btn-login" type="submit" className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg" onClick={login}>Moralis Login</button>
+          <button id="btn-logout" type="submit" className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg" onClick={logout}>Logout</button>
+          <Image
+            src={"https://gateway.pinata.cloud/ipfs/QmQ6ahozBToceMLgsRtTBfv1Nar3iSWAHkgyvmoFB9vkuY"}
+            width={500}
+            height={300}
+          />
+        </div>
+      )
     )
 }
