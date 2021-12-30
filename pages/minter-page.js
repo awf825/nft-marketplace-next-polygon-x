@@ -29,19 +29,17 @@ console.log(turtleMinterAddress);
 
 const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
-const serverUrl = process.env.MORALIS_SERVER_URL;
-const appId = process.env.MORALIS_APP_ID;
+const serverUrl = process.env.NEXT_PUBLIC_MORALIS_SERVER_URL
+const appId = process.env.NEXT_PUBLIC_MORALIS_APP_ID;
 Moralis.start({ serverUrl, appId });
-
-// const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
-// const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 export default function MinterPage() {
     const [fileUrl, setFileUrl] = useState(null)
     const [user, setUser] = useState(null);
-    const [nftPinHashes, setNftPinHashes] = useState([]);
+    const [metadataRequestUrls, setMetadataRequestUrls] = useState([])
+    const [appliedMetadata, setAppliedMetadata] = useState([]);
     const [formInput, updateFormInput] = useState({ price: '', name: '', description: ''})
     const router = useRouter();
 
@@ -76,38 +74,44 @@ export default function MinterPage() {
       console.log("logged out");
     }
 
-    const axios = require('axios');
-
     useEffect(() => {
-      const queryString = '?' + `metadata[name]='GNR'&`;
-      const url = `https://api.pinata.cloud/data/pinList`;
+      const url = 'https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][isMetadata]={"value":"1","op":"eq"}';
       return axios
           .get(url, {
               headers: {
-                  pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
-                  pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET
+                  pinata_api_key: pinataApiKey,
+                  pinata_secret_api_key: pinataApiSecret
               }
           })
           .then(function (response) {
-            console.log(response.data.rows)
             if (response.data.rows) {
-              const hashes = response.data.rows.map(r => {
-                console.log(r.metadata.valueOf())
-                return r.ipfs_pin_hash
-              })
-              setNftPinHashes(hashes);
+              const gateway = 'https://gateway.pinata.cloud/ipfs/';
+              setMetadataRequestUrls(response.data.rows.map(r => {
+                return axios.get(gateway+r.ipfs_pin_hash)
+              }))
             }
-              //handle response here
+            // setAppliedMetadata(hashes);
           })
           .catch(function (error) {
               //handle error here
           });
     }, [])
 
-    // useEffect(() => {
-    //   console.log('nftPinHashes: ', nftPinHashes)
-    // }, [nftPinHashes])
+    useEffect(() => {
+      console.log('metadataRequestUrls: ', metadataRequestUrls)
+      Promise
+        .all(metadataRequestUrls)
+        .then(function (responses) { 
+          console.log(responses)
+          setAppliedMetadata(responses.map(r => {
+            return r.data
+          }))
+        })
+    }, [metadataRequestUrls])
 
+    useEffect(() => {
+      console.log('appliedMetadata: ', appliedMetadata)
+    }, [appliedMetadata])
 
     // useEffect(() => {
     //     const url = `https://api.pinata.cloud/data/testAuthentication`;
@@ -125,38 +129,6 @@ export default function MinterPage() {
     //             //handle error here
     //         });
     // }, [])
-
-    // async function pinFileToIPFS(k, s, file) {
-    //     // const fs = require('fs');
-    //     const base = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
-    //     // data.append('file', fs.createReadStream());
-    //     return axios.post(base,
-    //         file,
-    //         {
-    //             headers: {
-    //                 'Content-Type': `multipart/form-data; boundary= ${data._boundary}`,
-    //                 'pinata_api_key': k,
-    //                 'pinata_secret_api_key': s
-    //             }
-    //         }
-    //     ).then(function (response) {
-    //         debugger
-    //     }).catch(function (error) {
-    //         //handle error here
-    //     });
-    // };
-
-    // async function onChange(e) {
-    //     debugger
-    //     const file = e.target.files[0]
-    //     console.log('file @ onChange: ', file)
-    //     try {
-    //         const toPin = await pinFileToIPFS(pinataApiKey, pinataApiSecret, file)
-    //         setFileUrl(toPin)
-    //     } catch (err) {
-    //         console.log(err)
-    //     }
-    // }
 
     /*
         Upload image file to ipfs, THEN create sale on the condition of this successful execution
@@ -255,13 +227,27 @@ export default function MinterPage() {
         </div>
         : 
         <div className="flex justify-center">
-          <button id="btn-login" type="submit" className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg" onClick={login}>Moralis Login</button>
-          <button id="btn-logout" type="submit" className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg" onClick={logout}>Logout</button>
-          <Image
+          <div>
+            <button id="btn-login" type="submit" className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg" onClick={login}>Moralis Login</button>
+            <button id="btn-logout" type="submit" className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg" onClick={logout}>Logout</button>
+          </div>
+          <div>
+            {
+              appliedMetadata.map((m, i) => (
+                <div key={i} className="border shadow rounded-xl overflow-hidden">
+                  <iframe src={m.image} width="400" height="400" ></iframe>
+                  <div className="p-4 bg-black">
+                    <p className="text-2xl font-bold text-white">{m.name}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+          {/* <Image
             src={"https://gateway.pinata.cloud/ipfs/QmQ6ahozBToceMLgsRtTBfv1Nar3iSWAHkgyvmoFB9vkuY"}
             width={500}
             height={300}
-          />
+          /> */}
         </div>
       )
     )
