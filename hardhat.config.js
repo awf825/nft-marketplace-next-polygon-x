@@ -21,7 +21,11 @@ module.exports = {
       chainId: 31337
     },
     ropsten: {
-      url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
+      url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ROPSTEN}`,
+      accounts: [process.env.METAMASK_PRIVATE_KEY_TEST]
+    },
+    rinkeby: {
+      url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_RINKEBY}`,
       accounts: [process.env.METAMASK_PRIVATE_KEY_TEST]
     }
     // mumbai: {

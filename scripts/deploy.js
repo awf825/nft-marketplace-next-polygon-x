@@ -31,6 +31,16 @@ async function main() {
   const turtleMinter = await TurtleMinter.deploy(biz.address);
   await turtleMinter.deployed()
   console.log("deployed turtleMinter to:", turtleMinter.address)
+
+  // const Market = await hre.ethers.getContractFactory("NFTMarket");
+  // const market = await Market.deploy();
+  // await market.deployed()
+  // console.log("deployed market to:", market.address)
+
+  // const NFT = await hre.ethers.getContractFactory("NFT");
+  // const nft = await NFT.deploy(market.address);
+  // await nft.deployed()
+  // console.log("deployed nft to:", nft.address)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

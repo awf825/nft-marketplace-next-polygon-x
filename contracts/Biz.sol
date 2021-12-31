@@ -40,6 +40,14 @@ contract Biz is ReentrancyGuard {
 
     mapping(uint256 => Turtle) private idToTurtle;
 
+    event TurtleCreated (
+        uint indexed itemId,
+        address indexed nftContract,
+        uint256 indexed tokenId,
+        address owner,
+        bool sold
+    );
+
     function getPriceToMint() public view returns (uint256) {
         // NEED LOGIC FOR DISCORD WHITELIST
         return priceToMint;
@@ -62,12 +70,34 @@ contract Biz is ReentrancyGuard {
             false
         );
 
-        //IERC721(turtleMinterContract).transferFrom(msg.sender, address(this), tokenId);
-        // IERC721(turtleMinterContract).transferFrom(turtleMinterContract, owner, tokenId);
+        IERC721(turtleMinterContract).transferFrom(msg.sender, address(this), tokenId);
 
-        // idToTurtle[itemId].owner = msg.sender;
+        emit TurtleCreated(
+            itemId,
+            turtleMinterContract,
+            tokenId,
+            msg.sender,
+            false
+        );
+
+        IERC721(turtleMinterContract).transferFrom(address(this), owner, tokenId);
+
         idToTurtle[itemId].sold = true;
         _itemsSold.increment();
         payable(bizWallet).transfer(priceToMint);
+    }
+
+    function fetchTurtlesSold() public view returns (Turtle[] memory) {
+        uint soldItemCount = _itemsSold.current();
+        uint currentIndex = 0;
+
+        Turtle[] memory items = new Turtle[](soldItemCount);
+        for (uint i = 0; i < soldItemCount; i++) {
+            uint currentId = idToTurtle[i].itemId;
+            Turtle storage currentItem = idToTurtle[currentId];
+            items[currentIndex] = currentItem;
+            currentIndex++;
+        }
+        return items;
     }
 }
