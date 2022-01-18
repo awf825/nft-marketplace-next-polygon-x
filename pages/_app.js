@@ -5,7 +5,7 @@
 
 import '../styles/globals.css'
 import Link from 'next/link';
-import { MoralisProvider } from "react-moralis";
+// import { MoralisProvider } from "react-moralis";
 // import { DAppProvider } from '@usedapp/core'
 // import { Mainnet } from '@usedapp/core/src/model/chain/ethereum.ts'
 // import { Local } from '@usedapp/core/src/model/chain/local.ts'
@@ -32,8 +32,7 @@ function Marketplace({ Component, pageProps }) {
     //   serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_ID}
     // >
     <div>
-      <nav className="border-b p-6">
-        <p className="text-4xl font-bold">Marketplace</p>
+      {/* <nav className="border-b p-6">
         <div className="flex mt-4">
           <Link href="/">
             <a className="mr-4 text-pink-500">
@@ -50,7 +49,7 @@ function Marketplace({ Component, pageProps }) {
               Turtles Sold
             </a>
           </Link>
-          {/* <Link href="/my-assets">
+          <Link href="/my-assets">
             <a className="mr-6 text-pink-500">
               My Digital Assets
             </a>
@@ -59,14 +58,14 @@ function Marketplace({ Component, pageProps }) {
             <a className="mr-6 text-pink-500">
               Creator Dashboard
             </a>
-          </Link> */}
+          </Link>
           <Link href="/minter-page">
             <a className="mr-6 text-pink-500">
               Mint
             </a>
           </Link>
         </div>
-      </nav>
+      </nav> */}
       <Component {...pageProps} />
     </div>
     // </MoralisProvider>

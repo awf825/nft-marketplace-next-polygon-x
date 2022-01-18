@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    background-color: black;
+}
+
+.top-container {
+    flex-direction: column;
+    text-align: center;
+    color: white;
+}
+
+.mint-graphic {
+    color: white;
+    /* text-align: center; */
+    margin: 0 5% 0 5%;
+}
+
+/* .header-with-logo {
+    height: 85px;
+} */

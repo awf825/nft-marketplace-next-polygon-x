@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
+import Image from 'next/image';
 // this is a way for us to interact with ipfs for uploading and downloading
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { useRouter } from 'next/router';
 import Moralis from 'moralis';
 import Web3Modal from 'web3modal';
-import Image from 'next/image';
 import axios from 'axios';
 
 // json rep of smart contracts for client side interaction (see artifcats dir)
@@ -15,11 +15,11 @@ import Biz from '../artifacts/contracts/Biz.sol/Biz.json';
 const nftAddress = process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS
 const nftMarketAddress = process.env.NEXT_PUBLIC_MARKET_CONTRACT_ADDRESS
 
-const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS_ROPSTEN
-const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS_ROPSTEN
+// const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS_ROPSTEN
+// const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS_ROPSTEN
 
-// const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS_RINKEBY
-// const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS_RINKEBY
+const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS_RINKEBY
+const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS_RINKEBY
 
 // const turtleMinterAddress = process.env.NEXT_PUBLIC_MINTER_CONTRACT_ADDRESS
 // const bizAddress = process.env.NEXT_PUBLIC_BIZ_CONTRACT_ADDRESS
@@ -30,19 +30,15 @@ console.log(turtleMinterAddress);
 
 const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
-const serverUrl = process.env.NEXT_PUBLIC_MORALIS_SERVER_URL
-const appId = process.env.NEXT_PUBLIC_MORALIS_APP_ID;
-Moralis.start({ serverUrl, appId });
+// const serverUrl = process.env.NEXT_PUBLIC_MORALIS_SERVER_URL
+// const appId = process.env.NEXT_PUBLIC_MORALIS_APP_ID;
+// Moralis.start({ serverUrl, appId });
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 export default function MinterPage() {
-    const [fileUrl, setFileUrl] = useState(null)
-    const [user, setUser] = useState(null);
-    const [metadataRequestUrls, setMetadataRequestUrls] = useState([])
+    const [metadataRequestUrls, setMetadataRequestUrls] = useState([]);
     const [appliedMetadata, setAppliedMetadata] = useState([]);
-    const [formInput, updateFormInput] = useState({ price: '', name: '', description: ''})
-    const router = useRouter();
 
     useEffect(() => {
       const url = 'https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][isMetadata]={"value":"1","op":"eq"}';
@@ -142,7 +138,11 @@ export default function MinterPage() {
     return (
       appliedMetadata.map((m, i) => (
         <div key={i} className="border shadow rounded-xl overflow-hidden">
-          <iframe src={m.data.image} width="400" height="400" ></iframe>
+          <Image
+            src={m.data.image} 
+            width="350" 
+            height="350"
+          />
           <div className="p-4 bg-black">
             <p className="text-2xl font-bold text-white">{m.data.name}</p>
           </div>
