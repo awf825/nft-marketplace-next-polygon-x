@@ -12,6 +12,7 @@ export default function Gallery() {
     const [incomingMetadataRequestUrls, setIncomingMetadataRequestUrls] = useState([]);
     const [appliedMetadata, setAppliedMetadata] = useState([]);
     const [pageOffset, setPageOffset] = useState(10);
+    const [carouselClicks, setCarouselClicks] = useState(0)
 
     useEffect(() => {
       const url = 'https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][isMetadata]={"value":"1","op":"eq"}';
@@ -106,7 +107,7 @@ export default function Gallery() {
     }, [appliedMetadata])
 
     async function onChangeCarousel() {
-        if (pageOffset <= 90) {
+        if ((pageOffset <= 90) && (carouselClicks === 9)) {
             const pageOffsetRef = pageOffset;
             console.log('pageOffset @ onChangeCarousel: ', pageOffset)
             const url = `https://api.pinata.cloud/data/pinList?status=pinned&pageOffset=${pageOffsetRef}&metadata[keyvalues][isMetadata]={"value":"1","op":"eq"}`;
@@ -120,6 +121,7 @@ export default function Gallery() {
             .then(function (response) {
               if (response.data.rows) {
                 setPageOffset(pageOffsetRef+10)
+                setCarouselClicks(0)
                 const gateway = 'https://turtleverse.mypinata.cloud/ipfs/';
                 setIncomingMetadataRequestUrls(response.data.rows.map(r => { return axios.get(gateway+r.ipfs_pin_hash) }).flat())
               }
@@ -149,10 +151,13 @@ export default function Gallery() {
             // .catch(function (error) {
             //     //handle error here
             // });
+        } else {
+          setCarouselClicks(carouselClicks+1)
         }
     } 
 
     return (
+
         <Carousel showThumbs={false} onChange={() => onChangeCarousel()}>
             {
                 appliedMetadata.map((m, i) => (
@@ -178,9 +183,5 @@ export default function Gallery() {
                 ))
             }
         </Carousel>
-        // <div className="gallery">
-        //     {/* <Image src="/mint_pic.png" layout="fill"/> */}
-        //     <p>Gallery</p>
-        // </div>
     )
 }
