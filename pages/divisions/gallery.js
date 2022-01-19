@@ -157,18 +157,19 @@ export default function Gallery() {
             {
                 appliedMetadata.map((m, i) => (
                     <div key={i} className="overflow-hidden">
-                        {/* <Image
+                        <Image
                             src={m.data.image} 
                             width="350" 
                             height="350"
-                        /> */}
-                        <img
+                            loading="lazy"
+                        />
+                        {/* <img
                             src={m.data.image}
                             style={{
                                 height: "350px",
                                 width: "350px"
                             }}
-                        />
+                        /> */}
                         <div className="p-4 bg-black">
                             <p className="text-2xl font-bold text-white">{m.data.name}</p>
                             <p className="text-2xl font-bold text-white">{m.data.description}</p>
