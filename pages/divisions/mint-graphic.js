@@ -5,7 +5,14 @@ export default function MintGraphic() {
     return (
         <div className="mint-graphic">
             {/* <Image src="/mint_pic.png" layout="fill"/> */}
-            <p>MINT GRAPHIC</p>
+            <img
+                src="../../public/mint_pic.png"
+                style={{
+                    width:"350",
+                    height:"350"
+                }}
+            />
+            {/* <p>MINT GRAPHIC</p> */}
         </div>
     )
 }
