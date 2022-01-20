@@ -14,17 +14,32 @@ body { background-color: black; }
 .tv-header, 
 .tv-blurb, 
 .gallery-row,
-.vision { display: flex; }
+.vision,
+.fndr-row { display: flex; }
+
+.tv-text-header, 
+.vis-blurb-header, 
+.fndr-header, 
+.rdmp-header { font-size: 80px; word-spacing: .9em; }
 
 .gallery-row { margin: 34px 0 34px 0; }
 /* next images appear as span tags */
 .tv-header > span { width: 15% !important; }
-.tv-text-header, .vis-blurb-header { font-size: 80px; word-spacing: .9em; }
 .tv-text-header { width: 70%; }
 .vis-blurb { width: 60%; }
 .vis-img { width: 40%; }
 .tv-logo-header { width: 15% }
 .vis-blurb-header > h1 { text-align: center; }
+.fndr-header > h1 { 
+    text-align: right; 
+    padding-left: 60%;
+    margin-top: -1em;
+    margin-bottom: .4em;
+}
+.rdmp-header > h1 {
+    text-align: left;
+
+}
 .vis-blurb-header > p { 
     font-size:26px; 
     word-spacing: .6em; 
@@ -37,5 +52,51 @@ body { background-color: black; }
     word-spacing: 0.6em;
     padding: 0px 55px 0px 55px;
     width: 68%;
+}
+.fndr-row {
+    margin-bottom: 3%;
+}
+.fndr-text {
+    width: 75%;
+    position: relative;
+}
+.fndr-img {
+    width: 25%;
+}
+.fndr-subheader {
+    font-size: 55px;
+    word-spacing: .4em;
+    text-align: left;
+}
+.fndr-ul {
+    text-align: left;
+    font-size: 32px;
+    padding: 34px 0 34px 21px;
+    margin-left: 2%;
+}
+.fndr-ul > li::before {
+    content: " - ";
+    width: 50px;
+} 
+.fndr-ul > li {
+    word-spacing: .6em;
+}
+.fndr-discord {
+    font-size: 40px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    word-spacing: 1em;
+}
+
+.rdmp-list {
+    text-align: left;
+}
+
+.rdmp-list ul > li {
+    display: flex;
+    font-size: 40px;
+    letter-spacing: .2em;
+    margin: 3%;
 }
 
