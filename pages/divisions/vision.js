@@ -10,10 +10,10 @@ export default function Vision() {
                     <h1>THE VISION</h1>
                     <p>
                         The world today is all about doing things quickly; we often gfind ourselves in constant motion,
-                        never stopping to think about what it is that we're doing or why we started doing it in the first
+                        never stopping to think about what it is that we&apos;re doing or why we started doing it in the first
                         place. This go-go-go state of mind had led to anxiety and stress for many of us aroubnd the world.
-                        We wanted to create an NFT project that could serve as a reminder that the quick way isn't always the
-                        right way and that, when it comes to living our best lives, "slow and steady, wins the race..." #WAGMI
+                        We wanted to create an NFT project that could serve as a reminder that the quick way isn&apos;t always the
+                        right way and that, when it comes to living our best lives, &quot;slow and steady, wins the race...&quot; #WAGMI
                     </p>
                 </div>
             </div>

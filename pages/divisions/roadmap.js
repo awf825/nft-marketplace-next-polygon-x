@@ -36,7 +36,7 @@ export default function Roadmap() {
                         </div>
                         <div style={{ width: "80%" }}>
                             <p style={{ fontSize: "24px !important"}}>
-                            After the 10k are sold - 5 withheld ultra-rare "ancestor"
+                            After the 10k are sold - 5 withheld ultra-rare &quot;ancestor&quot;
                             NFTurtles are airdropped to 5 holders
                             </p>
                         </div>
@@ -61,7 +61,7 @@ export default function Roadmap() {
                         <div style={{ width: "80%" }}>
                             <p style={{ fontSize: "24px !important"}}>
                             Once our OpenSea volume traded reaches 2000 - 5 withheld
-                            ultra-rare "NFTurtle-Gods" are airdropped to 5 holders
+                            ultra-rare &quot;NFTurtle-Gods&quot; are airdropped to 5 holders
                             </p>
                         </div>
                     </li>
