@@ -15,7 +15,7 @@ export default function Gallery() {
   const [gallery, setGallery] = useState([])
   const [count, setCount] = useState({
     prev: 0,
-    next: 10
+    next: 4
   })
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
@@ -27,8 +27,8 @@ export default function Gallery() {
     }
     setTimeout(() => {
       setCurrentGallery(currentGallery.concat(gallery.slice(count.prev, count.next)))
-    }, 500)
-    setCount((prevState) => ({ prev: prevState.prev + 10, next: prevState.next + 10 }))
+    }, 2000)
+    setCount((prevState) => ({ prev: prevState.prev + 4, next: prevState.next + 4 }))
   }
 
   useEffect(() => {
@@ -86,4 +86,3 @@ export default function Gallery() {
     </div>
   );
 }
-
