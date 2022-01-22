@@ -6,7 +6,6 @@ import Founders from './divisions/founders'
 import Roadmap from './divisions/roadmap'
 import Gallery from './divisions/gallery'
 
-
 export default function Home() {
   return (
     <div className="flex justify-center top-container">

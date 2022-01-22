@@ -8,7 +8,7 @@ body { background-color: black; }
     text-align: center;
     color: white;
 }
-.mint-graphic, .tv-intro, .vision, .founders, .roadmap { color: white; margin: 0 5% 0 5%; }
+.mint-graphic, .tv-intro, .vision, .founders, .roadmap, .gallery { color: white; margin: 0 5% 0 5%; }
 .tv-intro { text-align: center; }
 
 .tv-header, 
@@ -99,4 +99,3 @@ body { background-color: black; }
     letter-spacing: .2em;
     margin: 3%;
 }
-

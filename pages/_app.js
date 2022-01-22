@@ -5,6 +5,7 @@
 
 import '../styles/globals.css'
 import Link from 'next/link';
+import { useState } from "react";
 // import { MoralisProvider } from "react-moralis";
 // import { DAppProvider } from '@usedapp/core'
 // import { Mainnet } from '@usedapp/core/src/model/chain/ethereum.ts'
