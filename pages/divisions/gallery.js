@@ -72,10 +72,10 @@ export default function Gallery() {
         <div>
           {currentGallery && currentGallery.map(((item, index) => (
             <div key={index} className="post">
-              <Image
-                  src={item.image} 
-                  width="350" 
-                  height="350"
+              <img
+                src={item.image}
+                width={350}
+                height={350}
               />
               <h3>{`${item.name}-${item.description}`}</h3>
             </div>
