@@ -8,9 +8,16 @@ body { background-color: black; }
     text-align: center;
     color: white;
 }
-.mint-graphic, .tv-intro, .vision, .founders, .roadmap, .gallery { color: white; margin: 0 5% 0 5%; }
+.mint-graphic, 
+.tv-intro, 
+.vision, 
+.founders, 
+.roadmap, 
+.gallery { color: white; margin: 0 5% 0 5%; }
+
 .tv-intro { text-align: center; }
 
+.header,
 .tv-header, 
 .tv-blurb, 
 .gallery-row,
@@ -21,6 +28,22 @@ body { background-color: black; }
 .vis-blurb-header, 
 .fndr-header, 
 .rdmp-header { font-size: 80px; word-spacing: .9em; }
+
+.logo, .auth {
+    width: 50%;
+}
+
+.logo {
+    text-align: left;
+}
+
+.auth {
+    text-align: right;
+}
+
+.auth > button {
+    color: red;
+}
 
 .gallery-row { margin: 34px 0 34px 0; }
 /* next images appear as span tags */

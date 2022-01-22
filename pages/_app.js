@@ -6,7 +6,7 @@
 import '../styles/globals.css'
 import Link from 'next/link';
 import { useState } from "react";
-// import { MoralisProvider } from "react-moralis";
+import { MoralisProvider } from "react-moralis";
 // import { DAppProvider } from '@usedapp/core'
 // import { Mainnet } from '@usedapp/core/src/model/chain/ethereum.ts'
 // import { Local } from '@usedapp/core/src/model/chain/local.ts'
@@ -28,10 +28,10 @@ import { useState } from "react";
 
 function Marketplace({ Component, pageProps }) {
   return (
-    // <MoralisProvider
-    //   appId={process.env.NEXT_PUBLIC_MORALIS_APP_ID}
-    //   serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_ID}
-    // >
+    <MoralisProvider
+      appId={process.env.NEXT_PUBLIC_MORALIS_APP_ID}
+      serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_ID}
+    >
     <div>
       {/* <nav className="border-b p-6">
         <div className="flex mt-4">
@@ -69,7 +69,7 @@ function Marketplace({ Component, pageProps }) {
       </nav> */}
       <Component {...pageProps} />
     </div>
-    // </MoralisProvider>
+  </MoralisProvider>
   )
 }
 
