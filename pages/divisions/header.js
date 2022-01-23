@@ -9,13 +9,13 @@ export default function Header() {
             <div className="logo">
                 <Image src="/TV_Logo_white.png" alt="tv-white" width="75" height="75" style={{ textAlign: 'left !important'}}/>
             </div>
-            <div className="auth">
+            {/* <div className="auth"> */}
                 {
                     isAuthenticated ? 
                     <button onClick={() => logout()}>DISCONNECT WALLET</button> : 
                     <button onClick={() => authenticate()}>CONNECT WALLET</button>
                 }
-            </div>
+            {/* </div> */}
         </div>
     )
 }

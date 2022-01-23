@@ -15,7 +15,7 @@ export default function Gallery() {
   const [gallery, setGallery] = useState([])
   const [count, setCount] = useState({
     prev: 0,
-    next: 2
+    next: 1
   })
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
@@ -28,12 +28,12 @@ export default function Gallery() {
     setTimeout(() => {
       setCurrentGallery(currentGallery.concat(gallery.slice(count.prev, count.next)))
     }, 200)
-    setCount((prevState) => ({ prev: prevState.prev + 2, next: prevState.next + 2 }))
+    setCount((prevState) => ({ prev: prevState.prev + 1, next: prevState.next + 1 }))
   }
 
   useEffect(() => {
     fetch(
-      'https://api.pinata.cloud/data/pinList?status=pinned&pageLimit=100&metadata[keyvalues][isMetadata]={"value":"1","op":"eq"}',
+      'https://api.pinata.cloud/data/pinList?status=pinned&pageLimit=200&metadata[keyvalues][isMetadata]={"value":"1","op":"eq"}',
       {
         headers: {
             pinata_api_key: pinataApiKey,

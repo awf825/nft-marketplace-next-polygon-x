@@ -41,8 +41,10 @@ body { background-color: black; }
     text-align: right;
 }
 
-.auth > button {
+.header > button {
+    width: 50%;
     color: red;
+    text-align: right;
 }
 
 .gallery-row { margin: 34px 0 34px 0; }
