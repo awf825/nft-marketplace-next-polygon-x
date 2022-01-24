@@ -2,7 +2,7 @@ import Image from "next/image"
 
 export default function Vision() {
     return (
-        <div className="vision">
+        <div className="vision mobile-top-margin-lg">
             {/* <Image src="/mint_pic.png" layout="fill"/> */}
             {/* <p>VISION</p> */}
             <div className="vis-blurb">
@@ -17,7 +17,7 @@ export default function Vision() {
                     </p>
                 </div>
             </div>
-            <div className="vis-img">
+            <div className="vis-img hidden-mobile">
             <Image unoptimized={true} src="/TV_Logo_white.png" alt="tv-white" width="1200" height="1200" />
             </div>
         </div>

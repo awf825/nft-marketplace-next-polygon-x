@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 body { background-color: black; }
+
 .top-container {
     flex-direction: column;
     text-align: center;
@@ -22,7 +23,8 @@ body { background-color: black; }
 .tv-blurb, 
 .gallery-row,
 .vision,
-.fndr-row { display: flex; }
+.fndr-row,
+.gallery-item { display: flex; }
 
 .tv-text-header, 
 .vis-blurb-header, 
@@ -47,36 +49,39 @@ body { background-color: black; }
     text-align: right;
 }
 
-.gallery-row { margin: 34px 0 34px 0; }
-/* next images appear as span tags */
 .tv-header > span { width: 15% !important; }
+.tv-logo-header { width: 15% }
 .tv-text-header { width: 70%; }
+.tv-text-blurb {
+    font-size: 20px;
+    word-spacing: 0.6em;
+    padding: 0px 55px 0px 55px;
+    width: 68%;
+}
+.gallery-row { margin: 34px 0 34px 0; }
+.turtle-img-gallery-outer {
+    width: 16%;
+}
+.turtle-img-gallery-inner {
+    width: 22.666%;
+}
+.turtle-img-blurb { width: 16% !important; }
+/* next images appear as span tags */
 .vis-blurb { width: 60%; }
 .vis-img { width: 40%; }
-.tv-logo-header { width: 15% }
 .vis-blurb-header > h1 { text-align: center; }
-.fndr-header > h1 { 
-    text-align: right; 
-    padding-left: 60%;
-    margin-top: -1em;
-    margin-bottom: .4em;
-}
-.rdmp-header > h1 {
-    text-align: left;
-
-}
 .vis-blurb-header > p { 
     font-size:26px; 
     word-spacing: .6em; 
     text-align: left;
     padding-left: 5%;
 }
-.turtle-img-blurb { width: 16% !important; }
-.tv-text-blurb {
-    font-size: 20px;
-    word-spacing: 0.6em;
-    padding: 0px 55px 0px 55px;
-    width: 68%;
+
+.fndr-header > h1 { 
+    text-align: right; 
+    padding-left: 60%;
+    margin-top: -1em;
+    margin-bottom: .4em;
 }
 .fndr-row {
     margin-bottom: 3%;
@@ -114,8 +119,18 @@ body { background-color: black; }
     word-spacing: 1em;
 }
 
+.rdmp-header > h1 {
+    text-align: left;
+}
 .rdmp-list {
     text-align: left;
+}
+.rdmp-li-percent {
+    width: 20%
+}
+
+.rdmp-li-blurb {
+    width: 80%
 }
 
 .rdmp-list ul > li {
@@ -123,4 +138,118 @@ body { background-color: black; }
     font-size: 40px;
     letter-spacing: .2em;
     margin: 3%;
+    font-size: 24px;
+}
+
+.gallery-item > img, .attr-lines {
+    width: 50%;
+}
+
+@media only screen and (max-width: 767px) {
+    .hidden-mobile {
+        display: none !important;
+    }
+    .mobile-top-margin-sm {
+        margin-top: 23px !important;
+    }
+    .mobile-top-margin-lg {
+        margin-top: 40px;
+    }
+
+    .header,
+    .tv-header, 
+    .tv-blurb, 
+    .gallery-row,
+    .vision,
+    .fndr-row { display: block; }
+
+    .tv-header > span { width: 100% !important; }
+    .tv-logo-header { width: 100% }
+    .tv-text-header, 
+    .vis-blurb, 
+    .fndr-header, 
+    .rdmp-header {         
+        width: 100%; 
+        font-size: 40px; 
+        word-spacing: 0em; 
+    }
+    .tv-text-blurb {
+        font-size: 20px;
+        word-spacing: 0.6em;
+        padding: unset;
+        width: 100%;
+    }
+    /* .tv-header { font-size: 40px !important;} */
+    .gallery-row { margin: unset; }
+    .turtle-img-gallery-outer {
+        width: 50%;
+        display: inline;
+        padding: 5px
+    }
+
+    .vis-blurb-header > h1, .fndr-header > h1, .rdmp-header > h1  {
+        padding: 0 55px 0 55px;
+        font-size: 40px;
+        text-align: center;
+    }
+    .vis-blurb-header > p {
+        font-size: 21px;
+        word-spacing: 0.3em;
+        text-align: center;
+        padding-left: unset;
+    }
+    
+    .fndr-text, .fndr-img {
+        width: 100%;
+        padding: 13px;
+    }
+    .fndr-header > h1 {
+        text-align: center;
+        margin: unset !important;
+    }
+    .fndr-subheader {
+        font-size: 21px;
+        word-spacing: 0.3em;
+        text-align: center;
+    }
+    .fndr-ul {
+        text-align: center;
+        font-size: 13px;
+        padding: unset;
+    }
+    .fndr-discord {
+        position: relative;
+        bottom: 0;
+        right: 0;
+        font-size: 13px;
+        padding: 5px;
+    }
+    /* .rdmp-list {
+        text-align: right;
+    } */
+    .rdmp-li {
+        text-align: left;
+    }
+    .rdmp-li-percent {
+        width: 40%;
+        height: 10%;
+        float: left
+    }
+    .rdmp-li-blurb {
+        width: 60%
+    }
+    .rdmp-list ul > li {
+        font-size: 16px;
+    }
+
+    .gallery-item {
+        padding: 8px;
+    }
+    /* .gallery-item > img {
+        padding: 13px;
+    } */
+
+    .attr-lines {
+        text-align: right;
+    }
 }

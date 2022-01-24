@@ -71,13 +71,23 @@ export default function Gallery() {
       >
         <div>
           {currentGallery && currentGallery.map(((item, index) => (
-            <div key={index} className="post">
+            <div key={index} className="gallery-item mobile-top-margin-sm">
               <img
                 src={item.image}
-                width={350}
-                height={350}
-              />
-              <h3>{`${item.name}-${item.description}`}</h3>
+                width={200}
+                height={200}
+                />
+                <div className="attr-lines">
+                  <h3>{`${item.name}-${item.description}`}</h3>
+                  {
+                    item.attributes.map((a,idx) => (
+                      <div key={idx} className="attr-line">
+                        <span>{a.trait_type}: </span>
+                        <span>{a.value}</span>
+                      </div>
+                    ))
+                  }
+                </div>
             </div>
           )))
           }
