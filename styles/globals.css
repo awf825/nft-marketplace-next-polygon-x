@@ -3,11 +3,26 @@
 @tailwind utilities;
 
 body { background-color: black; }
+svg {
+    height: 2em;
+    width: 2em;
+}
 
 .top-container {
     flex-direction: column;
     text-align: center;
     color: white;
+}
+/* kind of odd way of setting the height form sticky header library*/
+.header, .header-section {
+    height: 8vh;
+    background: #000;
+}
+.header-icons > * {
+    display: inline-block;
+    text-align: right;
+    padding: 12px;
+    float: right;
 }
 .mint-graphic, 
 .tv-intro, 
@@ -31,16 +46,14 @@ body { background-color: black; }
 .fndr-header, 
 .rdmp-header { font-size: 80px; word-spacing: .9em; }
 
-.logo, .auth {
+.logo, .header-icons {
     width: 50%;
+    display: inline-block;
 }
 
 .logo {
+    margin: -.5% auto;
     text-align: left;
-}
-
-.auth {
-    text-align: right;
 }
 
 .header > button {
@@ -154,6 +167,17 @@ body { background-color: black; }
     }
     .mobile-top-margin-lg {
         margin-top: 40px;
+    }
+
+    .logo { width: 25% }
+    .header-icons { width: 75% }
+
+    .header-icons > * {
+        display: inline-block;
+        text-align: right;
+        padding: 5px;
+        margin-bottom: 1em;
+        float: right;
     }
 
     .header,
