@@ -12,10 +12,10 @@ export default function HeaderElements() {
             </div>
             <div className="header-icons">
                 <div>
-                    <a href="https://www.npmjs.com/package/react-sticky-header" target="_blank"><Twitter /></a>
+                    <a href="https://www.npmjs.com/package/react-sticky-header" target="_blank" rel="noreferrer" ><Twitter /></a>
                 </div>
                 <div>
-                    <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank"><Discord /></a>
+                    <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Discord /></a>
                 </div>
                 <div>
                     {
