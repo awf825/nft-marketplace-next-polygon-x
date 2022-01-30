@@ -17,6 +17,7 @@
     "@usedapp/core": "^0.7.2",
     "@walletconnect/web3-provider": "^1.7.0",
     "antd": "^4.17.4",
+    "aws-sdk": "^2.1066.0",
     "axios": "^0.24.0",
     "chai": "^4.3.4",
     "dotenv": "^10.0.0",
@@ -33,6 +34,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-moralis": "^0.3.11",
     "react-responsive-carousel": "^3.2.22",
+    "react-select": "^5.2.2",
     "react-sticky-header": "^0.2.0",
     "web3-react": "^5.0.5",
     "web3modal": "^1.9.4"

@@ -7,6 +7,9 @@ svg {
     height: 2em;
     width: 2em;
 }
+select {
+    color: #000
+}
 
 .top-container {
     flex-direction: column;
@@ -267,7 +270,8 @@ svg {
     }
 
     .gallery-item {
-        padding: 8px;
+        /* padding: 8px; */
+        display: block;
     }
     /* .gallery-item > img {
         padding: 13px;
