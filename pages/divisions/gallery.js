@@ -9,12 +9,12 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Select from 'react-select'
 
 const filterOptions = [
-  { value: 'Background-A1', label: 'Orange Creamsicle' },
-  { value: 'Background-A2', label: 'Hot Pink' },
-  { value: 'Background-A3', label: 'Summer Blue' },
-  { value: 'Background-A4', label: 'Tiel Green' },
-  { value: 'Background-A5', label: 'Lemon Yellow' },
-  { value: 'Background-A6', label: 'Faded Red' }
+  { value: 'A1', label: 'Orange Creamsicle' },
+  { value: 'A2', label: 'Hot Pink' },
+  { value: 'A3', label: 'Summer Blue' },
+  { value: 'A4', label: 'Tiel Green' },
+  { value: 'A5', label: 'Lemon Yellow' },
+  { value: 'A6', label: 'Faded Red' }
 ]
 
 const customStyles = {
@@ -51,12 +51,9 @@ const myBucket = new AWS.S3({
   region: 'ca-central-1',
 })
 
-const initialAttributeFilters = [
-  { "Background": null }
-]
-
 export default function Gallery() {
-  const [attributeFilters, setAttributeFilters] = useState(initialAttributeFilters) 
+  const [areFiltersOn, setAreFiltersOn] = useState(false)
+  const [attributeFilters, setAttributeFilters] = useState([]) 
   const [gallery, setGallery] = useState([])
   const [count, setCount] = useState({
     prev: 0,
@@ -68,6 +65,14 @@ export default function Gallery() {
   const getMoreData = () => {
     if (currentGallery.length === gallery.length) {
       setHasMore(false);
+      return;
+    } else if (areFiltersOn && ( currentGallery.length < 20 ) ) {
+      //debugger
+      setHasMore(false);
+      setCount({
+        prev: 0,
+        next: currentGallery.length
+      })
       return;
     }
     setTimeout(() => {
@@ -98,31 +103,49 @@ export default function Gallery() {
   }, [])
 
   useEffect(() => {
+    // 
     // debugger
-    const filterCodes = attributeFilters.map(function(af) { 
-      debugger
-      return Object.values(af) 
-    })
-    console.log(filterCodes)
-//     const terms = ["term1", "term2", "term3"]
-
-// const strings = ["very large string text ....", "another large string text"] 
-
-// // filter the strings of the array that contain some of the substrings we're looking for
-
-// const result1 = strings.filter(str => terms.some(term => str.includes(term)))
-
-// // filter the strings of the array that contain all the substrings we're looking for
-
-// const result2 = strings.filter(str => terms.every(term => str.includes(term)))
-
-    console.log(attributeFilters)
+    // const filterCodes = attributeFilters.map(function(af) { 
+    //   return Object.values(af) 
+    // })
     // const filteredGallery = gallery.filter(function (g) {
     //   filters.forEach(f => g.comboCode.includes(f))
     // })
-    gallery.filter(g => {
-      // console.log('g @ filter: ', g)
-    })
+    if (attributeFilters.length > 0) {
+      setAreFiltersOn(true)
+      const newGallery = gallery.filter(g => {
+        // return g.comboCode.includes(attributeFilters[0])
+        console.log('gallery item combo code @ newGallery filter: ', g.comboCode)
+        const filtersRef = attributeFilters.map(f => f);
+        console.log('filters @ newGallery filter: ', filtersRef)
+        console.log('checkForAllMatches(attributeFilters, g.comboCode): ', checkForAllMatches(filtersRef, g.comboCode))
+        return checkForAllMatches(filtersRef, g.comboCode)
+        // while (attributeFilters.length > 0) {
+        //   const match =  g.comboCode.includes(attributeFilters[0])
+        //   if (match) {
+        //     return match
+        //   } else {
+        //     attributeFilters.shift()
+        //   } 
+        // }
+        //checkForAllMatches(attributeFilters, g.comboCode) 
+        // console.log('g @ filter: ', g)
+      })
+      console.log('newGallery @ state change effect: ', newGallery)
+      // setGallery(newGallery)
+      // if (newGallery.length > 20) {
+      //   setCurrentGallery(newGallery.slice(count.prev, count.next))
+      // } else {
+      //   \
+      // }
+      setCurrentGallery(newGallery)
+      // setCount({
+      //   prev: 0,
+      //   next: newGallery.length
+      // })
+    } else {
+      setAreFiltersOn(false)
+    }
 
   }, [attributeFilters])
 
@@ -131,11 +154,37 @@ export default function Gallery() {
 
     // } else {
     // const filtersRef = [...attributeFilters];
-    attributeFilters[selectedOption.value.split('-')[0]] = selectedOption.value.split('-')[1]
-    setAttributeFilters(attributeFilters)
+    setAttributeFilters([...attributeFilters, selectedOption.value])
     // }
     // console.log(`Option selected:`, selectedOption);
   };
+
+  /*
+    single chomp, just chomp the string and check for each code (for loop inside of a while loop)
+    a = codes to check
+    s = full combo code
+  */
+  function checkForAllMatches(a, s) {
+    while ( ( ( s.length-2 ) > 0 ) && ( a.length > 0 ) ) {
+        console.log(s)
+        a.forEach((code, i) => {
+            // check for match
+            var match = (code === s.slice(0, code.length))
+            if (match) {
+                // if theres a match, delete the match from the codes array (a). If we empty 
+                // out this array, the while loop will stop, and we will recheck this condition
+                // on the final return. 
+                console.log('MATCH FOUND: ', a[i])
+                a.splice(i, 1);
+                console.log('a after match found: ', a)
+            }
+        })
+        // slice substring of s after checking each of the codes for a match
+        s = s.slice(1)
+    }
+    // if we haven't emptied out the checks, return false cos we didn't match ALL element
+    return (a.length > 0) ? false : true
+  }
 
   return (
     <div className="gallery">
