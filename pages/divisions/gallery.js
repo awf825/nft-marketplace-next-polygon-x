@@ -209,7 +209,7 @@ export default function Gallery() {
         <div>
           {currentGallery && currentGallery.map(((item, index) => (
             <div key={index} className="gallery-item mobile-top-margin-sm">
-              <Image
+              <img
                 src={item.image}
                 width="200"
                 height="200"
