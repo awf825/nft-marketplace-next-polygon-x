@@ -4,39 +4,40 @@
 
 import { useState, useEffect } from 'react'
 import AWS from 'aws-sdk'
-import Image from 'next/image';
+import FilterSelects from '../components/FilterSelects';
+// import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
-import Select from 'react-select'
+// import Select from 'react-select'
 
-const filterOptions = [
-  { value: 'A1', label: 'Orange Creamsicle' },
-  { value: 'A2', label: 'Hot Pink' },
-  { value: 'A3', label: 'Summer Blue' },
-  { value: 'A4', label: 'Tiel Green' },
-  { value: 'A5', label: 'Lemon Yellow' },
-  { value: 'A6', label: 'Faded Red' }
-]
+// const backgroundFilterOptions = [
+//   { value: 'Background-A1', label: 'Orange Creamsicle' },
+//   { value: 'Background-A2', label: 'Hot Pink' },
+//   { value: 'Background-A3', label: 'Summer Blue' },
+//   { value: 'Background-A4', label: 'Tiel Green' },
+//   { value: 'Background-A5', label: 'Lemon Yellow' },
+//   { value: 'Background-A6', label: 'Faded Red' }
+// ]
 
-const customStyles = {
-  menu: (provided, state) => ({
-    ...provided,
-    width: state.selectProps.width,
-    borderBottom: '1px dotted pink',
-    color: '#000',
-    padding: 20,
-  }),
+// const customStyles = {
+//   menu: (provided, state) => ({
+//     ...provided,
+//     width: state.selectProps.width,
+//     borderBottom: '1px dotted pink',
+//     color: '#000',
+//     padding: 20,
+//   }),
 
-  // control: (_, { selectProps: { width }}) => ({
-  //   width: width
-  // }),
+//   // control: (_, { selectProps: { width }}) => ({
+//   //   width: width
+//   // }),
 
-  // singleValue: (provided, state) => {
-  //   // const opacity = state.isDisabled ? 0.5 : 1;
-  //   // const transition = 'opacity 300ms';
+//   // singleValue: (provided, state) => {
+//   //   // const opacity = state.isDisabled ? 0.5 : 1;
+//   //   // const transition = 'opacity 300ms';
 
-  //   return { ...provided };
-  // }
-}
+//   //   return { ...provided };
+//   // }
+// }
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 // const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
@@ -51,9 +52,19 @@ const myBucket = new AWS.S3({
   region: 'ca-central-1',
 })
 
+const initialAttrState = [
+  { "Background": '' },
+  { "Clothes": '' },
+  { "Eyes": '' },
+  { "Mouth": '' },
+  { "Headwear": '' },
+  { "Paint": '' },
+  { "Skin": '' }
+]
+
 export default function Gallery() {
   const [areFiltersOn, setAreFiltersOn] = useState(false)
-  const [attributeFilters, setAttributeFilters] = useState([]) 
+  const [attributeFilters, setAttributeFilters] = useState(initialAttrState) 
   const [gallery, setGallery] = useState([])
   const [count, setCount] = useState({
     prev: 0,
@@ -67,7 +78,6 @@ export default function Gallery() {
       setHasMore(false);
       return;
     } else if (areFiltersOn && ( currentGallery.length < 20 ) ) {
-      //debugger
       setHasMore(false);
       setCount({
         prev: 0,
@@ -111,12 +121,14 @@ export default function Gallery() {
     // const filteredGallery = gallery.filter(function (g) {
     //   filters.forEach(f => g.comboCode.includes(f))
     // })
-    if (attributeFilters.length > 0) {
+    if (attributeFilters.find(af => Object.values(af)[0].length>0) ) {
       setAreFiltersOn(true)
       const newGallery = gallery.filter(g => {
         // return g.comboCode.includes(attributeFilters[0])
         console.log('gallery item combo code @ newGallery filter: ', g.comboCode)
-        const filtersRef = attributeFilters.map(f => f);
+        // get all relevant codes to send to check callback
+        const filtersRef = attributeFilters.map(f => Object.entries(f)[0][1]).filter(mf => mf.length>0)
+        
         console.log('filters @ newGallery filter: ', filtersRef)
         console.log('checkForAllMatches(attributeFilters, g.comboCode): ', checkForAllMatches(filtersRef, g.comboCode))
         return checkForAllMatches(filtersRef, g.comboCode)
@@ -150,13 +162,11 @@ export default function Gallery() {
   }, [attributeFilters])
 
   const filter = selectedOption => {
-    // if (attributeFilters.find(af => af.trait_type===selectedOption.value)) {
-
-    // } else {
-    // const filtersRef = [...attributeFilters];
-    setAttributeFilters([...attributeFilters, selectedOption.value])
-    // }
-    // console.log(`Option selected:`, selectedOption);
+    const splitVals = selectedOption.value.split('-');
+    const filtersRef = attributeFilters.map(f => f);
+    const pairToMutate = filtersRef.find(af => Object.entries(af)[0][0]===splitVals[0])
+    pairToMutate[splitVals[0]] = splitVals[1];
+    setAttributeFilters(filtersRef)
   };
 
   /*
@@ -165,18 +175,29 @@ export default function Gallery() {
     s = full combo code
   */
   function checkForAllMatches(a, s) {
-    while ( ( ( s.length-2 ) > 0 ) && ( a.length > 0 ) ) {
-        console.log(s)
+    while ( ( ( s.length-1 ) > 0 ) && ( a.length > 0 ) ) {
+        // console.log(s)
         a.forEach((code, i) => {
             // check for match
-            var match = (code === s.slice(0, code.length))
+            var firstThreeChars = s.slice(0, 3)
+            // if (firstThreeChars === "B2") {
+            //   debugger
+            // }
+            var match = ( code === firstThreeChars.slice(0, code.length) )
             if (match) {
-                // if theres a match, delete the match from the codes array (a). If we empty 
-                // out this array, the while loop will stop, and we will recheck this condition
-                // on the final return. 
-                console.log('MATCH FOUND: ', a[i])
-                a.splice(i, 1);
-                console.log('a after match found: ', a)
+                  // we also need to check if code is length 2 and second 2 of three to slice is NOT a number
+                  if (( code.length === 2 ) && ( Number(s.slice(1,3)).length>1 ) && ( Number(s.slice(1,3)) >= 0 )) {
+                    console.log('NO MATCH. BROADCHECKING: ', a[i])
+                  } else {
+                    // if theres a true match, delete the match from the codes array (a). If we empty 
+                    // out this array, the while loop will stop, and we will recheck this condition
+                    // on the final return. 
+                    console.log('MATCH FOUND: ', a[i])
+                    console.log('sliced check to match: ', s.slice(0, code.length))
+                    a.splice(i, 1);
+                    console.log('a after match found: ', a)
+                  }
+
             }
         })
         // slice substring of s after checking each of the codes for a match
@@ -186,20 +207,21 @@ export default function Gallery() {
     return (a.length > 0) ? false : true
   }
 
+  function clearFilters(e) {
+    e.preventDefault()
+    console.log('clearFilters')
+    console.log(initialAttrState)
+    const filtersRef = attributeFilters.map(f => f);
+    const newFilters = filtersRef.map(af => Object.entries(af)[0][1]==="")
+    
+    setAttributeFilters(newFilters)
+    setCurrentGallery(gallery) 
+  }
+
   return (
     <div className="gallery">
-      <Select 
-        onChange={filter}
-        placeholder={"Background"}
-        options={filterOptions}
-        styles={customStyles} 
-      />
-      {/* <select></select>
-      <select></select>
-      <select></select>
-      <select></select>
-      <select></select>
-      <select></select> */}
+      <FilterSelects filter={filter} clearFilters={clearFilters} attributeFilters={attributeFilters}/>
+      <button onClick={(e) => clearFilters}>CLEAR</button>
       <InfiniteScroll
         dataLength={currentGallery.length}
         next={getMoreData}
