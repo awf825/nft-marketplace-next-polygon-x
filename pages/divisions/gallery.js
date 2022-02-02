@@ -7,37 +7,6 @@ import AWS from 'aws-sdk'
 import FilterSelects from '../components/FilterSelects';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
-// import Select from 'react-select'
-
-// const backgroundFilterOptions = [
-//   { value: 'Background-A1', label: 'Orange Creamsicle' },
-//   { value: 'Background-A2', label: 'Hot Pink' },
-//   { value: 'Background-A3', label: 'Summer Blue' },
-//   { value: 'Background-A4', label: 'Tiel Green' },
-//   { value: 'Background-A5', label: 'Lemon Yellow' },
-//   { value: 'Background-A6', label: 'Faded Red' }
-// ]
-
-// const customStyles = {
-//   menu: (provided, state) => ({
-//     ...provided,
-//     width: state.selectProps.width,
-//     borderBottom: '1px dotted pink',
-//     color: '#000',
-//     padding: 20,
-//   }),
-
-//   // control: (_, { selectProps: { width }}) => ({
-//   //   width: width
-//   // }),
-
-//   // singleValue: (provided, state) => {
-//   //   // const opacity = state.isDisabled ? 0.5 : 1;
-//   //   // const transition = 'opacity 300ms';
-
-//   //   return { ...provided };
-//   // }
-// }
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 // const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
@@ -126,7 +95,6 @@ export default function Gallery() {
         console.log('checkForAllMatches(attributeFilters, g.comboCode): ', checkForAllMatches(filtersRef, g.comboCode))
         
         return checkForAllMatches(filtersRef, g.comboCode)
-
       })
       console.log('newGallery @ state change effect: ', newGallery)
       setCurrentGallery(newGallery)
@@ -136,15 +104,31 @@ export default function Gallery() {
 
   }, [attributeFilters])
 
-  const filter = selectedOption => {
-    const splitVals = selectedOption.value.split('-');
-    const filtersRef = attributeFilters.map(f => f);
-    const pairToMutate = filtersRef.find(af => Object.entries(af)[0][0]===splitVals[0])
-    pairToMutate[splitVals[0]] = splitVals[1];
-    setAreFiltersClear(false);
-    setAttributeFilters(filtersRef)
-  };
+  useEffect(() => {
+    if (areFiltersClear === true) {      
+      setAttributeFilters([
+        { "Background": '' },
+        { "Clothes": '' },
+        { "Eyes": '' },
+        { "Mouth": '' },
+        { "Headwear": '' },
+        { "Paint": '' },
+        { "Skin": '' }
+      ])
+      setCurrentGallery(gallery) 
+    }
+  }, [areFiltersClear])
 
+  const filter = selectedOption => {
+    if (selectedOption !== null) {
+      const splitVals = selectedOption.value.split('-');
+      const filtersRef = attributeFilters.map(f => f);
+      const pairToMutate = filtersRef.find(af => Object.entries(af)[0][0]===splitVals[0])
+      pairToMutate[splitVals[0]] = splitVals[1];
+      setAreFiltersClear(false);
+      setAttributeFilters(filtersRef);
+    }
+  };
   /*
     single chomp, just chomp the string and check for each code (for loop inside of a while loop)
     a = codes to check
@@ -182,27 +166,14 @@ export default function Gallery() {
     // if we haven't emptied out the checks, return false cos we didn't match ALL element
     return (a.length > 0) ? false : true
   }
-
-  function clearFilters(e) {
-    e.preventDefault()
-    setAttributeFilters([
-      { "Background": '' },
-      { "Clothes": '' },
-      { "Eyes": '' },
-      { "Mouth": '' },
-      { "Headwear": '' },
-      { "Paint": '' },
-      { "Skin": '' }
-    ])
-    // setAttributeFilters(initialAttrState)
-    setAreFiltersClear(true);
-    setCurrentGallery(gallery) 
-  }
+  
 
   return (
     <div className="gallery">
-      <FilterSelects filter={filter} areFiltersClear={areFiltersClear} attributeFilters={attributeFilters}/>
-      <button onClick={(e) => clearFilters(e)}>CLEAR</button>
+      <FilterSelects 
+        filter={filter} 
+        setAreFiltersClear={setAreFiltersClear}
+      />
       <InfiniteScroll
         dataLength={currentGallery.length}
         next={getMoreData}

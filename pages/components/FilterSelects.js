@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import Select from 'react-select'
 
 const customStyles = {
@@ -195,62 +195,79 @@ const headwearFilterOptions = [
 export default function FilterSelects(props) {
     // https://stackoverflow.com/questions/50412843/how-to-programmatically-clear-reset-react-select
     // try to hoist state up from this component, keep the clear button here 
-    const selectInputRef = useRef();
+    const refs = useRef([]);
 
-    // const onClear = () => {
-    // };
-    
-    useEffect(() => {
-        if (props.areFiltersClear===true && selectInputRef.current.select) {
-            selectInputRef.current.select.clearValue();
-        }
-    }, [props.areFiltersClear])
+    const onClear = () => {
+        refs.current.forEach(ref => ref.clearValue())
+        props.setAreFiltersClear(true)
+    };    
 
     return (
         <>
             <Select          
-                ref={selectInputRef}
+                ref={(element) => {
+                    refs.current[0] = element;
+                }}
                 onChange={props.filter}
                 placeholder={"Background"}
                 options={backgroundFilterOptions}
                 styles={customStyles} 
             />
             <Select 
+                ref={(element) => {
+                    refs.current[1] = element;
+                }}
                 onChange={props.filter}
                 placeholder={"Skin"}
                 options={skinFilterOptions}
                 styles={customStyles} 
             />
-            <Select 
+            <Select
+                ref={(element) => {
+                    refs.current[2] = element;
+                }}
                 onChange={props.filter}
                 placeholder={"Eyes"}
                 options={eyeFilterOptions}
                 styles={customStyles} 
             />
             <Select 
+                ref={(element) => {
+                    refs.current[3] = element;
+                }}
                 onChange={props.filter}
                 placeholder={"Mouth"}
                 options={mouthFilterOptions}
                 styles={customStyles} 
             />
             <Select 
+                ref={(element) => {
+                    refs.current[4] = element;
+                }}
                 onChange={props.filter}
                 placeholder={"Clothes"}
                 options={clothesFilterOptions}
                 styles={customStyles} 
                 />
             <Select 
+                ref={(element) => {
+                    refs.current[5] = element;
+                }}
                 onChange={props.filter}
                 placeholder={"Paint"}
                 options={paintFilterOptions}
                 styles={customStyles} 
             />
             <Select 
+                ref={(element) => {
+                    refs.current[6] = element;
+                }}
                 onChange={props.filter}
                 placeholder={"Headwear"}
                 options={headwearFilterOptions}
                 styles={customStyles} 
             />
+            <button onClick={onClear}>Clear Filters</button>
         </>
     )
 }
