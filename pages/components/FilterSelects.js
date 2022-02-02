@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import Select from 'react-select'
 
 const customStyles = {
@@ -23,7 +23,7 @@ const customStyles = {
   }
 
 const backgroundFilterOptions = [
-    { value: '', label: 'No Selection'},
+    { value: 'Background-', label: 'No Selection'},
     { value: 'Background-A1', label: 'Orange Creamsicle' },
     { value: 'Background-A2', label: 'Hot Pink' },
     { value: 'Background-A3', label: 'Summer Blue' },
@@ -32,7 +32,7 @@ const backgroundFilterOptions = [
     { value: 'Background-A6', label: 'Faded Red' } 
 ]
 const skinFilterOptions = [
-    { value: '', label: 'No Selection'},
+    { value: 'Skin-', label: 'No Selection'},
     { value: 'Skin-B2', label: 'Sport Orange' },
     { value: 'Skin-B3', label: 'Flare Purple' },
     { value: 'Skin-B4', label: 'Carolina Blue' },
@@ -55,7 +55,7 @@ const skinFilterOptions = [
     { value: 'Skin-B21', label: 'Reptilian Green' }
 ]
 const clothesFilterOptions = [
-    { value: '', label: 'No Selection'},
+    { value: 'Clothes-', label: 'No Selection'},
     { value: 'Clothes-E1', label: 'Thriller Gangster'},
     { value: 'Clothes-E2', label: 'Lounging Gangster'},
     { value: 'Clothes-E3', label: 'Lax Bro'},
@@ -97,7 +97,7 @@ const clothesFilterOptions = [
     { value: 'Clothes-E39', label: 'None'}
 ]
 const paintFilterOptions = [
-    { value: '', label: 'No Selection'},
+    { value: 'Paint-', label: 'No Selection'},
     { value: 'Paint-G1', label: 'Teardrop Tattoo'},
     { value: 'Paint-G2', label: '2022 Tattoo'},
     { value: 'Paint-G3', label: 'Band-Aid'},
@@ -107,7 +107,7 @@ const paintFilterOptions = [
     { value: 'Paint-G1', label: 'None'}    
 ]
 const mouthFilterOptions = [
-    { value: '', label: 'No Selection'},
+    { value: 'Mouth-', label: 'No Selection'},
     { value: 'Mouth-F2', label: 'Unfazed'},
     { value: 'Mouth-F3', label: 'Mouthguard'},
     { value: 'Mouth-F4', label: 'Iced Out Grill'},
@@ -142,7 +142,7 @@ const mouthFilterOptions = [
     { value: 'Mouth-F35', label: 'DatAss'},
 ]
 const eyeFilterOptions = [
-    { value: '', label: 'No Selection'},
+    { value: 'Eyes-', label: 'No Selection'},
     { value: 'Eyes-I1', label: 'Red Haze' },
     { value: 'Eyes-I2', label: 'Clear Blue' },
     { value: 'Eyes-I3', label: 'Cyborg' },
@@ -170,7 +170,7 @@ const eyeFilterOptions = [
     { value: 'Eyes-I25', label: 'Blinders' }
 ]
 const headwearFilterOptions = [
-    { value: '', label: 'No Selection'},
+    { value: 'Headwear-', label: 'No Selection'},
     { value: 'Headwear-J1', label: 'Ski Mask' },
     { value: 'Headwear-J2', label: 'Bucket Hat' },
     { value: 'Headwear-J3', label: 'Flow Bucket' },
@@ -193,9 +193,23 @@ const headwearFilterOptions = [
 ]
 
 export default function FilterSelects(props) {
+    // https://stackoverflow.com/questions/50412843/how-to-programmatically-clear-reset-react-select
+    // try to hoist state up from this component, keep the clear button here 
+    const selectInputRef = useRef();
+
+    // const onClear = () => {
+    // };
+    
+    useEffect(() => {
+        if (props.areFiltersClear===true && selectInputRef.current.select) {
+            selectInputRef.current.select.clearValue();
+        }
+    }, [props.areFiltersClear])
+
     return (
         <>
-            <Select 
+            <Select          
+                ref={selectInputRef}
                 onChange={props.filter}
                 placeholder={"Background"}
                 options={backgroundFilterOptions}

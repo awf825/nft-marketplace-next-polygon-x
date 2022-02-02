@@ -72,6 +72,7 @@ export default function Gallery() {
   })
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
+  const [areFiltersClear, setAreFiltersClear] = useState(true);
    
   const getMoreData = () => {
     if (currentGallery.length === gallery.length) {
@@ -81,7 +82,7 @@ export default function Gallery() {
       setHasMore(false);
       setCount({
         prev: 0,
-        next: currentGallery.length
+        next: 20
       })
       return;
     }
@@ -113,48 +114,22 @@ export default function Gallery() {
   }, [])
 
   useEffect(() => {
-    // 
-    // debugger
-    // const filterCodes = attributeFilters.map(function(af) { 
-    //   return Object.values(af) 
-    // })
-    // const filteredGallery = gallery.filter(function (g) {
-    //   filters.forEach(f => g.comboCode.includes(f))
-    // })
+    //debugger
+    console.log('attributeFilters @ side effect: ', attributeFilters)
     if (attributeFilters.find(af => Object.values(af)[0].length>0) ) {
       setAreFiltersOn(true)
       const newGallery = gallery.filter(g => {
-        // return g.comboCode.includes(attributeFilters[0])
         console.log('gallery item combo code @ newGallery filter: ', g.comboCode)
-        // get all relevant codes to send to check callback
-        const filtersRef = attributeFilters.map(f => Object.entries(f)[0][1]).filter(mf => mf.length>0)
         
+        const filtersRef = attributeFilters.map(f => Object.entries(f)[0][1]).filter(mf => mf.length>0)
         console.log('filters @ newGallery filter: ', filtersRef)
         console.log('checkForAllMatches(attributeFilters, g.comboCode): ', checkForAllMatches(filtersRef, g.comboCode))
+        
         return checkForAllMatches(filtersRef, g.comboCode)
-        // while (attributeFilters.length > 0) {
-        //   const match =  g.comboCode.includes(attributeFilters[0])
-        //   if (match) {
-        //     return match
-        //   } else {
-        //     attributeFilters.shift()
-        //   } 
-        // }
-        //checkForAllMatches(attributeFilters, g.comboCode) 
-        // console.log('g @ filter: ', g)
+
       })
       console.log('newGallery @ state change effect: ', newGallery)
-      // setGallery(newGallery)
-      // if (newGallery.length > 20) {
-      //   setCurrentGallery(newGallery.slice(count.prev, count.next))
-      // } else {
-      //   \
-      // }
       setCurrentGallery(newGallery)
-      // setCount({
-      //   prev: 0,
-      //   next: newGallery.length
-      // })
     } else {
       setAreFiltersOn(false)
     }
@@ -166,6 +141,7 @@ export default function Gallery() {
     const filtersRef = attributeFilters.map(f => f);
     const pairToMutate = filtersRef.find(af => Object.entries(af)[0][0]===splitVals[0])
     pairToMutate[splitVals[0]] = splitVals[1];
+    setAreFiltersClear(false);
     setAttributeFilters(filtersRef)
   };
 
@@ -209,19 +185,24 @@ export default function Gallery() {
 
   function clearFilters(e) {
     e.preventDefault()
-    console.log('clearFilters')
-    console.log(initialAttrState)
-    const filtersRef = attributeFilters.map(f => f);
-    const newFilters = filtersRef.map(af => Object.entries(af)[0][1]==="")
-    
-    setAttributeFilters(newFilters)
+    setAttributeFilters([
+      { "Background": '' },
+      { "Clothes": '' },
+      { "Eyes": '' },
+      { "Mouth": '' },
+      { "Headwear": '' },
+      { "Paint": '' },
+      { "Skin": '' }
+    ])
+    // setAttributeFilters(initialAttrState)
+    setAreFiltersClear(true);
     setCurrentGallery(gallery) 
   }
 
   return (
     <div className="gallery">
-      <FilterSelects filter={filter} clearFilters={clearFilters} attributeFilters={attributeFilters}/>
-      <button onClick={(e) => clearFilters}>CLEAR</button>
+      <FilterSelects filter={filter} areFiltersClear={areFiltersClear} attributeFilters={attributeFilters}/>
+      <button onClick={(e) => clearFilters(e)}>CLEAR</button>
       <InfiniteScroll
         dataLength={currentGallery.length}
         next={getMoreData}
@@ -237,17 +218,6 @@ export default function Gallery() {
                 height="200"
               />
               <h3>#{item.name.split("_")[1]}</h3>
-                {/* <div className="attr-lines">
-                  <h3>{`${item.name}-${item.comboCode}`}</h3>
-                  {
-                    item.attributes.map((a,idx) => (
-                      <div key={idx} className="attr-line">
-                        <span>{a.trait_type}: </span>
-                        <span>{a.value}</span>
-                      </div>
-                    ))
-                  }
-                </div> */}
             </div>
           )))
           }
