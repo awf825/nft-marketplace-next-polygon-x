@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function TVIntro() {
     return (
-        <div className="tv-intro">
+        <div id="aboutUs" className="tv-intro">
             {/* <Image src="/mint_pic.png" layout="fill"/> */}
             <div className="tv-header">
                 <Image className="tv-logo-header hidden-mobile" src="/TV_Logo_white.png" alt="tv-white" width="150" height="100" />

@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function Founders() {
     return (
-        <div className="founders mobile-top-margin-lg">
+        <div id="ourTeam" className="founders mobile-top-margin-lg">
             <div className="fndr-header">
                 <h1>THE FOUNDERS</h1>
             </div>

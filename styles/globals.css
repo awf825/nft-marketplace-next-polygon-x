@@ -27,6 +27,14 @@ select {
     padding: 12px;
     float: right;
 }
+.navburger {
+    text-align:right;
+}
+.sliding-menu {
+    height: 40vh;
+    width: 20vh;
+    float: right;
+}
 .mint-graphic, 
 .tv-intro, 
 .vision, 

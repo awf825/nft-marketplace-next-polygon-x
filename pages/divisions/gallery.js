@@ -196,7 +196,7 @@ export default function Gallery() {
   
 
   return (
-    <div className="gallery">
+    <div id="gallery" className="gallery">
       <FilterSelects 
         filter={filter} 
         setAreFiltersClear={setAreFiltersClear}

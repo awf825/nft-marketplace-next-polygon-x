@@ -1,6 +1,6 @@
 export default function Roadmap() {
     return (
-        <div className="roadmap mobile-top-margin-lg">
+        <div id="roadmap" className="roadmap mobile-top-margin-lg">
             <div className="rdmp-header">
                 <h1>THE ROADMAP</h1>
             </div>
