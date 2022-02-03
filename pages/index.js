@@ -5,7 +5,6 @@ import Vision from './divisions/vision'
 import Founders from './divisions/founders'
 import Roadmap from './divisions/roadmap'
 import Gallery from './divisions/gallery'
-import { useEffect } from 'react'
 
 export default function Home() {
   return (

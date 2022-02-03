@@ -7,6 +7,9 @@ import AWS from 'aws-sdk'
 import FilterSelects from '../components/FilterSelects';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
+// import {
+//   checkForAllMatches
+// } from '../helpers/checkForAllMatches'
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 // const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
@@ -88,11 +91,11 @@ export default function Gallery() {
     if (attributeFilters.find(af => Object.values(af)[0].length>0) ) {
       setAreFiltersOn(true)
       const newGallery = gallery.filter(g => {
-        console.log('gallery item combo code @ newGallery filter: ', g.comboCode)
+        // console.log('gallery item combo code @ newGallery filter: ', g.comboCode)
         
         const filtersRef = attributeFilters.map(f => Object.entries(f)[0][1]).filter(mf => mf.length>0)
-        console.log('filters @ newGallery filter: ', filtersRef)
-        console.log('checkForAllMatches(attributeFilters, g.comboCode): ', checkForAllMatches(filtersRef, g.comboCode))
+        // console.log('filters @ newGallery filter: ', filtersRef)
+        // console.log('checkForAllMatches(attributeFilters, g.comboCode): ', checkForAllMatches(filtersRef, g.comboCode))
         
         return checkForAllMatches(filtersRef, g.comboCode)
       })
@@ -129,42 +132,66 @@ export default function Gallery() {
       setAttributeFilters(filtersRef);
     }
   };
-  /*
-    single chomp, just chomp the string and check for each code (for loop inside of a while loop)
-    a = codes to check
-    s = full combo code
-  */
+  // /*
+  //   single chomp, just chomp the string and check for each code (for loop inside of a while loop)
+  //   a = codes to check
+  //   s = full combo code
+  // */
   function checkForAllMatches(a, s) {
-    while ( ( ( s.length-1 ) > 0 ) && ( a.length > 0 ) ) {
-        // console.log(s)
-        a.forEach((code, i) => {
-            // check for match
-            var firstThreeChars = s.slice(0, 3)
-            // if (firstThreeChars === "B2") {
-            //   debugger
-            // }
-            var match = ( code === firstThreeChars.slice(0, code.length) )
-            if (match) {
-                  // we also need to check if code is length 2 and second 2 of three to slice is NOT a number
-                  if (( code.length === 2 ) && ( Number(s.slice(1,3)).length>1 ) && ( Number(s.slice(1,3)) >= 0 )) {
-                    console.log('NO MATCH. BROADCHECKING: ', a[i])
-                  } else {
-                    // if theres a true match, delete the match from the codes array (a). If we empty 
-                    // out this array, the while loop will stop, and we will recheck this condition
-                    // on the final return. 
-                    console.log('MATCH FOUND: ', a[i])
-                    console.log('sliced check to match: ', s.slice(0, code.length))
-                    a.splice(i, 1);
-                    console.log('a after match found: ', a)
-                  }
-
-            }
-        })
-        // slice substring of s after checking each of the codes for a match
-        s = s.slice(1)
+    // slice each code into a duple array to be checked for deep equality against combocode
+    //debugger
+    const duples = a.map(toCheck => toCheck.split(/([A-J])/).slice(1,4));
+    // split the combo code into an array of loose duples
+    const blownUpCombo = s.split(/([A-J])/).slice(1,15)
+    // new while loop. chomp blownUpCombo in groups of two.
+    while (( blownUpCombo.length > 0 ) && ( duples.length > 0 )) {
+      console.log('duples @ top of while loop: ', duples);
+      console.log('blownUpCombo @ top of while loop', blownUpCombo)
+      duples.forEach((duple,i) => {
+        // we get a match if the letter char (always [0]) in the duple matches the letter char 
+        // in the blown up sequence AND same for the number char (always [1])
+        var match = ( ( duple[0] === blownUpCombo[0] ) && ( duple[1] === blownUpCombo[1] )  )
+        if (match) {
+          // i we have a match, remove the matching duple. We do this because we return a boolean
+          // based on the condition of the duples array being emptied out i.e we have matched every filter. 
+          console.log('MATCH FOUND')
+          duples.splice(i,1)
+          console.log('duples after splicing: ', duples)
+        }
+      })
+      blownUpCombo = blownUpCombo.slice(2)
     }
+    return (duples.length > 0) ? false : true
+    // while ( ( ( s.length-1 ) > 0 ) && ( a.length > 0 ) ) {
+    //     // console.log(s)
+    //     a.forEach((code, i) => {
+    //         // check for match
+    //         var firstThreeChars = s.slice(0, 3)
+    //         // if (firstThreeChars === "B2") {
+    //         //   debugger
+    //         // }
+    //         var match = ( code === firstThreeChars.slice(0, code.length) )
+    //         if (match) {
+    //               // we also need to check if code is length 2 and second 2 of three to slice is NOT a number
+    //               if (( code.length === 2 ) && ( Number(s.slice(1,3)).length>1 ) && ( Number(s.slice(1,3)) >= 0 )) {
+    //                 console.log('NO MATCH. BROADCHECKING: ', a[i])
+    //               } else {
+    //                 // if theres a true match, delete the match from the codes array (a). If we empty 
+    //                 // out this array, the while loop will stop, and we will recheck this condition
+    //                 // on the final return. 
+    //                 console.log('MATCH FOUND: ', a[i])
+    //                 console.log('sliced check to match: ', s.slice(0, code.length))
+    //                 a.splice(i, 1);
+    //                 console.log('a after match found: ', a)
+    //               }
+
+    //         }
+    //     })
+    //     // slice substring of s after checking each of the codes for a match
+    //     s = s.slice(1)
+    // }
     // if we haven't emptied out the checks, return false cos we didn't match ALL element
-    return (a.length > 0) ? false : true
+    // return (a.length > 0) ? false : true
   }
   
 

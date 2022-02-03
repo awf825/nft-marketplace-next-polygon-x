@@ -23,7 +23,6 @@ const customStyles = {
   }
 
 const backgroundFilterOptions = [
-    { value: 'Background-', label: 'No Selection'},
     { value: 'Background-A1', label: 'Orange Creamsicle' },
     { value: 'Background-A2', label: 'Hot Pink' },
     { value: 'Background-A3', label: 'Summer Blue' },
@@ -32,7 +31,6 @@ const backgroundFilterOptions = [
     { value: 'Background-A6', label: 'Faded Red' } 
 ]
 const skinFilterOptions = [
-    { value: 'Skin-', label: 'No Selection'},
     { value: 'Skin-B2', label: 'Sport Orange' },
     { value: 'Skin-B3', label: 'Flare Purple' },
     { value: 'Skin-B4', label: 'Carolina Blue' },
@@ -55,7 +53,6 @@ const skinFilterOptions = [
     { value: 'Skin-B21', label: 'Reptilian Green' }
 ]
 const clothesFilterOptions = [
-    { value: 'Clothes-', label: 'No Selection'},
     { value: 'Clothes-E1', label: 'Thriller Gangster'},
     { value: 'Clothes-E2', label: 'Lounging Gangster'},
     { value: 'Clothes-E3', label: 'Lax Bro'},
@@ -97,7 +94,6 @@ const clothesFilterOptions = [
     { value: 'Clothes-E39', label: 'None'}
 ]
 const paintFilterOptions = [
-    { value: 'Paint-', label: 'No Selection'},
     { value: 'Paint-G1', label: 'Teardrop Tattoo'},
     { value: 'Paint-G2', label: '2022 Tattoo'},
     { value: 'Paint-G3', label: 'Band-Aid'},
@@ -107,7 +103,6 @@ const paintFilterOptions = [
     { value: 'Paint-G1', label: 'None'}    
 ]
 const mouthFilterOptions = [
-    { value: 'Mouth-', label: 'No Selection'},
     { value: 'Mouth-F2', label: 'Unfazed'},
     { value: 'Mouth-F3', label: 'Mouthguard'},
     { value: 'Mouth-F4', label: 'Iced Out Grill'},
@@ -142,7 +137,6 @@ const mouthFilterOptions = [
     { value: 'Mouth-F35', label: 'DatAss'},
 ]
 const eyeFilterOptions = [
-    { value: 'Eyes-', label: 'No Selection'},
     { value: 'Eyes-I1', label: 'Red Haze' },
     { value: 'Eyes-I2', label: 'Clear Blue' },
     { value: 'Eyes-I3', label: 'Cyborg' },
@@ -170,7 +164,6 @@ const eyeFilterOptions = [
     { value: 'Eyes-I25', label: 'Blinders' }
 ]
 const headwearFilterOptions = [
-    { value: 'Headwear-', label: 'No Selection'},
     { value: 'Headwear-J1', label: 'Ski Mask' },
     { value: 'Headwear-J2', label: 'Bucket Hat' },
     { value: 'Headwear-J3', label: 'Flow Bucket' },
