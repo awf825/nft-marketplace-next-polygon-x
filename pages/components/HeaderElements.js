@@ -7,6 +7,11 @@ const Nav = styled.nav`
   width: 100%;
   height: 55px;
   padding: 0 20px;
+  position: fixed;
+  background-color: black;
+  height: 7vh;
+  width: 100%;
+  z-index: 9997;
 `
 
 const StyledBurger = styled.div`
@@ -64,14 +69,14 @@ export default function HeaderElements() {
     return (
         <div>
             <Nav>
-                <>
-                    <StyledBurger open={open} onClick={() => setOpen(!open)}>
-                        <div />
-                        <div />
-                        <div />
-                    </StyledBurger>
-                </>
+                {/* <>
+                </> */}
             </Nav>
+            <StyledBurger open={open} onClick={() => setOpen(!open)}>
+                <div />
+                <div />
+                <div />
+            </StyledBurger>
             <Menu open={open}>
                 <Link href="#aboutUs">About Us</Link>
                 <Link href="#ourTeam">Our Team</Link>

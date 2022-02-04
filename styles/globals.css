@@ -34,16 +34,11 @@ select {
     color: white;
 }
 /* kind of odd way of setting the height form sticky header library*/
-.header, .header-section {
+.header-section {
     height: 8vh;
     background: #000;
 }
-.header-icons > * {
-    display: inline-block;
-    text-align: right;
-    padding: 12px;
-    float: right;
-}
+
 .navburger {
     text-align:right;
 }
@@ -58,40 +53,37 @@ select {
 .roadmap, 
 .gallery { color: white; margin: 0 5% 0 5%; }
 
-.tv-intro { text-align: center; }
-
 .header,
-.tv-header, 
 .tv-blurb, 
 .gallery-row,
 .vision,
 .fndr-row,
 .gallery-item { display: flex; }
+.tv-header{ display: block } 
 
 .tv-text-header, 
 .vis-blurb-header, 
 .fndr-header, 
 .rdmp-header { font-size: 80px; padding: 0 4.8% 0 4.8%; }
-
-.logo, .header-icons {
-    width: 50%;
-    display: inline-block;
-}
-
 .logo {
     margin: -.5% auto;
     text-align: left;
 }
-
 .header > button {
     width: 50%;
     color: red;
     text-align: right;
 }
-
-.tv-header > span { width: 15% !important; }
-.tv-logo-header { width: 15% }
-.tv-text-header { width: 70%; }
+.tv-intro {
+    margin-top: 5%;
+}
+.tv-text-header > h1, 
+.vis-blurb-header > h1,
+.fndr-header > h1,
+.rdmp-header > h1 { 
+    font-weight: 800;
+    font-style:italic;
+}
 .tv-text-blurb {
     font-size: 20px;
     word-spacing: 0.4em;
@@ -110,6 +102,9 @@ select {
 /* next images appear as span tags */
 /* .vis-blurb { width: 60%; } */
 /* .vis-img { width: 40%; } */
+.vision {
+    margin-top: 3%
+}
 .vis-blurb-header, .fndr-header, .divider-header, .discord-divider {
     padding: 0 4.8% 0 4.8%;
     text-align: right;
@@ -195,6 +190,14 @@ select {
     margin: 3%;
     font-size: 24px;
 }
+.rdmp-li:after {
+    content: 'l';
+    color: #fff;
+    font-size: 85px;
+    position: absolute;
+    padding: 1%;
+    margin: -1% 0 0% 0.5%;
+}
 
 .gallery-item > img, .attr-lines {
     width: 50%;
@@ -202,9 +205,9 @@ select {
 
 #officialLinks div {
     display: inline-block;
-    width: 50%;
+    width: 33.333%;
     margin: 13px auto;
-    padding-left: 23.5%;
+    padding-left: 15.5%;
 }
 
 @media only screen and (max-width: 900px) {
@@ -253,7 +256,7 @@ select {
     .fndr-header, 
     .rdmp-header {         
         width: 100%; 
-        font-size: 40px; 
+        font-size: 35px; 
         word-spacing: 0em; 
     }
 
@@ -355,6 +358,12 @@ select {
     }
 
     #officialLinks div {
-        padding-left: 20%;
+        padding-left: 12.5%;
+    }
+}
+
+@media only screen and (max-width: 767px) { 
+    #aboutUs {
+        margin-top: 15%;
     }
 }

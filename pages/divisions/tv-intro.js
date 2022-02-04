@@ -5,15 +5,15 @@ export default function TVIntro() {
         <div id="aboutUs" className="tv-intro">
             {/* <Image src="/mint_pic.png" layout="fill"/> */}
             <div className="tv-header">
-                <div className="tv-logo-header">
+                {/* <div className="tv-logo-header">
                     <Image className="tv-logo-header hidden-mobile" src="/TV_Logo_white.png" alt="tv-white" width="150" height="100" />    
-                </div>
+                </div> */}
                 <div className="tv-text-header">
                     <h1>THE TURTLEVERSE</h1>
                 </div>
-                <div className="tv-logo-header">
+                {/* <div className="tv-logo-header">
                     <Image  src="/TV_Logo_white.png" alt="tv-white" width="150" height="100" />
-                </div>
+                </div> */}
             </div>
             <div className="tv-blurb">
                 <div className="turtle-img-blurb hidden-mobile">

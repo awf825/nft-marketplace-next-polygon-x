@@ -11,6 +11,9 @@ export default function Footer() {
             <div>
                 <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Icon.Discord /></a>
             </div>
+            <div>
+                <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Icon.Instagram /></a>
+            </div>
         </div>
     )
 }

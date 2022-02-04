@@ -53,10 +53,10 @@ export default function Gallery() {
       return;
     } else if (areFiltersOn && ( currentGallery.length < 20 ) ) {
       setHasMore(false);
-      setCount({
-        prev: 0,
-        next: 20
-      })
+      // setCount({
+      //   prev: 0,
+      //   next: 20
+      // })
       return;
     }
     setTimeout(() => {
@@ -119,10 +119,6 @@ export default function Gallery() {
         { "Paint": '' },
         { "Skin": '' }
       ])
-      setCount({
-        prev: 0,
-        next: 20
-      })
       setCurrentGallery(gallery) 
     }
   }, [areFiltersClear])
@@ -180,7 +176,7 @@ export default function Gallery() {
         dataLength={currentGallery.length}
         next={getMoreData}
         hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
+        // loader={<h4>Loading...</h4>}
       >
         <div>
           {currentGallery && currentGallery.map(((item, index) => (

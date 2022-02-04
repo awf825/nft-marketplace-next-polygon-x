@@ -7,6 +7,7 @@ export default function Vision() {
             {/* <p>VISION</p> */}
             <div className="vis-blurb">
                 <div className="vis-blurb-header">
+                    <div className="white-divider hidden-mobile" style={{marginBottom: "-6%", width: "55%"}}></div>
                     <h1>THE VISION</h1>
                     <p>
                         The world today is all about doing things quickly; we often gfind ourselves in constant motion,
