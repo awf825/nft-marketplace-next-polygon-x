@@ -35,7 +35,6 @@ select {
     width: 20vh;
     float: right;
 }
-.mint-graphic, 
 .tv-intro, 
 .vision, 
 .founders, 
@@ -179,6 +178,9 @@ select {
     .mobile-top-margin-lg {
         margin-top: 40px;
     }
+    .founders, 
+    .roadmap, 
+    .gallery { margin: unset !important;}
 
     .logo { width: 25% }
     .header-icons { width: 75% }
@@ -199,20 +201,27 @@ select {
     .fndr-row { display: block; }
 
     .tv-header > span { width: 100% !important; }
-    .tv-logo-header { width: 100% }
+    .tv-logo-header { display: none; }
+
     .tv-text-header, 
     .vis-blurb, 
+    .vis-blurb-header,
     .fndr-header, 
     .rdmp-header {         
         width: 100%; 
         font-size: 40px; 
         word-spacing: 0em; 
     }
-    .tv-text-blurb {
-        font-size: 20px;
-        word-spacing: 0.6em;
+
+    .tv-text-blurb, .vis-blurb-header > p {
+        font-size: 18px;
+        word-spacing: unset;
         padding: unset;
         width: 100%;
+        text-align: justify;
+    }
+    .tv-header > span {
+        display: none;
     }
     /* .tv-header { font-size: 40px !important;} */
     .gallery-row { margin: unset; }
@@ -227,16 +236,15 @@ select {
         font-size: 40px;
         text-align: center;
     }
-    .vis-blurb-header > p {
-        font-size: 21px;
-        word-spacing: 0.3em;
-        text-align: center;
-        padding-left: unset;
-    }
-    
     .fndr-text, .fndr-img {
         width: 100%;
-        padding: 13px;
+    }
+    .fndr-text {
+        position: absolute;
+        margin-top: 45vh;
+    }
+    .fndr-row {
+        margin-bottom: 30%;
     }
     .fndr-header > h1 {
         text-align: center;
@@ -244,13 +252,17 @@ select {
     }
     .fndr-subheader {
         font-size: 21px;
-        word-spacing: 0.3em;
-        text-align: center;
+        word-spacing: unset;
+        text-align: left;
+        padding: 1%;
     }
     .fndr-ul {
-        text-align: center;
+        text-align: left;
         font-size: 13px;
         padding: unset;
+    }
+    .fndr-ul > li {
+        word-spacing: unset;
     }
     .fndr-discord {
         position: relative;
@@ -258,6 +270,8 @@ select {
         right: 0;
         font-size: 13px;
         padding: 5px;
+        word-spacing: unset;
+        text-align: right;    
     }
     /* .rdmp-list {
         text-align: right;
@@ -287,5 +301,12 @@ select {
 
     .attr-lines {
         text-align: right;
+    }
+
+    #officialLinks div {
+        display: inline-block;
+        width: 50%;
+        margin: 13px auto;
+        padding-left: 20%;
     }
 }

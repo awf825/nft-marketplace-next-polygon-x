@@ -17,7 +17,7 @@ export default function Founders() {
                     <h4 className="fndr-discord">DISCORD: JohnnyVG<span style= {{ letterSpacing: '0.3em' }}>#3661</span></h4>
                 </div>
                 <div className="fndr-img">
-                    <Image src="/B13.png" alt="tv-white" width="350" height="350" />
+                    <Image layout="responsive" src="/B13.png" alt="tv-white" width="350" height="350" />
                 </div>
             </div>
             <div className="fndr-row">
@@ -31,7 +31,7 @@ export default function Founders() {
                     <h4 className="fndr-discord">DISCORD: JohnnyVG<span style= {{ letterSpacing: '0.3em' }}>#3661</span></h4>
                 </div>
                 <div className="fndr-img">
-                    <Image src="/B13.png" alt="tv-white" width="350" height="350" />
+                    <Image layout="responsive" src="/B13.png" alt="tv-white" width="350" height="350" />
                 </div>
             </div>
             <div className="fndr-row">
@@ -45,7 +45,7 @@ export default function Founders() {
                     <h4 className="fndr-discord">DISCORD: JohnnyVG<span style= {{ letterSpacing: '0.3em' }}>#3661</span></h4>
                 </div>
                 <div className="fndr-img">
-                    <Image src="/B13.png" alt="tv-white" width="350" height="350" />
+                    <Image layout="responsive" src="/B13.png" alt="tv-white" width="350" height="350" />
                 </div>
             </div>
             <div className="fndr-row">
@@ -59,7 +59,7 @@ export default function Founders() {
                     <h4 className="fndr-discord">DISCORD: JohnnyVG<span style= {{ letterSpacing: '0.3em' }}>#3661</span></h4>
                 </div>
                 <div className="fndr-img">
-                    <Image src="/B13.png" alt="tv-white" width="350" height="350" />
+                    <Image layout="responsive" src="/B13.png" alt="tv-white" width="350" height="350" />
                 </div>
             </div>
         </div>

@@ -2,7 +2,7 @@ import Image from "next/image"
 
 export default function Vision() {
     return (
-        <div className="vision mobile-top-margin-lg">
+        <div className="vision mobile-top-margin-sm">
             {/* <Image src="/mint_pic.png" layout="fill"/> */}
             {/* <p>VISION</p> */}
             <div className="vis-blurb">

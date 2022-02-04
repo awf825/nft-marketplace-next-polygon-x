@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react'
 import AWS from 'aws-sdk'
+import Image from 'next/image'
 import FilterSelects from '../components/FilterSelects';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -118,6 +119,10 @@ export default function Gallery() {
         { "Paint": '' },
         { "Skin": '' }
       ])
+      setCount({
+        prev: 0,
+        next: 20
+      })
       setCurrentGallery(gallery) 
     }
   }, [areFiltersClear])
@@ -145,8 +150,8 @@ export default function Gallery() {
     const blownUpCombo = s.split(/([A-J])/).slice(1,15)
     // new while loop. chomp blownUpCombo in groups of two.
     while (( blownUpCombo.length > 0 ) && ( duples.length > 0 )) {
-      console.log('duples @ top of while loop: ', duples);
-      console.log('blownUpCombo @ top of while loop', blownUpCombo)
+      // console.log('duples @ top of while loop: ', duples);
+      // console.log('blownUpCombo @ top of while loop', blownUpCombo)
       duples.forEach((duple,i) => {
         // we get a match if the letter char (always [0]) in the duple matches the letter char 
         // in the blown up sequence AND same for the number char (always [1])
@@ -154,44 +159,14 @@ export default function Gallery() {
         if (match) {
           // i we have a match, remove the matching duple. We do this because we return a boolean
           // based on the condition of the duples array being emptied out i.e we have matched every filter. 
-          console.log('MATCH FOUND')
+          // console.log('MATCH FOUND')
           duples.splice(i,1)
-          console.log('duples after splicing: ', duples)
+          // console.log('duples after splicing: ', duples)
         }
       })
       blownUpCombo = blownUpCombo.slice(2)
     }
     return (duples.length > 0) ? false : true
-    // while ( ( ( s.length-1 ) > 0 ) && ( a.length > 0 ) ) {
-    //     // console.log(s)
-    //     a.forEach((code, i) => {
-    //         // check for match
-    //         var firstThreeChars = s.slice(0, 3)
-    //         // if (firstThreeChars === "B2") {
-    //         //   debugger
-    //         // }
-    //         var match = ( code === firstThreeChars.slice(0, code.length) )
-    //         if (match) {
-    //               // we also need to check if code is length 2 and second 2 of three to slice is NOT a number
-    //               if (( code.length === 2 ) && ( Number(s.slice(1,3)).length>1 ) && ( Number(s.slice(1,3)) >= 0 )) {
-    //                 console.log('NO MATCH. BROADCHECKING: ', a[i])
-    //               } else {
-    //                 // if theres a true match, delete the match from the codes array (a). If we empty 
-    //                 // out this array, the while loop will stop, and we will recheck this condition
-    //                 // on the final return. 
-    //                 console.log('MATCH FOUND: ', a[i])
-    //                 console.log('sliced check to match: ', s.slice(0, code.length))
-    //                 a.splice(i, 1);
-    //                 console.log('a after match found: ', a)
-    //               }
-
-    //         }
-    //     })
-    //     // slice substring of s after checking each of the codes for a match
-    //     s = s.slice(1)
-    // }
-    // if we haven't emptied out the checks, return false cos we didn't match ALL element
-    // return (a.length > 0) ? false : true
   }
   
 
@@ -210,10 +185,12 @@ export default function Gallery() {
         <div>
           {currentGallery && currentGallery.map(((item, index) => (
             <div key={index} className="gallery-item mobile-top-margin-sm">
-              <img
+              <Image
+                // loader={}
                 src={item.image}
-                width="200"
-                height="200"
+                width="500"
+                height="500"
+                // layout="responsive"
               />
               <h3>#{item.name.split("_")[1]}</h3>
             </div>
