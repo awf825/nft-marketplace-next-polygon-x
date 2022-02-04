@@ -17,7 +17,7 @@ export default function TVIntro() {
             </div>
             <div className="tv-blurb">
                 <div className="turtle-img-blurb hidden-mobile">
-                    <Image src="/B13.png" alt="tv-white" width="135" height="135" />
+                    <Image src="/B13.png" alt="tv-white" width="115" height="115" />
                 </div>
                 <div className="tv-text-blurb">
                     The TurtleVerse is a collection of 10,000 1/1 Turtles, each one algorithmically generated from 
@@ -25,41 +25,50 @@ export default function TVIntro() {
                     Turtles range in rarity, so cross your fingers!
                 </div>
                 <div className="turtle-img-blurb hidden-mobile">
-                    <Image src="/B11.png" alt="tv-white" width="135" height="135" />
+                    <Image src="/B11.png" alt="tv-white" width="115" height="115" />
                 </div>
             </div>
             <div className="gallery-row gallery-row-one mobile-top-margin-sm">
                 <div className="turtle-img-gallery-outer">
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="135" height="135" />
-                </div>
-                <div className="turtle-img-gallery-inner hidden-mobile" style={{ paddingLeft: "47px" }}>
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="135" height="135" />                
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
                 </div>
                 <div className="turtle-img-gallery-inner hidden-mobile">
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="135" height="135" />
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />                
                 </div>
-                <div className="turtle-img-gallery-inner hidden-mobile" style={{ paddingRight: "47px" }}>
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="135" height="135" />
+                <div className="turtle-img-gallery-inner hidden-mobile">
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
+                </div>
+                <div className="turtle-img-gallery-inner hidden-mobile">
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
+                </div>
+                <div className="turtle-img-gallery-inner hidden-mobile">
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
+                </div>
+                <div className="turtle-img-gallery-inner hidden-mobile">
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
+                </div>
+                <div className="turtle-img-gallery-inner hidden-mobile">
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
                 </div>
                 <div className="turtle-img-gallery-outer">
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="135" height="135" />
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115"/>
                 </div>
             </div>
-            <div className="gallery-row gallery-row-two">
+            <div className="gallery-row gallery-row-two hidden">
                 <div className="turtle-img-gallery-outer">
-                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="135" height="135" />
+                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="115" height="115" />
                 </div>
                 <div className="turtle-img-gallery-inner hidden-mobile" style={{ paddingLeft: "47px" }}>
-                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="135" height="135" />                
+                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="115" height="115" />                
                 </div>
                 <div className="turtle-img-gallery-inner hidden-mobile">
-                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="135" height="135" />
+                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="115" height="115" />
                 </div>
                 <div className="turtle-img-gallery-inner hidden-mobile" style={{ paddingRight: "47px" }}>
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="135" height="135" />
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
                 </div>
                 <div className="turtle-img-gallery-outer">
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="135" height="135" />
+                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
                 </div>
             </div>
         </div>

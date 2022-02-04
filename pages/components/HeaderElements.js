@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import styled from 'styled-components';
 import { useState } from 'react'
 
@@ -75,7 +76,7 @@ export default function HeaderElements() {
                 <Link href="#aboutUs">About Us</Link>
                 <Link href="#ourTeam">Our Team</Link>
                 <Link href="#roadmap">Roadmap</Link>
-                <Link href="#gallery">Gallery</Link>
+                <Link href="/gallery">Gallery</Link>
                 <Link href="#officialLinks">Official Links</Link>
                 <Link href="/minter-page">
                     Mint

@@ -3,7 +3,8 @@ import TVIntro from './divisions/tv-intro'
 import Vision from './divisions/vision'
 import Founders from './divisions/founders'
 import Roadmap from './divisions/roadmap'
-import Gallery from './divisions/gallery'
+import Divider from './divisions/divider'
+// import Gallery from './divisions/gallery'
 import Footer from './divisions/footer'
 
 export default function Home() {
@@ -12,9 +13,11 @@ export default function Home() {
       <Header />
       <TVIntro />
       <Vision />
+      <Divider />
       <Founders />
+      <Divider />
       <Roadmap />
-      <Gallery />
+      <Divider />
       <Footer />
     </div>
   )

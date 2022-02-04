@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react'
 import AWS from 'aws-sdk'
 import Image from 'next/image'
-import FilterSelects from '../components/FilterSelects';
+import FilterSelects from './components/FilterSelects';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
 // import {

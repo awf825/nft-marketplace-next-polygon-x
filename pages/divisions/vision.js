@@ -17,9 +17,9 @@ export default function Vision() {
                     </p>
                 </div>
             </div>
-            <div className="vis-img hidden-mobile">
+            {/* <div className="vis-img hidden-mobile">
             <Image unoptimized={true} src="/TV_Logo_white.png" alt="tv-white" width="1200" height="1200" />
-            </div>
+            </div> */}
         </div>
     )
 }
