@@ -136,13 +136,18 @@ export default function Gallery() {
       turtleBucket.listObjects(bucketParams, function(err,payload) {
         if (err) throw err;
         payload.Contents.forEach(c => {
-          console.log(c.Key)
           const nextParams = {
             Bucket: 'turtleverse.albums',
             Key: c.Key
           }
           turtleBucket.getObject(nextParams, function(error,data) {
-             g.push(JSON.parse(data.Body.toString('utf-8')))
+             const baseBody = JSON.parse(data.Body.toString('utf-8'))
+             baseBody.signed = turtleBucket.getSignedUrl('getObject', {
+                Bucket: 'turtleverse.albums',
+                Key: `generation-one/turtles/${baseBody.image.split('/')[6]}`,
+                Expires: 60 * 60 // time in seconds: e.g. 60 * 5 = 5 mins
+             })
+             g.push(baseBody)
           })        
         })
       })
@@ -247,7 +252,7 @@ export default function Gallery() {
             <div key={index} className="gallery-item mobile-top-margin-sm">
               <img
                 // loader={}
-                src={item.image}
+                src={item.signed}
                 width="500"
                 height="500"
                 // layout="responsive"
