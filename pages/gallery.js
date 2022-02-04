@@ -1,5 +1,7 @@
 /*
   https://blog.logrocket.com/4-ways-to-render-large-lists-in-react/
+  https://medium.com/@apalshah/how-to-handle-and-serve-data-from-aws-s3-s-private-bucket-with-aws-sts-in-node-js-104d42938b70
+  https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0852923 <-- iam, s3, sts
 */
 
 import { useState, useEffect } from 'react'
@@ -8,6 +10,25 @@ import Image from 'next/image'
 import FilterSelects from './components/FilterSelects';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
+let stsAccessParams;
+let turtleBucket;
+const policy = {
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Sid": "PublicReadGetObject",
+          "Effect": "Allow",
+          "Action": [
+              "s3:GetObject",
+              "s3:PutObject"
+          ],
+          "Resource": [
+              "arn:aws:s3:::turtleverse.albums",
+              "arn:aws:s3:::turtleverse.albums/*"
+          ]
+      }
+  ]
+}
 // import {
 //   checkForAllMatches
 // } from '../helpers/checkForAllMatches'
@@ -20,10 +41,25 @@ AWS.config.update({
   secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
 
-const myBucket = new AWS.S3({
-  params: { Bucket: 'turtleverse.albums' },
-  region: 'ca-central-1',
-})
+
+// const sts = new AWS.STS();
+// sts.assumeRole({
+//   DurationSeconds: 901,
+//   Policy: JSON.stringify(policy),
+//   ExternalId: '1234-1234-1234-1234',
+//   RoleArn: "arn:aws:iam::996833347617:role/s3-temp",
+//   RoleSessionName: 'TV-Gallery-View'
+// }, (err, data) => {
+//   if (err) throw err;
+//   console.log('sts data: ', data); //success
+//   stsAccessParams = {
+//     accessKeyId: data.Credentials.AccessKeyId,
+//     secretAccessKey: data.Credentials.SecretAccessKey,
+//     sessionToken: data.Credentials.SessionToken,
+//     region: 'ca-central-1',
+//   };
+//   turtleBucket = new AWS.S3(stsAccessParams)
+// })
 
 const initialAttrState = [
   { "Background": '' },
@@ -36,6 +72,7 @@ const initialAttrState = [
 ]
 
 export default function Gallery() {
+  const [stsAccessParams, setSTSAccessParams] = useState({});
   const [areFiltersOn, setAreFiltersOn] = useState(false)
   const [attributeFilters, setAttributeFilters] = useState(initialAttrState) 
   const [gallery, setGallery] = useState([])
@@ -65,26 +102,53 @@ export default function Gallery() {
     setCount((prevState) => ({ prev: prevState.prev + 20, next: prevState.next + 20 }))
   }
 
-  useEffect(() => {
-    const bucketParams = {
-      Bucket: 'turtleverse.albums',
-      Prefix: 'generation-one/metadata'
-    }
-    let g = [];
-
-    myBucket.listObjects(bucketParams, function(err,payload) {
-      payload.Contents.forEach(c => {
-        const nextParams = {
-          Bucket: 'turtleverse.albums',
-          Key: c.Key
-        }
-        myBucket.getObject(nextParams, function(error,data) {
-           g.push(JSON.parse(data.Body.toString('utf-8')))
-        })        
-      })
+  useEffect(async () => {
+    const sts = new AWS.STS();
+    sts.assumeRole({
+      DurationSeconds: 901,
+      // Policy: JSON.stringify(policy),
+      ExternalId: 'turtleverse-assume-s3-access',
+      RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
+      RoleSessionName: 'TV-Gallery-View'
+    }, (err, data) => {
+      if (err) throw err;
+      console.log('sts data: ', data); //success
+      // return data;
+      setSTSAccessParams(data)
     })
-    setGallery(g)
   }, [])
+  
+  useEffect(() => {
+    if (Object.keys(stsAccessParams).length > 0) {
+      const turtleBucket = new AWS.S3({
+        accessKeyId: stsAccessParams.Credentials.AccessKeyId,
+        secretAccessKey: stsAccessParams.Credentials.SecretAccessKey,
+        sessionToken: stsAccessParams.Credentials.SessionToken,
+        bucket: 'turtleverse.albums',
+        region: 'ca-central-1'
+      })
+      const bucketParams = {
+        Bucket: 'turtleverse.albums',
+        Prefix: 'generation-one/metadata'
+      }
+      let g = [];
+  
+      turtleBucket.listObjects(bucketParams, function(err,payload) {
+        if (err) throw err;
+        payload.Contents.forEach(c => {
+          console.log(c.Key)
+          const nextParams = {
+            Bucket: 'turtleverse.albums',
+            Key: c.Key
+          }
+          turtleBucket.getObject(nextParams, function(error,data) {
+             g.push(JSON.parse(data.Body.toString('utf-8')))
+          })        
+        })
+      })
+      setGallery(g)
+    }
+  }, [stsAccessParams])
 
   useEffect(() => {
     //debugger
