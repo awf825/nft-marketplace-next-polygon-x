@@ -11,6 +11,8 @@ import FilterSelects from './components/FilterSelects';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
 
+
+
 // const policy = {
 //   "Version": "2012-10-17",
 //   "Statement": [
@@ -23,7 +25,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 //           ],
 //           "Resource": [
 //               "arn:aws:s3:::turtleverse.albums",
-//               "arn:aws:s3:::turtleverse.albums/*"
+//               "arn:aws:s3:::turtleverse.albumsside ecd/*"
 //           ]
 //       }
 //   ]
@@ -110,7 +112,7 @@ export default function Gallery() {
       })
       const bucketParams = {
         Bucket: 'turtleverse.albums',
-        Prefix: 'generation-one/metadata'
+        Prefix: 'generation-two/metadata'
       }
       let g = [];
   
@@ -125,7 +127,7 @@ export default function Gallery() {
              const baseBody = JSON.parse(data.Body.toString('utf-8'))
              baseBody.signed = turtleBucket.getSignedUrl('getObject', {
                 Bucket: 'turtleverse.albums',
-                Key: `generation-one/turtles/${baseBody.image.split('/')[6]}`,
+                Key: `generation-two/turtles/${baseBody.image.split('/')[6]}`,
                 Expires: 60 * 60 // time in seconds: e.g. 60 * 5 = 5 mins
              })
              g.push(baseBody)
@@ -138,7 +140,6 @@ export default function Gallery() {
 
   useEffect(() => {
     //debugger
-    console.log('attributeFilters @ side effect: ', attributeFilters)
     if (attributeFilters.find(af => Object.values(af)[0].length>0) ) {
       setAreFiltersOn(true)
       const newGallery = gallery.filter(g => {
@@ -231,14 +232,13 @@ export default function Gallery() {
         <div>
           {currentGallery && currentGallery.map(((item, index) => (
             <div key={index} className="gallery-item mobile-top-margin-sm">
-              <img
-                // loader={}
+              <Image
                 src={item.signed}
-                width="500"
-                height="500"
+                width={250}
+                height={250}
                 // layout="responsive"
               />
-              <h3>#{item.name.split("_")[1]}</h3>
+              <h3>#{item.name.split("_")[0]}</h3>
             </div>
           )))
           }

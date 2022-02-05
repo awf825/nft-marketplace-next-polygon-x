@@ -3,16 +3,21 @@ import * as Icon from 'react-bootstrap-icons'
 
 export default function Footer() {
     return (
-        <div id="officialLinks">
-            {/* OFFICIAL LINKS */}
-            <div>
-                <a href="https://www.npmjs.com/package/react-sticky-header" target="_blank" rel="noreferrer" ><Icon.Twitter size="2x" /></a>
+        <div className="footer">
+            <div id="officialLinks">
+                {/* OFFICIAL LINKS */}
+                <div>
+                    <a href="https://www.npmjs.com/package/react-sticky-header" target="_blank" rel="noreferrer" ><Icon.Twitter size="2x" /></a>
+                </div>
+                <div>
+                    <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Icon.Discord /></a>
+                </div>
+                <div>
+                    <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Icon.Instagram /></a>
+                </div>
             </div>
-            <div>
-                <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Icon.Discord /></a>
-            </div>
-            <div>
-                <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Icon.Instagram /></a>
+            <div className="copyright">
+                ©2022 Turtleverse 
             </div>
         </div>
     )

@@ -1,9 +1,12 @@
-
+import Image from 'next/image'
 
 export default function MinterPage() {
     return (
-        <div>
-            COMING SOON
+        <div className="minter">
+            <div className="minter-image" style={{textAlign: "center"}}>
+                <Image src={"/turtles.gif"} width={500} height={500}/>
+                <h1>MINTER COMING SOON</h1>
+            </div>
         </div>
     )
 }

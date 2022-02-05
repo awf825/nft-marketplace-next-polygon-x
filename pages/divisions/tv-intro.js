@@ -9,7 +9,9 @@ export default function TVIntro() {
                     <Image className="tv-logo-header hidden-mobile" src="/TV_Logo_white.png" alt="tv-white" width="150" height="100" />    
                 </div> */}
                 <div className="tv-text-header">
+                    <div className="white-divider hidden-mobile" style={{width: "10%"}}></div>
                     <h1>THE TURTLEVERSE</h1>
+                    <div className="white-divider hidden-mobile" style={{width: "10%"}}></div>
                 </div>
                 {/* <div className="tv-logo-header">
                     <Image  src="/TV_Logo_white.png" alt="tv-white" width="150" height="100" />

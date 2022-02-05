@@ -2,7 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body { background-color: black; }
+body { 
+    background-color: black; 
+    color: white;
+}
 svg {
     height: 2em;
     width: 2em;
@@ -16,7 +19,7 @@ select {
 .white-divider {
     height: 0.25rem;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 10px/50%;
     width: 40%;
 }
 .divider-left {
@@ -51,20 +54,30 @@ select {
 .vision, 
 .founders, 
 .roadmap, 
-.gallery { color: white; margin: 0 5% 0 5%; }
+.gallery,
+.vis-blurb-row { color: white; margin: 0 5% 0 5%; }
 
 .header,
 .tv-blurb, 
 .gallery-row,
 .vision,
 .fndr-row,
-.gallery-item { display: flex; }
+.gallery-item,
+.tv-text-header,
+.vis-blurb-row,
+.rdmp-header { display: flex; }
+
+.tv-text-header, .rdmp-header {
+    align-items: center;
+    justify-content: center;
+}
 .tv-header{ display: block } 
 
 .tv-text-header, 
 .vis-blurb-header, 
 .fndr-header, 
-.rdmp-header { font-size: 80px; padding: 0 4.8% 0 4.8%; }
+.rdmp-header,
+.minter-image { font-size: 80px; padding: 0 4.8% 0 4.8%; }
 .logo {
     margin: -.5% auto;
     text-align: left;
@@ -81,9 +94,16 @@ select {
 .vis-blurb-header > h1,
 .fndr-header > h1,
 .rdmp-header > h1,
+.minter-image > h1,
 .fndr-subheader { 
     font-weight: 800;
     font-style:italic;
+}
+.tv-text-header > h1 {
+    width: 80%
+}
+.rdmp-header > h1 {
+    width: 60%
 }
 .tv-text-blurb {
     font-size: 20px;
@@ -110,7 +130,14 @@ select {
     padding: 0 4.8% 0 4.8%;
     text-align: right;
 }
-.vis-blurb-header > p { 
+.vis-blurb-img {
+    width: 40%;
+    padding-right: 1%;
+}
+.vis-blurb-text {
+    padding-left: 2%;
+}
+.vis-blurb-text { 
     font-size:20px; 
     word-spacing: .6em; 
     text-align: justify;
@@ -204,12 +231,20 @@ select {
     width: 50%;
 }
 
+.footer {
+    color: white !important;
+}
+
+.copyright {
+    text-align: center;
+    margin: 3% auto;
+}
+
 #officialLinks div {
     display: inline-block;
     width: 33.333%;
     margin: 13px auto;
     padding-left: 15.5%;
-    color: white !important;
 }
 
 @media only screen and (max-width: 1220px) {
@@ -269,7 +304,7 @@ select {
         word-spacing: 0em; 
     }
 
-    .tv-text-blurb, .vis-blurb-header > p {
+    .tv-text-blurb, .vis-blurb-text {
         font-size: 18px;
         word-spacing: unset;
         padding: unset;
@@ -357,6 +392,9 @@ select {
 @media only screen and (max-width: 767px) { 
     #aboutUs {
         margin-top: 15%;
+    }
+    .tv-text-header > h1 {
+        width: 100% !important;
     }
     .rdmp-li::after {
         font-size: 79px;
