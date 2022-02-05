@@ -16,7 +16,6 @@ export default function Home() {
       <Founders />
       <Divider />
       <Roadmap />
-      {/* <Divider />
       <Footer /> */}
     </div>
   )
