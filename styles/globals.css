@@ -80,7 +80,8 @@ select {
 .tv-text-header > h1, 
 .vis-blurb-header > h1,
 .fndr-header > h1,
-.rdmp-header > h1 { 
+.rdmp-header > h1,
+.fndr-subheader { 
     font-weight: 800;
     font-style:italic;
 }
@@ -110,10 +111,10 @@ select {
     text-align: right;
 }
 .vis-blurb-header > p { 
-    font-size:26px; 
+    font-size:20px; 
     word-spacing: .6em; 
-    text-align: right;
-    width: 66.6666%;
+    text-align: justify;
+    width: 60%;
     float: right;
 }
 
@@ -193,7 +194,7 @@ select {
 .rdmp-li:after {
     content: 'l';
     color: #fff;
-    font-size: 85px;
+    font-size: 60px;
     position: absolute;
     padding: 1%;
     margin: -1% 0 0% 0.5%;
@@ -208,6 +209,14 @@ select {
     width: 33.333%;
     margin: 13px auto;
     padding-left: 15.5%;
+    color: white !important;
+}
+
+@media only screen and (max-width: 1220px) {
+    .tv-text-header, 
+    .vis-blurb-header, 
+    .fndr-header, 
+    .rdmp-header { font-size: 55px !important; }
 }
 
 @media only screen and (max-width: 900px) {
@@ -256,7 +265,7 @@ select {
     .fndr-header, 
     .rdmp-header {         
         width: 100%; 
-        font-size: 35px; 
+        font-size: 35px !important; 
         word-spacing: 0em; 
     }
 
@@ -313,23 +322,6 @@ select {
         font-size: 16px;
         text-align: center;
     }
-    /*
-    .fndr-text {
-        position: absolute;
-        margin-top: 54vh;
-    }
-    .fndr-discord {
-        position: relative;
-        bottom: 0;
-        right: 0;
-        font-size: 13px;
-        padding: 5px;
-        word-spacing: unset;
-        text-align: right;    
-    } */
-    /* .rdmp-list {
-        text-align: right;
-    } */
     .rdmp-li {
         text-align: left;
     }
@@ -365,5 +357,10 @@ select {
 @media only screen and (max-width: 767px) { 
     #aboutUs {
         margin-top: 15%;
+    }
+    .rdmp-li::after {
+        font-size: 79px;
+        padding: 1.5%;
+        margin: -2% 1% 0% 1%;
     }
 }

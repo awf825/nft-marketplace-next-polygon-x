@@ -10,25 +10,25 @@ import Image from 'next/image'
 import FilterSelects from './components/FilterSelects';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
-let stsAccessParams;
-let turtleBucket;
-const policy = {
-  "Version": "2012-10-17",
-  "Statement": [
-      {
-          "Sid": "PublicReadGetObject",
-          "Effect": "Allow",
-          "Action": [
-              "s3:GetObject",
-              "s3:PutObject"
-          ],
-          "Resource": [
-              "arn:aws:s3:::turtleverse.albums",
-              "arn:aws:s3:::turtleverse.albums/*"
-          ]
-      }
-  ]
-}
+
+// const policy = {
+//   "Version": "2012-10-17",
+//   "Statement": [
+//       {
+//           "Sid": "PublicReadGetObject",
+//           "Effect": "Allow",
+//           "Action": [
+//               "s3:GetObject",
+//               "s3:PutObject"
+//           ],
+//           "Resource": [
+//               "arn:aws:s3:::turtleverse.albums",
+//               "arn:aws:s3:::turtleverse.albums/*"
+//           ]
+//       }
+//   ]
+// }
+
 // import {
 //   checkForAllMatches
 // } from '../helpers/checkForAllMatches'
@@ -36,30 +36,11 @@ const policy = {
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 // const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
 // const gateway = 'https://turtleverse.mypinata.cloud/ipfs/'
+
 AWS.config.update({
   accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
   secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
-
-
-// const sts = new AWS.STS();
-// sts.assumeRole({
-//   DurationSeconds: 901,
-//   Policy: JSON.stringify(policy),
-//   ExternalId: '1234-1234-1234-1234',
-//   RoleArn: "arn:aws:iam::996833347617:role/s3-temp",
-//   RoleSessionName: 'TV-Gallery-View'
-// }, (err, data) => {
-//   if (err) throw err;
-//   console.log('sts data: ', data); //success
-//   stsAccessParams = {
-//     accessKeyId: data.Credentials.AccessKeyId,
-//     secretAccessKey: data.Credentials.SecretAccessKey,
-//     sessionToken: data.Credentials.SessionToken,
-//     region: 'ca-central-1',
-//   };
-//   turtleBucket = new AWS.S3(stsAccessParams)
-// })
 
 const initialAttrState = [
   { "Background": '' },
@@ -112,7 +93,7 @@ export default function Gallery() {
       RoleSessionName: 'TV-Gallery-View'
     }, (err, data) => {
       if (err) throw err;
-      console.log('sts data: ', data); //success
+      // console.log('sts data: ', data); //success
       // return data;
       setSTSAccessParams(data)
     })

@@ -6,7 +6,12 @@
 import '../styles/globals.css'
 import Link from 'next/link';
 import { useState } from "react";
+import Header from './divisions/header'
+import Divider from './divisions/divider'
+import Footer from './divisions/footer'
 import { MoralisProvider } from "react-moralis";
+// import styled from 'styled-components'
+// import * as Icon from 'react-bootstrap-icons'
 // import { DAppProvider } from '@usedapp/core'
 // import { Mainnet } from '@usedapp/core/src/model/chain/ethereum.ts'
 // import { Local } from '@usedapp/core/src/model/chain/local.ts'
@@ -25,6 +30,15 @@ import { MoralisProvider } from "react-moralis";
 //     [ChainId.Ropsten]: 'https://ropsten.infura.io/v3/5ae4b97d4ee44b838e88224cb474d9bf',
 //   },
 // }
+// const Footer = styled.div`
+//   display: inline-block;
+//   width: 33.333%;
+//   margin: 13px auto;
+//   padding-left: 15.5%;
+//   @media only screen and (max-width: 900px) {
+//     padding-left: 12.5%;
+//   }
+// `
 
 function Marketplace({ Component, pageProps }) {
   return (
@@ -33,6 +47,7 @@ function Marketplace({ Component, pageProps }) {
       serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_ID}
     >
     <div>
+      <Header/>
       {/* <nav className="border-b p-6">
         <div className="flex mt-4">
           <Link href="/">
@@ -68,6 +83,8 @@ function Marketplace({ Component, pageProps }) {
         </div>
       </nav> */}
       <Component {...pageProps} />
+      <Divider />
+      <Footer />
     </div>
   </MoralisProvider>
   )

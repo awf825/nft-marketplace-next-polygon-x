@@ -4,21 +4,21 @@ import Vision from './divisions/vision'
 import Founders from './divisions/founders'
 import Roadmap from './divisions/roadmap'
 import Divider from './divisions/divider'
-// import Gallery from './divisions/gallery'
-import Footer from './divisions/footer'
+// // import Gallery from './divisions/gallery'
+// import Footer from './divisions/footer'
 
 export default function Home() {
   return (
     <div className="flex justify-center top-container">
-      <Header />
+      {/* <Header /> */}
       <TVIntro />
       <Vision />
       <Divider />
       <Founders />
       <Divider />
       <Roadmap />
-      <Divider />
-      <Footer />
+      {/* <Divider />
+      <Footer /> */}
     </div>
   )
 }

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import styled from 'styled-components';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router';
 
 const Nav = styled.nav`
   width: 100%;
@@ -45,6 +46,8 @@ const StyledBurger = styled.div`
 `;
 
 const Menu = styled.ul`
+  color: white;
+  text-align: center;
   list-style: none;
   display: flex;
   flex-flow: row nowrap;
@@ -64,49 +67,63 @@ const Menu = styled.ul`
   }
 `;
 
+const BrandLogo = styled.div`
+height: 5rem;
+width: 6rem;
+position: fixed;
+left: 0;
+`
+
 export default function HeaderElements() {
+    const router = useRouter();
     const [open, setOpen] = useState(false)
+    const [isHome, setIsHome] = useState(true)
+
+    useEffect(() => {
+      const p = window.location.pathname;
+      if (p === "/") {
+        setIsHome(true)
+      } else {
+        setIsHome(false)
+      }
+      //console.log('window.location @ sideeffect: ', window.location)
+    }, [router.pathname])
+
     return (
         <div>
             <Nav>
-                {/* <>
-                </> */}
+              <BrandLogo><Image  src="/TV_Logo_white.png" alt="tv-white" width="150" height="100" /></BrandLogo>
             </Nav>
             <StyledBurger open={open} onClick={() => setOpen(!open)}>
                 <div />
                 <div />
                 <div />
             </StyledBurger>
-            <Menu open={open}>
-                <Link href="#aboutUs">About Us</Link>
-                <Link href="#ourTeam">Our Team</Link>
-                <Link href="#roadmap">Roadmap</Link>
+            {
+              isHome 
+              ?
+              <Menu open={open}>
+                  <Link href="#aboutUs">About Us</Link>
+                  <Link href="#ourTeam">Our Team</Link>
+                  <Link href="#roadmap">Roadmap</Link>
+                  <Link href="/gallery">Gallery</Link>
+                  <Link href="#officialLinks">Official Links</Link>
+                  <Link href="/minter-page">
+                      Mint
+                  </Link>
+              </Menu> 
+              :
+              <Menu open={open}>
+                <Link href="/">Home</Link>
                 <Link href="/gallery">Gallery</Link>
-                <Link href="#officialLinks">Official Links</Link>
                 <Link href="/minter-page">
                     Mint
-                    {/* <a className="mr-6 text-pink-500">
-                    Mint
-                    </a> */}
                 </Link>
-                {/* <Link>Home</Link>
-                <Link>Home</Link>
-                <Link>Home</Link>
-                <Link>Home</Link>
-                <Link>Home</Link>
-                <Link>Home</Link> */}
-            </Menu>
-            {/* {
-                open 
-                ?
-                <div style={{position: 'fixed'}}>HELLO</div>
-                :
-                <div style={{position: 'fixed'}}></div>
-            } */}
+              </Menu> 
+            }
         </div>
     )
 }
-
 
 // import { useMoralis } from 'react-moralis';
 // import { Twitter, Discord } from 'react-bootstrap-icons';
