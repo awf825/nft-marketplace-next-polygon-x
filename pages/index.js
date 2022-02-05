@@ -10,7 +10,6 @@ import Divider from './divisions/divider'
 export default function Home() {
   return (
     <div className="flex justify-center top-container">
-      {/* <Header /> */}
       <TVIntro />
       <Vision />
       <Divider />
