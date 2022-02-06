@@ -36,6 +36,17 @@ select {
     text-align: center;
     color: white;
 }
+.nav-wrapper {
+    width: 100%;
+    background-color: black;
+    z-index: 9998;
+}
+.brand-logo {
+    top: -18px !important;
+    left: -62px !important;
+    bottom: 18px !important;
+    padding: 15px !important;
+}
 /* kind of odd way of setting the height form sticky header library*/
 .header-section {
     height: 8vh;
@@ -65,7 +76,8 @@ select {
 .gallery-item,
 .tv-text-header,
 .vis-blurb-row,
-.rdmp-header { display: flex; }
+.rdmp-header,
+.gallery { display: flex; }
 
 .tv-text-header, .rdmp-header {
     align-items: center;
@@ -87,17 +99,20 @@ select {
     color: red;
     text-align: right;
 }
-.tv-intro {
-    margin-top: 5%;
-}
 .tv-text-header > h1, 
 .vis-blurb-header > h1,
 .fndr-header > h1,
 .rdmp-header > h1,
 .minter-image > h1,
-.fndr-subheader { 
+.fndr-subheader,
+.gallery-directive
+{ 
     font-weight: 800;
     font-style:italic;
+}
+.gallery-directive {
+    font-size: 62px;
+    /* margin: 5%; */
 }
 .tv-text-header > h1 {
     width: 80%
@@ -153,12 +168,6 @@ select {
     margin-top: -5%;
     width: 60%;
 }
-/* .fndr-header > h1 { 
-    text-align: right; 
-    padding-left: 60%;
-    margin-top: -1em;
-    margin-bottom: .4em;
-} */
 .fndr-row {
     padding: 0 4.8% 0 4.8%;
     margin-bottom: 3%;
@@ -245,6 +254,44 @@ select {
     width: 33.333%;
     margin: 13px auto;
     padding-left: 15.5%;
+}
+
+/* .gallery {
+    margin: 5% 0 5% 0 !important;
+} */
+
+.filter-selects-wrapper {
+    width: 25%;
+}
+
+.iscroll-wrapper {
+    width: 75%;
+}
+
+.gallery-items-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 2%;
+}
+
+.gallery-item {
+    display: block !important;
+    text-align: center;
+    padding-left: 2%;
+}
+
+.clear-filters {
+    display: flex;
+    margin: 15px;
+    background-color: white;
+}
+
+.clear-filters > button {
+    color: black;
+    font-weight: 800;
+    font-style: "italic";
+    font-size: 23px;
 }
 
 @media only screen and (max-width: 1220px) {
@@ -376,6 +423,16 @@ select {
         /* padding: 8px; */
         display: block;
     }
+
+    .gallery {
+        display: block;
+    }
+    .gallery > * {
+        width: 100%;
+    }
+    .gallery-directive {
+        font-size: 28px;
+    }
     /* .gallery-item > img {
         padding: 13px;
     } */
@@ -390,9 +447,6 @@ select {
 }
 
 @media only screen and (max-width: 767px) { 
-    #aboutUs {
-        margin-top: 15%;
-    }
     .tv-text-header > h1 {
         width: 100% !important;
     }

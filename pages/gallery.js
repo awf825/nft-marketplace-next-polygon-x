@@ -71,17 +71,24 @@ export default function Gallery() {
     if (currentGallery.length === gallery.length) {
       setHasMore(false);
       return;
-    } else if (areFiltersOn && ( currentGallery.length < 20 ) ) {
+    } else if ( areFiltersOn && ( currentGallery.length < 20 ) ) {
       setHasMore(false);
-      // setCount({
-      //   prev: 0,
-      //   next: 20
-      // })
+      setCount({
+        prev: 0,
+        next: currentGallery.length
+      })
       return;
+    } else if ( areFiltersOn && ( currentGallery.length > 20 ) ) {
+      setHasMore(true)
+      setCount({
+        prev: 0,
+        next: 20
+      })
+      return
     }
     setTimeout(() => {
       setCurrentGallery(currentGallery.concat(gallery.slice(count.prev, count.next)))
-    }, 200)
+    }, 500)
     setCount((prevState) => ({ prev: prevState.prev + 20, next: prevState.next + 20 }))
   }
 
@@ -170,7 +177,12 @@ export default function Gallery() {
         { "Paint": '' },
         { "Skin": '' }
       ])
-      setCurrentGallery(gallery) 
+      // setCurrentGallery(gallery) 
+      setCurrentGallery([]) 
+      setCount({
+        prev: 0,
+        next: 20
+      })
     }
   }, [areFiltersClear])
 
@@ -223,27 +235,39 @@ export default function Gallery() {
         filter={filter} 
         setAreFiltersClear={setAreFiltersClear}
       />
-      <InfiniteScroll
-        dataLength={currentGallery.length}
-        next={getMoreData}
-        hasMore={hasMore}
-        // loader={<h4>Loading...</h4>}
-      >
-        <div>
-          {currentGallery && currentGallery.map(((item, index) => (
-            <div key={index} className="gallery-item mobile-top-margin-sm">
-              <Image
-                src={item.signed}
-                width={250}
-                height={250}
-                // layout="responsive"
-              />
-              <h3>#{item.name.split("_")[0]}</h3>
-            </div>
-          )))
-          }
-        </div>
-      </InfiniteScroll>
+      <div className="iscroll-wrapper">
+        <InfiniteScroll
+          dataLength={currentGallery.length}
+          next={getMoreData}
+          hasMore={hasMore}
+          // loader={<h4>Loading...</h4>}
+        >
+          <div className="gallery-items-wrapper">
+            {currentGallery && currentGallery.map(((item, index) => (
+              <div key={index} className="gallery-item mobile-top-margin-sm">
+                <Image
+                  src={item.signed}
+                  width={175}
+                  height={175}
+                  // layout="responsive"
+                />
+                <h3>#{item.name.split("_")[0]}</h3>
+              </div>
+            )))
+            }
+            {
+              currentGallery.length===0 
+              ?
+              ( areFiltersOn ?
+                <h1 className="gallery-directive" style={{ margin: "5%" }}>No Turtles found with these filters</h1> :
+                <h1 className="gallery-directive" style={{ margin: "5%" }}>SELECT A FILTER AND STEP INTO THE TURTLEVERSE!</h1>
+              ) 
+              :
+              null
+            }
+          </div>
+        </InfiniteScroll>
+      </div>
     </div>
   );
 }

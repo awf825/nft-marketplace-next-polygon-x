@@ -1,4 +1,6 @@
+import { Divider } from 'antd'
 import React, { useRef } from 'react'
+import Image from 'next/image'
 import Select from 'react-select'
 
 const customStyles = {
@@ -10,9 +12,43 @@ const customStyles = {
       padding: 20,
     }),
   
-    // control: (_, { selectProps: { width }}) => ({
-    //   width: width
-    // }),
+    control: (_, { selectProps: { display }}) => ({
+      backgroundColor: "#000",
+      color: "#fff",
+      borderTop: "1px solid white",
+      borderBottom: "1px solid white",
+      borderBottom: '1px white',
+      display: "flex",
+      width: "100%"
+    }),
+
+    placeholder: () => ({
+    //   fontSize: "30px"
+      fontWeight: "800",
+      fontStyle: "italic",
+      fontSize: "28px",
+      textTransform: "uppercase"
+    }),
+
+    indicatorSeparator: () => ({
+        display: "none"
+    }),
+
+    input: () => ({
+        display: "none"
+    }),
+
+    singleValue: () => ({
+        //   fontSize: "30px"
+          color: "#ADD8E6",
+          fontWeight: "800",
+          fontStyle: "italic",
+          fontSize: "28px",
+          textTransform: "uppercase"
+    }),
+
+
+
   
     // singleValue: (provided, state) => {
     //   // const opacity = state.isDisabled ? 0.5 : 1;
@@ -196,7 +232,8 @@ export default function FilterSelects(props) {
     };    
 
     return (
-        <>
+        <div className="filter-selects-wrapper">
+            <h1 className="gallery-directive">GALLERY</h1>
             <Select          
                 ref={(element) => {
                     refs.current[0] = element;
@@ -211,7 +248,7 @@ export default function FilterSelects(props) {
                     refs.current[1] = element;
                 }}
                 onChange={props.filter}
-                placeholder={"Skin"}
+                placeholder={"Skin Color"}
                 options={skinFilterOptions}
                 styles={customStyles} 
             />
@@ -238,7 +275,7 @@ export default function FilterSelects(props) {
                     refs.current[4] = element;
                 }}
                 onChange={props.filter}
-                placeholder={"Clothes"}
+                placeholder={"Clothing"}
                 options={clothesFilterOptions}
                 styles={customStyles} 
                 />
@@ -247,7 +284,7 @@ export default function FilterSelects(props) {
                     refs.current[5] = element;
                 }}
                 onChange={props.filter}
-                placeholder={"Paint"}
+                placeholder={"Accessories"}
                 options={paintFilterOptions}
                 styles={customStyles} 
             />
@@ -260,7 +297,10 @@ export default function FilterSelects(props) {
                 options={headwearFilterOptions}
                 styles={customStyles} 
             />
-            <button onClick={onClear}>Clear Filters</button>
-        </>
+            <div className="clear-filters">
+                <Image src={"/TV_Logo_black.png"} width={65} height={65}></Image>
+                <button onClick={onClear}>CLEAR FILTERS</button>
+            </div>
+        </div>
     )
 }

@@ -8,7 +8,6 @@ const Nav = styled.nav`
   width: 100%;
   height: 55px;
   padding: 0 20px;
-  position: fixed;
   background-color: black;
   height: 7vh;
   width: 100%;
@@ -68,8 +67,10 @@ const Menu = styled.ul`
 `;
 
 const BrandLogo = styled.div`
-height: 5rem;
-width: 6rem;
+background-color: black;
+z-index: 9999;
+width: 100%;
+height: 7%;
 position: fixed;
 left: 0;
 `
@@ -90,9 +91,9 @@ export default function HeaderElements() {
     }, [router.pathname])
 
     return (
-        <div>
+        <div className="nav-wrapper">
             <Nav>
-              <BrandLogo><Image  src="/TV_Logo_white.png" alt="tv-white" width="150" height="100" /></BrandLogo>
+              <BrandLogo><Image className="brand-logo" src="/TV_Logo_white.png" alt="tv-white" width="100" height="100"/></BrandLogo>
             </Nav>
             <StyledBurger open={open} onClick={() => setOpen(!open)}>
                 <div />
