@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import AWS from 'aws-sdk'
 import Image from 'next/image'
 import FilterSelects from './components/FilterSelects';
+// import LoadingOverlay from './components/LoadingOverlay';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -66,6 +67,7 @@ export default function Gallery() {
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
   const [areFiltersClear, setAreFiltersClear] = useState(true);
+  const [loading, setLoading] = useState(false)
    
   const getMoreData = () => {
     if (currentGallery.length === gallery.length) {
@@ -93,6 +95,7 @@ export default function Gallery() {
   }
 
   useEffect(async () => {
+    setLoading(true)
     const sts = new AWS.STS();
     sts.assumeRole({
       DurationSeconds: 901,
@@ -108,7 +111,7 @@ export default function Gallery() {
     })
   }, [])
   
-  useEffect(() => {
+  useEffect(async () => {
     if (Object.keys(stsAccessParams).length > 0) {
       const turtleBucket = new AWS.S3({
         accessKeyId: stsAccessParams.Credentials.AccessKeyId,
@@ -143,6 +146,7 @@ export default function Gallery() {
       })
       setGallery(g)
     }
+    setLoading(false)
   }, [stsAccessParams])
 
   useEffect(() => {
@@ -231,6 +235,7 @@ export default function Gallery() {
 
   return (
     <div id="gallery" className="gallery">
+      {/* <LoadingOverlay loading={loading}/> */}
       <FilterSelects 
         filter={filter} 
         setAreFiltersClear={setAreFiltersClear}
@@ -245,10 +250,10 @@ export default function Gallery() {
           <div className="gallery-items-wrapper">
             {currentGallery && currentGallery.map(((item, index) => (
               <div key={index} className="gallery-item mobile-top-margin-sm">
-                <Image
+                <img
                   src={item.signed}
-                  width={175}
-                  height={175}
+                  width="175"
+                  height="175"
                   // layout="responsive"
                 />
                 <h3>#{item.name.split("_")[0]}</h3>
@@ -259,7 +264,7 @@ export default function Gallery() {
               currentGallery.length===0 
               ?
               ( areFiltersOn ?
-                <h1 className="gallery-directive" style={{ margin: "5%" }}>No Turtles found with these filters</h1> :
+                <h1 className="gallery-directive" style={{ margin: "5%"}}>No Turtles found with these filters</h1> :
                 <h1 className="gallery-directive" style={{ margin: "5%" }}>SELECT A FILTER AND STEP INTO THE TURTLEVERSE!</h1>
               ) 
               :
