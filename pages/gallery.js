@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
 import AWS from 'aws-sdk'
 import Image from 'next/image'
 import FilterSelects from './components/FilterSelects';
-// import LoadingOverlay from './components/LoadingOverlay';
+import LoadingOverlay from './components/LoadingOverlay';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -45,6 +45,7 @@ AWS.config.update({
   secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
 
+
 const initialAttrState = [
   { "Background": '' },
   { "Clothes": '' },
@@ -68,7 +69,49 @@ export default function Gallery() {
   const [currentGallery, setCurrentGallery] = useState([])
   const [areFiltersClear, setAreFiltersClear] = useState(true);
   const [loading, setLoading] = useState(false)
-   
+  
+  async function listAllObjectsFromS3Bucket(s3, bucket, prefix) {
+    let isTruncated = true;
+    let marker;
+    const elements = [];
+    setLoading(true)
+    while(isTruncated) {
+      let params = { Bucket: bucket };
+      if (prefix) params.Prefix = prefix;
+      if (marker) params.Marker = marker;
+      try {
+        const response = await s3.listObjects(params).promise();
+        response.Contents.forEach(async item => {
+          // elements.push(item.Key);
+          const nextParams = {
+            Bucket: 'turtleverse.albums',
+            Key: item.Key
+          }
+          const resp = await s3.getObject(nextParams).promise();
+          console.log('resp: ', resp)
+          // s3.getObject(nextParams, function(err,data) {
+          //   if (err) throw err;
+          //   const baseBody = JSON.parse(data.Body.toString('utf-8'))
+          //   baseBody.signed = s3.getSignedUrl('getObject', {
+          //     Bucket: 'turtleverse.albums',
+          //     Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+          //     Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+          //   }) 
+          //   elements.push(baseBody)  
+          // });
+        })
+        isTruncated = response.IsTruncated;
+        if (isTruncated) {
+          marker = response.Contents.slice(-1)[0].Key;
+        }
+    } catch(error) {
+        throw error;
+      }
+    }
+    setLoading(false)
+    return elements;
+  }
+
   const getMoreData = () => {
     if (currentGallery.length === gallery.length) {
       setHasMore(false);
@@ -122,28 +165,31 @@ export default function Gallery() {
       })
       const bucketParams = {
         Bucket: 'turtleverse.albums',
-        Prefix: 'generation-two/metadata'
+        Prefix: 'generation-four/metadata'
       }
-      let g = [];
-  
-      turtleBucket.listObjects(bucketParams, function(err,payload) {
-        if (err) throw err;
-        payload.Contents.forEach(c => {
-          const nextParams = {
-            Bucket: 'turtleverse.albums',
-            Key: c.Key
-          }
-          turtleBucket.getObject(nextParams, function(error,data) {
-             const baseBody = JSON.parse(data.Body.toString('utf-8'))
-             baseBody.signed = turtleBucket.getSignedUrl('getObject', {
-                Bucket: 'turtleverse.albums',
-                Key: `generation-two/turtles/${baseBody.image.split('/')[6]}`,
-                Expires: 60 * 60 // time in seconds: e.g. 60 * 5 = 5 mins
-             })
-             g.push(baseBody)
-          })        
-        })
-      })
+      //let g = [];
+
+      const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-four/metadata')
+      // turtleBucket.listObjects(bucketParams, function(err,payload) {
+      //   if (err) throw err;
+      //   debugger
+      //   payload.Contents.forEach(c => {
+      //     const nextParams = {
+      //       Bucket: 'turtleverse.albums',
+      //       Key: c.Key
+      //     }
+      //     turtleBucket.getObject(nextParams, function(error,data) {
+      //        const baseBody = JSON.parse(data.Body.toString('utf-8'))
+      //        baseBody.signed = turtleBucket.getSignedUrl('getObject', {
+      //           Bucket: 'turtleverse.albums',
+      //           Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+      //           Expires: 60 * 60 // time in seconds: e.g. 60 * 5 = 5 mins
+      //        })
+      //        g.push(baseBody)
+      //     })        
+      //   })
+      // })
+      console.log('g before setGallery: ', g)
       setGallery(g)
     }
     setLoading(false)
@@ -235,7 +281,7 @@ export default function Gallery() {
 
   return (
     <div id="gallery" className="gallery">
-      {/* <LoadingOverlay loading={loading}/> */}
+      <LoadingOverlay loading={loading}/>
       <FilterSelects 
         filter={filter} 
         setAreFiltersClear={setAreFiltersClear}
