@@ -2,6 +2,7 @@
   https://blog.logrocket.com/4-ways-to-render-large-lists-in-react/
   https://medium.com/@apalshah/how-to-handle-and-serve-data-from-aws-s3-s-private-bucket-with-aws-sts-in-node-js-104d42938b70
   https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0852923 <-- iam, s3, sts
+  https://gist.github.com/hmontazeri/e9493c2110d4640a5d10429ccbafb616 <-- fetch from s3 in chunks
 */
 
 import { useState, useEffect } from 'react'
@@ -11,8 +12,6 @@ import FilterSelects from './components/FilterSelects';
 import LoadingOverlay from './components/LoadingOverlay';
 // import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
-
-
 
 // const policy = {
 //   "Version": "2012-10-17",
@@ -89,16 +88,13 @@ export default function Gallery() {
           }
           const resp = await s3.getObject(nextParams).promise();
           console.log('resp: ', resp)
-          // s3.getObject(nextParams, function(err,data) {
-          //   if (err) throw err;
-          //   const baseBody = JSON.parse(data.Body.toString('utf-8'))
-          //   baseBody.signed = s3.getSignedUrl('getObject', {
-          //     Bucket: 'turtleverse.albums',
-          //     Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
-          //     Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-          //   }) 
-          //   elements.push(baseBody)  
-          // });
+          const baseBody = JSON.parse(resp.Body.toString('utf-8'))
+          baseBody.signed = s3.getSignedUrl('getObject', {
+            Bucket: 'turtleverse.albums',
+            Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+            Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+          }) 
+          elements.push(baseBody)  
         })
         isTruncated = response.IsTruncated;
         if (isTruncated) {

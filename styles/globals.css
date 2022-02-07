@@ -61,6 +61,7 @@ select {
     width: 20vh;
     float: right;
 }
+.hero,
 .tv-intro, 
 .vision, 
 .founders, 
@@ -105,6 +106,38 @@ select {
 .rdmp-header > h1,
 .minter-image > h1,
 .fndr-subheader,
+.gallery-directive
+{ 
+    font-weight: 800;
+    font-style:italic;
+}
+.loading-overlay {
+    background-color: rgba(0,0,0,.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 9000;
+}
+.loading-overlay > span {
+    position: absolute !important;
+    left: 15%;
+    right: 15%;
+    top: 10%;
+    /* text-align: center; */
+}
+.loading-overlay > h1 {
+    position: absolute !important;
+    left: 15%;
+    right: 15%;
+    top: 10%;
+    font-weight: 800;
+    font-style:italic;
+    font-size: 40px;
+    color: black;
+    text-align: center;
+}
 .gallery-directive
 { 
     font-weight: 800;

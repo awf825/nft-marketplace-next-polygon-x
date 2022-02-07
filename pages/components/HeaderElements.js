@@ -20,7 +20,7 @@ const StyledBurger = styled.div`
   position: fixed;
   top: 15px;
   right: 20px;
-  z-index: 9999;
+  z-index: 10000;
   display: flex;
   justify-content: space-around;
   flex-flow: column nowrap;
@@ -50,19 +50,23 @@ const Menu = styled.ul`
   list-style: none;
   display: flex;
   flex-flow: row nowrap;
-  z-index: 9998;
+  z-index: 9999;
   flex-flow: column nowrap;
   background-color: #0D2538;
   position: fixed;
   transform: ${({ open }) => open ? 'translateX(0)' : 'translateX(100%)'};
   top: 0;
   right: 0;
-  height: 30vh;
-  width: 20vh;
+  height: 35%;
+  width: 25%;
   padding-top: 3.5rem;
   transition: transform 0.3s ease-in-out;
   li {
     color: #fff;
+  }
+  @media only screen and (max-width: 797px) {
+     width: 40%;
+     height: 40%;
   }
 `;
 
@@ -70,9 +74,9 @@ const BrandLogo = styled.div`
 background-color: black;
 z-index: 9999;
 width: 100%;
-height: 7%;
+height: 8%;
 position: fixed;
-left: 0;
+left: 10px;
 `
 
 export default function HeaderElements() {
