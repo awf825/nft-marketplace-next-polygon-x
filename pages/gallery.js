@@ -11,7 +11,7 @@ import LoadingOverlay from './components/LoadingOverlay';
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
   GalleryContext,
-} from "./contexts/GalleryContext.js";
+} from "../contexts/GalleryContext.js";
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 // const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
