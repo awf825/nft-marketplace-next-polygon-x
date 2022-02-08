@@ -20,7 +20,30 @@ export default function Roadmap() {
                     </li>
                     <li className="rdmp-li">
                         <div className="rdmp-li-percent">
-                            10%
+                            20%
+                            <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
+                        </div>
+                        <div className="rdmp-li-blurb">
+                            <p>
+                                2000 whitelist members - 5 random members receive a free mint
+                            </p>
+                        </div>
+                    </li>
+                    <li className="rdmp-li">
+                        <div className="rdmp-li-percent">
+                            30%
+                            <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
+                        </div>
+                        <div className="rdmp-li-blurb">
+                            <p>
+                                After all 10k turtles are minted, 5 withheld ultra-rare NFTs are 
+                                airdropped to 5 holders
+                            </p>
+                        </div>
+                    </li>
+                    <li className="rdmp-li">
+                        <div className="rdmp-li-percent">
+                            40%
                             <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
                         </div>
                         <div className="rdmp-li-blurb">
@@ -31,7 +54,7 @@ export default function Roadmap() {
                     </li>
                     <li className="rdmp-li">
                         <div className="rdmp-li-percent">
-                            10%
+                            50%
                             <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
                         </div>
                         <div className="rdmp-li-blurb">
@@ -42,7 +65,7 @@ export default function Roadmap() {
                     </li>
                     <li className="rdmp-li">
                         <div className="rdmp-li-percent">
-                            10%
+                            60%
                             <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
                         </div>
                         <div className="rdmp-li-blurb">
@@ -53,7 +76,7 @@ export default function Roadmap() {
                     </li>
                     <li className="rdmp-li">
                         <div className="rdmp-li-percent">
-                            10%
+                            80%
                             <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
                         </div>
                         <div className="rdmp-li-blurb">
@@ -64,29 +87,7 @@ export default function Roadmap() {
                     </li>
                     <li className="rdmp-li">
                         <div className="rdmp-li-percent">
-                            10%
-                            <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
-                        </div>
-                        <div className="rdmp-li-blurb">
-                            <p>
-                                1000 whitelist members - 5 random members receive a free mint
-                            </p>
-                        </div>
-                    </li>
-                    <li className="rdmp-li">
-                        <div className="rdmp-li-percent">
-                            10%
-                            <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
-                        </div>
-                        <div className="rdmp-li-blurb">
-                            <p>
-                                1000 whitelist members - 5 random members receive a free mint
-                            </p>
-                        </div>
-                    </li>
-                    <li className="rdmp-li">
-                        <div className="rdmp-li-percent">
-                            10%
+                            100%
                             <span className="hidden-mobile" style={{ padding: "0 30%"}}>-</span>
                         </div>
                         <div className="rdmp-li-blurb">
