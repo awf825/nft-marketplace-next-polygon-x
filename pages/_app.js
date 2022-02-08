@@ -18,7 +18,7 @@ import {
   stopLoading,
   setGallery,
   fetchGallery
-} from "./contexts/GalleryContext.js";
+} from "../contexts/GalleryContext.js";
 // import styled from 'styled-components'
 // import * as Icon from 'react-bootstrap-icons'
 // import { DAppProvider } from '@usedapp/core'
