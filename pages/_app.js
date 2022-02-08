@@ -17,8 +17,9 @@ import {
   startLoading,
   stopLoading,
   setGallery,
+  setAccessParams,
   fetchGallery
-} from "./contexts/GalleryContext.js";
+} from "../contexts/GalleryContext.js";
 // import styled from 'styled-components'
 // import * as Icon from 'react-bootstrap-icons'
 // import { DAppProvider } from '@usedapp/core'
@@ -60,7 +61,8 @@ function Marketplace({ Component, pageProps }) {
     galleryReducer,
     {
       loading: null,
-      gallery: []
+      gallery: [],
+      accessParams: {}
     }
   )
 
@@ -74,21 +76,21 @@ function Marketplace({ Component, pageProps }) {
       if (marker) params.Marker = marker;
       try {
         const response = await s3.listObjects(params).promise();
-        response.Contents.forEach(async item => {
+        response.Contents.forEach(item => {
           // elements.push(item.Key);
-          const nextParams = {
-            Bucket: 'turtleverse.albums',
-            Key: item.Key
-          }
-          const resp = await s3.getObject(nextParams).promise();
-          // console.log('resp: ', resp)
-          const baseBody = JSON.parse(resp.Body.toString('utf-8'))
-          baseBody.signed = s3.getSignedUrl('getObject', {
-            Bucket: 'turtleverse.albums',
-            Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
-            Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-          }) 
-          elements.push(baseBody)  
+          // const nextParams = {
+          //   Bucket: 'turtleverse.albums',
+          //   Key: item.Key
+          // }
+          // const resp = await s3.getObject(nextParams).promise();
+          // // console.log('resp: ', resp)
+          // const baseBody = JSON.parse(resp.Body.toString('utf-8'))
+          // baseBody.signed = s3.getSignedUrl('getObject', {
+          //   Bucket: 'turtleverse.albums',
+          //   Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+          //   Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+          // }) 
+          elements.push(item)  
         })
         isTruncated = response.IsTruncated;
         if (isTruncated) {
@@ -112,6 +114,7 @@ function Marketplace({ Component, pageProps }) {
       }, (err, data) => {
         if (err) throw err;
         setSTSAccessParams(data)
+        dispatch(setAccessParams(data))
       })
     }
   }, [])

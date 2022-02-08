@@ -11,7 +11,7 @@ import LoadingOverlay from './components/LoadingOverlay';
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
   GalleryContext,
-} from "./contexts/GalleryContext.js";
+} from "../contexts/GalleryContext.js";
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 // const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
@@ -35,33 +35,115 @@ export default function Gallery() {
     prev: 0,
     next: 20
   })
+  // marker to set where we are in the motherlode array of bucket keys (galleryState)
+  const [marker, setMarker] = useState(9999)
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
   const [areFiltersClear, setAreFiltersClear] = useState(true);
+  const [gallery, setGallery] = useState([])
+
+  useEffect(async () => {
+      if (marker === 0) { return };
+      let toSet = [];
+      const accessKeyId = galleryState.accessParams.Credentials.AccessKeyId
+      const secretAccessKey = galleryState.accessParams.Credentials.SecretAccessKey
+      const sessionToken = galleryState.accessParams.Credentials.SessionToken
+      const turtleBucket = new AWS.S3({
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey,
+        sessionToken: sessionToken,
+        bucket: 'turtleverse.albums',
+        region: 'ca-central-1'
+      })
+      let benchmark = 20
+      while (benchmark >= 0) {
+        const params = {
+          Bucket: 'turtleverse.albums',
+          Key: galleryState.gallery[marker-benchmark].Key
+        }
+        const resp = await turtleBucket.getObject(params).promise();
+        // console.log('resp: ', resp)
+        const baseBody = JSON.parse(resp.Body.toString('utf-8'))
+        baseBody.signed = turtleBucket.getSignedUrl('getObject', {
+          Bucket: 'turtleverse.albums',
+          Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+          Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+        })
+        toSet.push(baseBody);
+        benchmark-=1;
+      }
+      setMarker(marker-20)
+      setGallery(gallery.concat(toSet))
+      if (currentGallery.length === 0) {
+        setCurrentGallery(toSet)
+      }
+  }, [])
 
   const getMoreData = () => {
-    if (currentGallery.length === gallery.length) {
+    /*
+      Logic is in place to get more data when filters are off. 
+      need to make some changes for when filters are on. 
+
+      If filters are on, I want to query the whole gallery for entries with filters. 
+
+      Upon getting this, reset count hook to 0,20 and set marker hook to ( length of filtered gallery ) - 1
+      setHasMore(false) if currentGallery.length < 20  
+
+    */
+    if (currentGallery.length === 10000) {
+      // setCount({
+      //   prev: 0,
+      //   next: 20
+      // })
       setHasMore(false);
       return;
-    } else if ( areFiltersOn && ( currentGallery.length < 20 ) ) {
-      setHasMore(false);
-      setCount({
-        prev: 0,
-        next: currentGallery.length
-      })
-      return;
+    // } else if ( areFiltersOn && ( currentGallery.length < 20 ) ) {
+    //   setHasMore(false);
+    //   setCount({
+    //     prev: 0,
+    //     next: currentGallery.length
+    //   })
+    //   return;
     } else if ( areFiltersOn && ( currentGallery.length > 20 ) ) {
       setHasMore(true)
-      setCount({
-        prev: 0,
-        next: 20
-      })
       return
     }
-    setTimeout(() => {
-      setCurrentGallery(currentGallery.concat(galleryState.gallery.slice(count.prev, count.next)))
+    setTimeout(async () => {
+      if (marker === 0) { return };
+      let toSet = [];
+      const accessKeyId = galleryState.accessParams.Credentials.AccessKeyId
+      const secretAccessKey = galleryState.accessParams.Credentials.SecretAccessKey
+      const sessionToken = galleryState.accessParams.Credentials.SessionToken
+      const turtleBucket = new AWS.S3({
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey,
+        sessionToken: sessionToken,
+        bucket: 'turtleverse.albums',
+        region: 'ca-central-1'
+      })
+      let benchmark = 20
+      while (benchmark >= 0) {
+        const params = {
+          Bucket: 'turtleverse.albums',
+          Key: galleryState.gallery[marker-benchmark].Key
+        }
+        const resp = await turtleBucket.getObject(params).promise();
+        // console.log('resp: ', resp)
+        const baseBody = JSON.parse(resp.Body.toString('utf-8'))
+        baseBody.signed = turtleBucket.getSignedUrl('getObject', {
+          Bucket: 'turtleverse.albums',
+          Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+          Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+        })
+        toSet.push(baseBody);
+        benchmark-=1;
+      }
+      setMarker(marker-20)
+      setGallery(gallery.concat(toSet))
+      setCurrentGallery(currentGallery.concat(gallery.slice(count.prev, count.next)))
     }, 500)
     setCount((prevState) => ({ prev: prevState.prev + 20, next: prevState.next + 20 }))
+    setMarker(marker-20)
   }
 
   useEffect(() => {
@@ -74,11 +156,55 @@ export default function Gallery() {
         const filtersRef = attributeFilters.map(f => Object.entries(f)[0][1]).filter(mf => mf.length>0)
         // console.log('filters @ newGallery filter: ', filtersRef)
         // console.log('checkForAllMatches(attributeFilters, g.comboCode): ', checkForAllMatches(filtersRef, g.comboCode))
-        
-        return checkForAllMatches(filtersRef, g.comboCode)
+        const comboCode = g.Key.split('/')[2].split('_')[1].split('.')[0]
+        return checkForAllMatches(filtersRef, comboCode)
       })
+
+      const accessKeyId = galleryState.accessParams.Credentials.AccessKeyId
+      const secretAccessKey = galleryState.accessParams.Credentials.SecretAccessKey
+      const sessionToken = galleryState.accessParams.Credentials.SessionToken
+      const turtleBucket = new AWS.S3({
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey,
+        sessionToken: sessionToken,
+        bucket: 'turtleverse.albums',
+        region: 'ca-central-1'
+      })
+
+      let toSet = [];
+      newGallery.slice(0,500).forEach(async ng => {
+        const params = {
+          Bucket: 'turtleverse.albums',
+          Key: ng.Key
+        }
+        const resp = await turtleBucket.getObject(params).promise();
+        // console.log('resp: ', resp)
+        const baseBody = JSON.parse(resp.Body.toString('utf-8'))
+        baseBody.signed = turtleBucket.getSignedUrl('getObject', {
+          Bucket: 'turtleverse.albums',
+          Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+          Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+        })
+        toSet.push(baseBody);
+      })
+
+      setMarker(toSet.length)
+      setGallery(toSet)
+      setCurrentGallery(toSet.slice(0,20))
+      setCount({
+        prev: 0,
+        next: 20
+      })
+
       console.log('newGallery @ state change effect: ', newGallery)
-      setCurrentGallery(newGallery)
+      // setGallery(newGallery)
+      // setCurrentGallery(newGallery)
+      // if (newGallery.length > 20) {
+      //   setHasMore(false)
+      // } else {
+      //   setHasMore(true)
+      // }
+      // setMarker(newGallery.length)
     } else {
       setAreFiltersOn(false)
     }
@@ -159,7 +285,7 @@ export default function Gallery() {
           dataLength={currentGallery.length}
           next={getMoreData}
           hasMore={hasMore}
-          // loader={<h4>Loading...</h4>}
+          loader={<h4>Loading...</h4>}
         >
           <div className="gallery-items-wrapper">
             {currentGallery && currentGallery.map(((item, index) => (
@@ -168,7 +294,6 @@ export default function Gallery() {
                   src={item.signed}
                   width="175"
                   height="175"
-                  // layout="responsive"
                 />
                 <h3>#{item.name.split("_")[0]}</h3>
               </div>
