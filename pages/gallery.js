@@ -5,45 +5,17 @@
   https://gist.github.com/hmontazeri/e9493c2110d4640a5d10429ccbafb616 <-- fetch from s3 in chunks
 */
 
-import { useState, useEffect } from 'react'
-import AWS from 'aws-sdk'
-import Image from 'next/image'
+import { useState, useEffect, useContext } from 'react'
 import FilterSelects from './components/FilterSelects';
 import LoadingOverlay from './components/LoadingOverlay';
-// import Image from 'next/image';
 import InfiniteScroll from "react-infinite-scroll-component";
-
-// const policy = {
-//   "Version": "2012-10-17",
-//   "Statement": [
-//       {
-//           "Sid": "PublicReadGetObject",
-//           "Effect": "Allow",
-//           "Action": [
-//               "s3:GetObject",
-//               "s3:PutObject"
-//           ],
-//           "Resource": [
-//               "arn:aws:s3:::turtleverse.albums",
-//               "arn:aws:s3:::turtleverse.albumsside ecd/*"
-//           ]
-//       }
-//   ]
-// }
-
-// import {
-//   checkForAllMatches
-// } from '../helpers/checkForAllMatches'
+import {
+  GalleryContext,
+} from "./contexts/GalleryContext.js";
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 // const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
 // const gateway = 'https://turtleverse.mypinata.cloud/ipfs/'
-
-AWS.config.update({
-  accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
-  secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
-})
-
 
 const initialAttrState = [
   { "Background": '' },
@@ -56,10 +28,9 @@ const initialAttrState = [
 ]
 
 export default function Gallery() {
-  const [stsAccessParams, setSTSAccessParams] = useState({});
+  const [galleryState, dispatch] = useContext(GalleryContext);
   const [areFiltersOn, setAreFiltersOn] = useState(false)
   const [attributeFilters, setAttributeFilters] = useState(initialAttrState) 
-  const [gallery, setGallery] = useState([])
   const [count, setCount] = useState({
     prev: 0,
     next: 20
@@ -67,46 +38,6 @@ export default function Gallery() {
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
   const [areFiltersClear, setAreFiltersClear] = useState(true);
-  const [loading, setLoading] = useState(false)
-  
-  async function listAllObjectsFromS3Bucket(s3, bucket, prefix) {
-    let isTruncated = true;
-    let marker;
-    const elements = [];
-    setLoading(true)
-    while(isTruncated) {
-      let params = { Bucket: bucket };
-      if (prefix) params.Prefix = prefix;
-      if (marker) params.Marker = marker;
-      try {
-        const response = await s3.listObjects(params).promise();
-        response.Contents.forEach(async item => {
-          // elements.push(item.Key);
-          const nextParams = {
-            Bucket: 'turtleverse.albums',
-            Key: item.Key
-          }
-          const resp = await s3.getObject(nextParams).promise();
-          console.log('resp: ', resp)
-          const baseBody = JSON.parse(resp.Body.toString('utf-8'))
-          baseBody.signed = s3.getSignedUrl('getObject', {
-            Bucket: 'turtleverse.albums',
-            Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
-            Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-          }) 
-          elements.push(baseBody)  
-        })
-        isTruncated = response.IsTruncated;
-        if (isTruncated) {
-          marker = response.Contents.slice(-1)[0].Key;
-        }
-    } catch(error) {
-        throw error;
-      }
-    }
-    setLoading(false)
-    return elements;
-  }
 
   const getMoreData = () => {
     if (currentGallery.length === gallery.length) {
@@ -128,74 +59,16 @@ export default function Gallery() {
       return
     }
     setTimeout(() => {
-      setCurrentGallery(currentGallery.concat(gallery.slice(count.prev, count.next)))
+      setCurrentGallery(currentGallery.concat(galleryState.gallery.slice(count.prev, count.next)))
     }, 500)
     setCount((prevState) => ({ prev: prevState.prev + 20, next: prevState.next + 20 }))
   }
-
-  useEffect(async () => {
-    setLoading(true)
-    const sts = new AWS.STS();
-    sts.assumeRole({
-      DurationSeconds: 901,
-      // Policy: JSON.stringify(policy),
-      ExternalId: 'turtleverse-assume-s3-access',
-      RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
-      RoleSessionName: 'TV-Gallery-View'
-    }, (err, data) => {
-      if (err) throw err;
-      // console.log('sts data: ', data); //success
-      // return data;
-      setSTSAccessParams(data)
-    })
-  }, [])
-  
-  useEffect(async () => {
-    if (Object.keys(stsAccessParams).length > 0) {
-      const turtleBucket = new AWS.S3({
-        accessKeyId: stsAccessParams.Credentials.AccessKeyId,
-        secretAccessKey: stsAccessParams.Credentials.SecretAccessKey,
-        sessionToken: stsAccessParams.Credentials.SessionToken,
-        bucket: 'turtleverse.albums',
-        region: 'ca-central-1'
-      })
-      const bucketParams = {
-        Bucket: 'turtleverse.albums',
-        Prefix: 'generation-four/metadata'
-      }
-      //let g = [];
-
-      const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-four/metadata')
-      // turtleBucket.listObjects(bucketParams, function(err,payload) {
-      //   if (err) throw err;
-      //   debugger
-      //   payload.Contents.forEach(c => {
-      //     const nextParams = {
-      //       Bucket: 'turtleverse.albums',
-      //       Key: c.Key
-      //     }
-      //     turtleBucket.getObject(nextParams, function(error,data) {
-      //        const baseBody = JSON.parse(data.Body.toString('utf-8'))
-      //        baseBody.signed = turtleBucket.getSignedUrl('getObject', {
-      //           Bucket: 'turtleverse.albums',
-      //           Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
-      //           Expires: 60 * 60 // time in seconds: e.g. 60 * 5 = 5 mins
-      //        })
-      //        g.push(baseBody)
-      //     })        
-      //   })
-      // })
-      console.log('g before setGallery: ', g)
-      setGallery(g)
-    }
-    setLoading(false)
-  }, [stsAccessParams])
 
   useEffect(() => {
     //debugger
     if (attributeFilters.find(af => Object.values(af)[0].length>0) ) {
       setAreFiltersOn(true)
-      const newGallery = gallery.filter(g => {
+      const newGallery = galleryState.gallery.filter(g => {
         // console.log('gallery item combo code @ newGallery filter: ', g.comboCode)
         
         const filtersRef = attributeFilters.map(f => Object.entries(f)[0][1]).filter(mf => mf.length>0)
@@ -209,7 +82,6 @@ export default function Gallery() {
     } else {
       setAreFiltersOn(false)
     }
-
   }, [attributeFilters])
 
   useEffect(() => {
@@ -277,7 +149,7 @@ export default function Gallery() {
 
   return (
     <div id="gallery" className="gallery">
-      <LoadingOverlay loading={loading}/>
+      <LoadingOverlay loading={galleryState.loading}/>
       <FilterSelects 
         filter={filter} 
         setAreFiltersClear={setAreFiltersClear}
