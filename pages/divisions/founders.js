@@ -46,7 +46,7 @@ export default function Founders() {
                     <h3 className="fndr-subheader">MARKET (THE BUSINESSMAN)</h3>
                     <ul className="fndr-ul">
                         <li>Turned down multiple higher paying jobs to be here</li>
-                        <li>Doesn\'t watch movies or listen to music</li>
+                        <li>Doesn&apos;t watch movies or listen to music</li>
                         <li>Favorite Drink: Dutch chocolate milk</li>
                     </ul>
                 </div>
