@@ -56,23 +56,14 @@ export default function TVIntro() {
                     <Image className="turtle-img-gallery-one" src="/B4.png" alt="tv-white" width="115" height="115"/>
                 </div>
             </div>
-            {/* <div className="gallery-row gallery-row-two hidden">
+            <div className="gallery-row gallery-row-two hidden">
                 <div className="turtle-img-gallery-outer">
-                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="115" height="115" />
-                </div>
-                <div className="turtle-img-gallery-inner hidden-mobile" style={{ paddingLeft: "47px" }}>
-                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="115" height="115" />                
-                </div>
-                <div className="turtle-img-gallery-inner hidden-mobile">
-                    <Image className="turtle-img-gallery-two" src="/B13.png" alt="tv-white" width="115" height="115" />
-                </div>
-                <div className="turtle-img-gallery-inner hidden-mobile" style={{ paddingRight: "47px" }}>
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
+                    <Image className="turtle-img-gallery-two" src="/B14.png" alt="tv-white" width="115" height="115" />
                 </div>
                 <div className="turtle-img-gallery-outer">
-                    <Image className="turtle-img-gallery-one" src="/B13.png" alt="tv-white" width="115" height="115" />
+                    <Image className="turtle-img-gallery-one" src="/B8.png" alt="tv-white" width="115" height="115" />
                 </div>
-            </div> */}
+            </div>
         </div>
     )
 }
