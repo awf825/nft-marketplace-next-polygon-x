@@ -11,6 +11,7 @@ import LoadingOverlay from './components/LoadingOverlay';
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
   GalleryContext,
+  resetGallery
 } from "../contexts/GalleryContext.js";
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
@@ -36,7 +37,7 @@ export default function Gallery() {
     next: 20
   })
   // marker to set where we are in the motherlode array of bucket keys (galleryState)
-  const [marker, setMarker] = useState(20)
+  const [marker, setMarker] = useState(0)
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
   const [areFiltersClear, setAreFiltersClear] = useState(true);
@@ -72,6 +73,7 @@ export default function Gallery() {
         toSet.push(baseBody);
         benchmark+=1;
       }
+      setMarker(marker+20)
       setGallery(gallery.concat(toSet))
       if (currentGallery.length === 0) {
         setCurrentGallery(toSet)
@@ -140,13 +142,13 @@ export default function Gallery() {
       }
       setMarker(marker+20)
       setGallery(gallery.concat(toSet))
-      setCurrentGallery(currentGallery.concat(gallery.slice(count.prev, count.next)))
+      setCurrentGallery(currentGallery.concat(toSet))
     }, 500)
     setCount((prevState) => ({ prev: prevState.prev + 20, next: prevState.next + 20 }))
     setMarker(marker+20)
   }
 
-  useEffect(() => {
+  useEffect(async () => {
     //debugger
     if (attributeFilters.find(af => Object.values(af)[0].length>0) ) {
       setAreFiltersOn(true)
@@ -160,6 +162,9 @@ export default function Gallery() {
         return checkForAllMatches(filtersRef, comboCode)
       })
 
+      dispatch(resetGallery(newGallery))
+
+      let toSet = [];
       const accessKeyId = galleryState.accessParams.Credentials.AccessKeyId
       const secretAccessKey = galleryState.accessParams.Credentials.SecretAccessKey
       const sessionToken = galleryState.accessParams.Credentials.SessionToken
@@ -170,12 +175,11 @@ export default function Gallery() {
         bucket: 'turtleverse.albums',
         region: 'ca-central-1'
       })
-
-      let toSet = [];
-      newGallery.slice(0,500).forEach(async ng => {
+      let benchmark = 0
+      while (benchmark < 20) {
         const params = {
           Bucket: 'turtleverse.albums',
-          Key: ng.Key
+          Key: newGallery[benchmark].Key
         }
         const resp = await turtleBucket.getObject(params).promise();
         // console.log('resp: ', resp)
@@ -186,11 +190,11 @@ export default function Gallery() {
           Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
         })
         toSet.push(baseBody);
-      })
-
-      setMarker(toSet.length)
+        benchmark+=1;
+      }
       setGallery(toSet)
-      setCurrentGallery(toSet.slice(0,20))
+      setCurrentGallery(toSet)
+      setMarker(0)
       setCount({
         prev: 0,
         next: 20

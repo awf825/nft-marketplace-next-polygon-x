@@ -31,6 +31,11 @@ export const setAccessParams = (payload) => ({
     payload: payload
 })
 
+export const resetGallery = (payload) => ({
+    type: "RESET_GALLERY",
+    payload: payload
+})
+
 export const GalleryContext = React.createContext({});
 
 export const galleryReducer = (state, action) => {
@@ -59,6 +64,11 @@ export const galleryReducer = (state, action) => {
     return {
         ...state,
         accessParams: action.payload
+    }
+    case "RESET_GALLERY":
+    return {
+        ...state,
+        gallery: action.payload
     }
   }
 };

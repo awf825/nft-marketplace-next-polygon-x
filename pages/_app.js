@@ -107,7 +107,7 @@ function Marketplace({ Component, pageProps }) {
     if (Object.keys(stsAccessParams).length === 0) {
       const sts = new AWS.STS();
       sts.assumeRole({
-        DurationSeconds: 901,
+        DurationSeconds: 1000,
         ExternalId: 'turtleverse-assume-s3-access',
         RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
         RoleSessionName: 'TV-Gallery-View'
