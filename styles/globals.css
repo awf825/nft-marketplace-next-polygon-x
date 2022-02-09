@@ -318,6 +318,10 @@ select {
     padding-left: 2%;
 }
 
+.gallery-gif {
+    margin: 50%;
+}
+
 .clear-filters {
     display: flex;
     margin: 15px;
