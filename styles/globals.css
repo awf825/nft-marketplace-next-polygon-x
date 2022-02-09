@@ -296,9 +296,13 @@ select {
 .filter-selects-wrapper {
     width: 25%;
 }
-
+/* 
 .iscroll-wrapper {
     width: 75%;
+} */
+
+.iscroll-wrapper {
+    width: 100%;
 }
 
 .gallery-items-wrapper {

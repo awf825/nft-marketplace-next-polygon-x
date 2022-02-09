@@ -26,6 +26,16 @@ export const isLoading = () => ({
     type: "IS_LOADING"
 })
 
+export const setAccessParams = (payload) => ({
+    type: "SET_ACCESS_PARAMS",
+    payload: payload
+})
+
+export const resetGallery = (payload) => ({
+    type: "RESET_GALLERY",
+    payload: payload
+})
+
 export const GalleryContext = React.createContext({});
 
 export const galleryReducer = (state, action) => {
@@ -49,5 +59,16 @@ export const galleryReducer = (state, action) => {
     }
     case "IS_LOADING":
     return state.loading;
+    case "SET_ACCESS_PARAMS":
+        console.log('accessParams: ', action.payload)
+    return {
+        ...state,
+        accessParams: action.payload
+    }
+    case "RESET_GALLERY":
+    return {
+        ...state,
+        gallery: action.payload
+    }
   }
 };
