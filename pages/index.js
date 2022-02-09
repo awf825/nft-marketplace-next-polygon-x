@@ -16,9 +16,9 @@ export default function Home() {
       <Hero />
       <TVIntro />
       <Vision />
-      <Divider />
+      <Divider identifier={"fullBrandDividerOne"}/>
       <Founders />
-      <Divider />
+      <Divider identifier={"fullBrandDividerTwo"}/>
       <Roadmap />
     </div>
   )

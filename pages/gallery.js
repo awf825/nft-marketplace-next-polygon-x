@@ -59,19 +59,21 @@ export default function Gallery() {
       })
       let benchmark = 0
       while (benchmark < 20) {
-        const params = {
-          Bucket: 'turtleverse.albums',
-          Key: galleryState.gallery[benchmark].Key
+        if (galleryState.gallery[benchmark] !== undefined) {
+          const params = {
+            Bucket: 'turtleverse.albums',
+            Key: galleryState.gallery[benchmark].Key
+          }
+          const resp = await turtleBucket.getObject(params).promise();
+          // console.log('resp: ', resp)
+          const baseBody = JSON.parse(resp.Body.toString('utf-8'))
+          baseBody.signed = turtleBucket.getSignedUrl('getObject', {
+            Bucket: 'turtleverse.albums',
+            Key: `generation-five/turtles/${baseBody.image.split('/')[6]}`,
+            Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+          })
+          toSet.push(baseBody);
         }
-        const resp = await turtleBucket.getObject(params).promise();
-        // console.log('resp: ', resp)
-        const baseBody = JSON.parse(resp.Body.toString('utf-8'))
-        baseBody.signed = turtleBucket.getSignedUrl('getObject', {
-          Bucket: 'turtleverse.albums',
-          Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
-          Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-        })
-        toSet.push(baseBody);
         benchmark+=1;
       }
       setMarker(marker+20)
@@ -125,20 +127,21 @@ export default function Gallery() {
       })
       let benchmark = 0
       while (benchmark < 20) {
-        console.log('marker+benchmark: ', marker+benchmark)
-        const params = {
-          Bucket: 'turtleverse.albums',
-          Key: galleryState.gallery[marker+benchmark].Key
+        if (galleryState.gallery[marker+benchmark] !== undefined) {
+          const params = {
+            Bucket: 'turtleverse.albums',
+            Key: galleryState.gallery[marker+benchmark].Key
+          }
+          const resp = await turtleBucket.getObject(params).promise();
+          // console.log('resp: ', resp)
+          const baseBody = JSON.parse(resp.Body.toString('utf-8'))
+          baseBody.signed = turtleBucket.getSignedUrl('getObject', {
+            Bucket: 'turtleverse.albums',
+            Key: `generation-five/turtles/${baseBody.image.split('/')[6]}`,
+            Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+          })
+          toSet.push(baseBody);
         }
-        const resp = await turtleBucket.getObject(params).promise();
-        // console.log('resp: ', resp)
-        const baseBody = JSON.parse(resp.Body.toString('utf-8'))
-        baseBody.signed = turtleBucket.getSignedUrl('getObject', {
-          Bucket: 'turtleverse.albums',
-          Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
-          Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-        })
-        toSet.push(baseBody);
         benchmark+=1;
       }
       setMarker(marker+20)
@@ -187,7 +190,7 @@ export default function Gallery() {
         const baseBody = JSON.parse(resp.Body.toString('utf-8'))
         baseBody.signed = turtleBucket.getSignedUrl('getObject', {
           Bucket: 'turtleverse.albums',
-          Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+          Key: `generation-five/turtles/${baseBody.image.split('/')[6]}`,
           Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
         })
         toSet.push(baseBody);
@@ -280,7 +283,7 @@ export default function Gallery() {
 
   return (
     <div id="gallery" className="gallery">
-      <LoadingOverlay loading={galleryState.loading}/>
+      {/* <LoadingOverlay loading={galleryState.loading}/> */}
       {/* <FilterSelects 
         filter={filter} 
         setAreFiltersClear={setAreFiltersClear}
@@ -290,7 +293,7 @@ export default function Gallery() {
           dataLength={currentGallery.length}
           next={getMoreData}
           hasMore={hasMore}
-          loader={<Image className="gallery-item mobile-top-margin-sm" src={"/turtles.gif"} width={175} height={175}/>}
+          loader={<h4 style={{ textAlign: "center"}}>LOADING...</h4>}
         >
           <div className="gallery-items-wrapper">
             {currentGallery && currentGallery.map(((item, index) => (

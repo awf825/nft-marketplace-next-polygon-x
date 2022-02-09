@@ -50,6 +50,8 @@ const Menu = styled.ul`
   list-style: none;
   display: flex;
   flex-flow: row nowrap;
+  font-style: italic;
+  font-weight: bold;
   z-index: 9999;
   flex-flow: column nowrap;
   background-color: #0D2538;
@@ -74,9 +76,12 @@ const BrandLogo = styled.div`
 background-color: black;
 z-index: 9999;
 width: 100%;
-height: 8%;
+height: 0%;
 position: fixed;
 left: 10px;
+@media only screen and (max-width: 797px) {
+  height: 7%;
+}
 `
 
 export default function HeaderElements() {
@@ -108,9 +113,9 @@ export default function HeaderElements() {
               isHome 
               ?
               <Menu open={open}>
-                  <Link href="#aboutUs">About Us</Link>
-                  <Link href="#ourTeam">Our Team</Link>
-                  <Link href="#roadmap">Roadmap</Link>
+                  <Link href="#hero">About Us</Link>
+                  <Link href="#fullBrandDividerOne">Our Team</Link>
+                  <Link href="#fullBrandDividerTwo">Roadmap</Link>
                   <Link href="/gallery">Gallery</Link>
                   <Link href="#officialLinks">Official Links</Link>
                   <Link href="/minter-page">

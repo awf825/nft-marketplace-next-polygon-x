@@ -63,7 +63,7 @@ export default function Founders() {
                     <h3 className="fndr-subheader">BOUNCER (THE COMMUNITY)</h3>
                     <ul className="fndr-ul">
                         <li>Builds robots in his free time</li>
-                        <li>Sciene-fiction movie aficianado</li>
+                        <li>Science-fiction movie aficianado</li>
                         <li>Favorite Drink: Scotch</li>
                     </ul>
                 </div>
