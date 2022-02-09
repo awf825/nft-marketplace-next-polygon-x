@@ -6,6 +6,7 @@
 */
 
 import { useState, useEffect, useContext } from 'react'
+import Image from 'next/image'
 import FilterSelects from './components/FilterSelects';
 import LoadingOverlay from './components/LoadingOverlay';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -280,16 +281,16 @@ export default function Gallery() {
   return (
     <div id="gallery" className="gallery">
       <LoadingOverlay loading={galleryState.loading}/>
-      <FilterSelects 
+      {/* <FilterSelects 
         filter={filter} 
         setAreFiltersClear={setAreFiltersClear}
-      />
+      /> */}
       <div className="iscroll-wrapper">
         <InfiniteScroll
           dataLength={currentGallery.length}
           next={getMoreData}
           hasMore={hasMore}
-          loader={<h4>Loading...</h4>}
+          loader={<Image className="gallery-item mobile-top-margin-sm" src={"/turtles.gif"} width={175} height={175}/>}
         >
           <div className="gallery-items-wrapper">
             {currentGallery && currentGallery.map(((item, index) => (
@@ -303,16 +304,16 @@ export default function Gallery() {
               </div>
             )))
             }
-            {
+            {/* {
               currentGallery.length===0 
               ?
               ( areFiltersOn ?
                 <h1 className="gallery-directive" style={{ margin: "5%"}}>No Turtles found with these filters</h1> :
-                <h1 className="gallery-directive" style={{ margin: "5%" }}>SELECT A FILTER AND STEP INTO THE TURTLEVERSE!</h1>
+                <h1 className="gallery-directive" style={{ margin: "5%" }}>SCROLL DOWN TO VIEW OUR TURTLES</h1>
               ) 
               :
               null
-            }
+            } */}
           </div>
         </InfiniteScroll>
       </div>
