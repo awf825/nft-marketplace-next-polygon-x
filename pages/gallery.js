@@ -69,7 +69,7 @@ export default function Gallery() {
           const baseBody = JSON.parse(resp.Body.toString('utf-8'))
           baseBody.signed = turtleBucket.getSignedUrl('getObject', {
             Bucket: 'turtleverse.albums',
-            Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+            Key: `generation-five/turtles/${baseBody.image.split('/')[6]}`,
             Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
           })
           toSet.push(baseBody);
@@ -137,7 +137,7 @@ export default function Gallery() {
           const baseBody = JSON.parse(resp.Body.toString('utf-8'))
           baseBody.signed = turtleBucket.getSignedUrl('getObject', {
             Bucket: 'turtleverse.albums',
-            Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+            Key: `generation-five/turtles/${baseBody.image.split('/')[6]}`,
             Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
           })
           toSet.push(baseBody);
@@ -190,7 +190,7 @@ export default function Gallery() {
         const baseBody = JSON.parse(resp.Body.toString('utf-8'))
         baseBody.signed = turtleBucket.getSignedUrl('getObject', {
           Bucket: 'turtleverse.albums',
-          Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
+          Key: `generation-five/turtles/${baseBody.image.split('/')[6]}`,
           Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
         })
         toSet.push(baseBody);

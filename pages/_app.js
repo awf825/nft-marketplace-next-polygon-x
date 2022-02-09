@@ -77,19 +77,6 @@ function Marketplace({ Component, pageProps }) {
       try {
         const response = await s3.listObjects(params).promise();
         response.Contents.forEach(item => {
-          // elements.push(item.Key);
-          // const nextParams = {
-          //   Bucket: 'turtleverse.albums',
-          //   Key: item.Key
-          // }
-          // const resp = await s3.getObject(nextParams).promise();
-          // // console.log('resp: ', resp)
-          // const baseBody = JSON.parse(resp.Body.toString('utf-8'))
-          // baseBody.signed = s3.getSignedUrl('getObject', {
-          //   Bucket: 'turtleverse.albums',
-          //   Key: `generation-four/turtles/${baseBody.image.split('/')[6]}`,
-          //   Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-          // }) 
           elements.push(item)  
         })
         isTruncated = response.IsTruncated;
@@ -107,7 +94,7 @@ function Marketplace({ Component, pageProps }) {
     if (Object.keys(stsAccessParams).length === 0) {
       const sts = new AWS.STS();
       sts.assumeRole({
-        DurationSeconds: 1000,
+        DurationSeconds: 14400,
         ExternalId: 'turtleverse-assume-s3-access',
         RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
         RoleSessionName: 'TV-Gallery-View'
@@ -131,9 +118,9 @@ function Marketplace({ Component, pageProps }) {
       })
       const bucketParams = {
         Bucket: 'turtleverse.albums',
-        Prefix: 'generation-four/metadata'
+        Prefix: 'generation-five/metadata'
       }
-      const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-four/metadata')
+      const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-five/metadata')
       dispatch(setGallery(g))
     }
     dispatch(stopLoading(false))
