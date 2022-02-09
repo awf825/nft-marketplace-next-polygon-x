@@ -36,14 +36,14 @@ export default function Gallery() {
     next: 20
   })
   // marker to set where we are in the motherlode array of bucket keys (galleryState)
-  const [marker, setMarker] = useState(9999)
+  const [marker, setMarker] = useState(20)
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
   const [areFiltersClear, setAreFiltersClear] = useState(true);
   const [gallery, setGallery] = useState([])
 
   useEffect(async () => {
-      if (marker === 0) { return };
+      //if (marker === 0) { return };
       let toSet = [];
       const accessKeyId = galleryState.accessParams.Credentials.AccessKeyId
       const secretAccessKey = galleryState.accessParams.Credentials.SecretAccessKey
@@ -55,11 +55,11 @@ export default function Gallery() {
         bucket: 'turtleverse.albums',
         region: 'ca-central-1'
       })
-      let benchmark = 20
-      while (benchmark >= 0) {
+      let benchmark = 0
+      while (benchmark < 20) {
         const params = {
           Bucket: 'turtleverse.albums',
-          Key: galleryState.gallery[marker-benchmark].Key
+          Key: galleryState.gallery[benchmark].Key
         }
         const resp = await turtleBucket.getObject(params).promise();
         // console.log('resp: ', resp)
@@ -70,9 +70,8 @@ export default function Gallery() {
           Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
         })
         toSet.push(baseBody);
-        benchmark-=1;
+        benchmark+=1;
       }
-      setMarker(marker-20)
       setGallery(gallery.concat(toSet))
       if (currentGallery.length === 0) {
         setCurrentGallery(toSet)
@@ -121,11 +120,12 @@ export default function Gallery() {
         bucket: 'turtleverse.albums',
         region: 'ca-central-1'
       })
-      let benchmark = 20
-      while (benchmark >= 0) {
+      let benchmark = 0
+      while (benchmark < 20) {
+        console.log('marker+benchmark: ', marker+benchmark)
         const params = {
           Bucket: 'turtleverse.albums',
-          Key: galleryState.gallery[marker-benchmark].Key
+          Key: galleryState.gallery[marker+benchmark].Key
         }
         const resp = await turtleBucket.getObject(params).promise();
         // console.log('resp: ', resp)
@@ -136,14 +136,14 @@ export default function Gallery() {
           Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
         })
         toSet.push(baseBody);
-        benchmark-=1;
+        benchmark+=1;
       }
-      setMarker(marker-20)
+      setMarker(marker+20)
       setGallery(gallery.concat(toSet))
       setCurrentGallery(currentGallery.concat(gallery.slice(count.prev, count.next)))
     }, 500)
     setCount((prevState) => ({ prev: prevState.prev + 20, next: prevState.next + 20 }))
-    setMarker(marker-20)
+    setMarker(marker+20)
   }
 
   useEffect(() => {
