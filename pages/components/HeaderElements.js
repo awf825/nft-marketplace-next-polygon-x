@@ -80,7 +80,7 @@ height: 0%;
 position: fixed;
 left: 10px;
 @media only screen and (max-width: 797px) {
-  height: 7%;
+  height: 9%;
 }
 `
 
