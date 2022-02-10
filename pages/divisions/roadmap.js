@@ -50,7 +50,7 @@ export default function Roadmap() {
                             <p>
                                 Our volume traded reaches 1000 - The NFTurtle holder exclusive TV merch 
                                 shop opens for business
-                                Our volume traded reaches 2000 - 5 withheld ultra-rare "NFTurtle-Gods"
+                                Our volume traded reaches 2000 - 5 withheld ultra-rare &quot;NFTurtle-Gods&quot;
                                 are airdropped to 5 holders
                             </p>
                         </div>
