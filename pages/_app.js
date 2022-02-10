@@ -118,9 +118,9 @@ function Marketplace({ Component, pageProps }) {
       })
       const bucketParams = {
         Bucket: 'turtleverse.albums',
-        Prefix: 'generation-five/metadata'
+        Prefix: 'generation-six/metadata'
       }
-      const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-five/metadata')
+      const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-six/metadata')
       dispatch(setGallery(g))
     }
     dispatch(stopLoading(false))

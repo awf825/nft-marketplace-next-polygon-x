@@ -12,7 +12,7 @@ import Hero from './divisions/hero'
 
 export default function Home() {  
   return (
-    <div className="flex justify-center top-container">
+    <div className="flex justify-center top-container mobile-top-margin-lg">
       <Hero />
       <TVIntro />
       <Vision />

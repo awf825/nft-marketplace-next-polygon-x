@@ -7,13 +7,13 @@ export default function Footer() {
             <div id="officialLinks">
                 {/* OFFICIAL LINKS */}
                 <div>
-                    <a href="https://www.npmjs.com/package/react-sticky-header" target="_blank" rel="noreferrer" ><Icon.Twitter size="2x" /></a>
+                    <a href="https://twitter.com/nfturtleverse" target="_blank" rel="noreferrer" ><Icon.Twitter size="2x" /></a>
                 </div>
                 <div>
-                    <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Icon.Discord /></a>
+                    <a href="https://discord.gg/ykBCBNAsPE" target="_blank" rel="noreferrer" ><Icon.Discord /></a>
                 </div>
                 <div>
-                    <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Icon.Instagram /></a>
+                    <a href="https://instagram.com/turtleverse" target="_blank" rel="noreferrer" ><Icon.Instagram /></a>
                 </div>
             </div>
             <div className="copyright">

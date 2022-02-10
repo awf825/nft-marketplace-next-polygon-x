@@ -25,7 +25,7 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                2000 whitelist members - 5 random members receive a free mint
+                                2000 whitelist members - 5 additional random members receive a free mint
                             </p>
                         </div>
                     </li>
@@ -48,7 +48,10 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                1000 whitelist members - 5 random members receive a free mint
+                                Our volume traded reaches 1000 - The NFTurtle holder exclusive TV merch 
+                                shop opens for business
+                                Our volume traded reaches 2000 - 5 withheld ultra-rare "NFTurtle-Gods"
+                                are airdropped to 5 holders
                             </p>
                         </div>
                     </li>
@@ -59,7 +62,8 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                1000 whitelist members - 5 random members receive a free mint
+                                Our volume traded reaches 1000 - The NFTurtle holder exclusive TV merch 
+                                shop opens for business
                             </p>
                         </div>
                     </li>
@@ -70,7 +74,8 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                1000 whitelist members - 5 random members receive a free mint
+                                Our volume traded reaches 5000 - the first NFTurtle exclusive live 
+                                event is held
                             </p>
                         </div>
                     </li>
@@ -81,7 +86,8 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                1000 whitelist members - 5 random members receive a free mint
+                                Our volume traded reaches 7500 - We release 10000 NFTurtle spinoff tokens
+                                to holders
                             </p>
                         </div>
                     </li>
@@ -92,7 +98,7 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                1000 whitelist members - 5 random members receive a free mint
+                                Our volume traded reaches 10000 - and a new NFT universe is discovered
                             </p>
                         </div>
                     </li>
