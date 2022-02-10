@@ -48,9 +48,7 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                Our volume traded reaches 1000 - The NFTurtle holder exclusive TV merch 
-                                shop opens for business
-                                Our volume traded reaches 2000 - 5 withheld ultra-rare &quot;NFTurtle-Gods&quot;
+                             Our volume traded reaches 1000 - 5 withheld ultra-rare &quot;NFTurtle-Gods&quot;
                                 are airdropped to 5 holders
                             </p>
                         </div>
@@ -62,7 +60,7 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                Our volume traded reaches 1000 - The NFTurtle holder exclusive TV merch 
+                                Our volume traded reaches 2000 - The NFTurtle holder exclusive TV merch 
                                 shop opens for business
                             </p>
                         </div>
