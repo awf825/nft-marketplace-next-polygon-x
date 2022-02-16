@@ -6,13 +6,14 @@
 */
 
 import { useState, useEffect, useContext } from 'react'
-import Image from 'next/image'
+// import Image from 'next/image'
 import FilterSelects from './components/FilterSelects';
 import LoadingOverlay from './components/LoadingOverlay';
 import InfiniteScroll from "react-infinite-scroll-component";
+
 import {
   GalleryContext,
-  resetGallery
+  setFilteredAppliedGallery
 } from "../contexts/GalleryContext.js";
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
@@ -38,50 +39,21 @@ export default function Gallery() {
     next: 20
   })
   // marker to set where we are in the motherlode array of bucket keys (galleryState)
-  const [marker, setMarker] = useState(0)
+  const [marker, setMarker] = useState(20)
   const [hasMore, setHasMore] = useState(true);
   const [currentGallery, setCurrentGallery] = useState([])
   const [areFiltersClear, setAreFiltersClear] = useState(true);
   const [gallery, setGallery] = useState([])
 
-  useEffect(async () => {
-      //if (marker === 0) { return };
-      let toSet = [];
-      const accessKeyId = galleryState.accessParams.Credentials.AccessKeyId
-      const secretAccessKey = galleryState.accessParams.Credentials.SecretAccessKey
-      const sessionToken = galleryState.accessParams.Credentials.SessionToken
-      const turtleBucket = new AWS.S3({
-        accessKeyId: accessKeyId,
-        secretAccessKey: secretAccessKey,
-        sessionToken: sessionToken,
-        bucket: 'turtleverse.albums',
-        region: 'ca-central-1'
-      })
-      let benchmark = 0
-      while (benchmark < 20) {
-        if (galleryState.gallery[benchmark] !== undefined) {
-          const params = {
-            Bucket: 'turtleverse.albums',
-            Key: galleryState.gallery[benchmark].Key
-          }
-          const resp = await turtleBucket.getObject(params).promise();
-          // console.log('resp: ', resp)
-          const baseBody = JSON.parse(resp.Body.toString('utf-8'))
-          baseBody.signed = turtleBucket.getSignedUrl('getObject', {
-            Bucket: 'turtleverse.albums',
-            Key: `generation-six/turtles/${baseBody.image.split('/')[6]}`,
-            Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-          })
-          toSet.push(baseBody);
-        }
-        benchmark+=1;
-      }
-      setMarker(marker+20)
-      setGallery(gallery.concat(toSet))
-      if (currentGallery.length === 0) {
-        setCurrentGallery(toSet)
-      }
-  }, [])
+  useEffect(() => {
+    setGallery(galleryState.appliedGallery)
+  }, [galleryState.appliedGallery])
+
+  useEffect(() => {
+    if (currentGallery.length === 0) {
+      setCurrentGallery(gallery.slice(0,20))
+    }
+  }, [gallery])
 
   const getMoreData = () => {
     /*
@@ -95,124 +67,42 @@ export default function Gallery() {
 
     */
     if (currentGallery.length === 10000) {
-      // setCount({
-      //   prev: 0,
-      //   next: 20
-      // })
       setHasMore(false);
       return;
-    // } else if ( areFiltersOn && ( currentGallery.length < 20 ) ) {
-    //   setHasMore(false);
-    //   setCount({
-    //     prev: 0,
-    //     next: currentGallery.length
-    //   })
-    //   return;
-    } else if ( areFiltersOn && ( currentGallery.length > 20 ) ) {
+    } else {
       setHasMore(true)
-      return
-    }
-    setTimeout(async () => {
-      if (marker === 0) { return };
-      let toSet = [];
-      const accessKeyId = galleryState.accessParams.Credentials.AccessKeyId
-      const secretAccessKey = galleryState.accessParams.Credentials.SecretAccessKey
-      const sessionToken = galleryState.accessParams.Credentials.SessionToken
-      const turtleBucket = new AWS.S3({
-        accessKeyId: accessKeyId,
-        secretAccessKey: secretAccessKey,
-        sessionToken: sessionToken,
-        bucket: 'turtleverse.albums',
-        region: 'ca-central-1'
-      })
-      let benchmark = 0
-      while (benchmark < 20) {
-        if (galleryState.gallery[marker+benchmark] !== undefined) {
-          const params = {
-            Bucket: 'turtleverse.albums',
-            Key: galleryState.gallery[marker+benchmark].Key
+      setTimeout(async () => {
+        const g = areFiltersOn ? galleryState.filteredAppliedGallery : galleryState.appliedGallery;
+        if (marker === 10000) { return };
+        let toSet = [];
+        let benchmark = 0
+        while (benchmark < 20) {
+          if (g[marker+benchmark] !== undefined) {
+            toSet.push(g[marker+benchmark]);
           }
-          const resp = await turtleBucket.getObject(params).promise();
-          // console.log('resp: ', resp)
-          const baseBody = JSON.parse(resp.Body.toString('utf-8'))
-          baseBody.signed = turtleBucket.getSignedUrl('getObject', {
-            Bucket: 'turtleverse.albums',
-            Key: `generation-six/turtles/${baseBody.image.split('/')[6]}`,
-            Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-          })
-          toSet.push(baseBody);
+          benchmark+=1;
         }
-        benchmark+=1;
-      }
+        setCurrentGallery(currentGallery.concat(toSet))
+      }, 500)
+      setCount((prevState) => ({ prev: prevState.prev + 20, next: prevState.next + 20 }))
       setMarker(marker+20)
-      setGallery(gallery.concat(toSet))
-      setCurrentGallery(currentGallery.concat(toSet))
-    }, 500)
-    setCount((prevState) => ({ prev: prevState.prev + 20, next: prevState.next + 20 }))
-    setMarker(marker+20)
+    }
   }
 
   useEffect(async () => {
-    //debugger
     if (attributeFilters.find(af => Object.values(af)[0].length>0) ) {
       setAreFiltersOn(true)
-      const newGallery = galleryState.gallery.filter(g => {
-        // console.log('gallery item combo code @ newGallery filter: ', g.comboCode)
-        
+      const filteredAppliedGallery = galleryState.appliedGallery.filter(g => {        
         const filtersRef = attributeFilters.map(f => Object.entries(f)[0][1]).filter(mf => mf.length>0)
-        // console.log('filters @ newGallery filter: ', filtersRef)
-        // console.log('checkForAllMatches(attributeFilters, g.comboCode): ', checkForAllMatches(filtersRef, g.comboCode))
-        const comboCode = g.Key.split('/')[2].split('_')[1].split('.')[0]
-        return checkForAllMatches(filtersRef, comboCode)
+        return checkForAllMatches(filtersRef, g.comboCode)
       })
-
-      dispatch(resetGallery(newGallery))
-
-      let toSet = [];
-      const accessKeyId = galleryState.accessParams.Credentials.AccessKeyId
-      const secretAccessKey = galleryState.accessParams.Credentials.SecretAccessKey
-      const sessionToken = galleryState.accessParams.Credentials.SessionToken
-      const turtleBucket = new AWS.S3({
-        accessKeyId: accessKeyId,
-        secretAccessKey: secretAccessKey,
-        sessionToken: sessionToken,
-        bucket: 'turtleverse.albums',
-        region: 'ca-central-1'
-      })
-      let benchmark = 0
-      while (benchmark < 20) {
-        const params = {
-          Bucket: 'turtleverse.albums',
-          Key: newGallery[benchmark].Key
-        }
-        const resp = await turtleBucket.getObject(params).promise();
-        // console.log('resp: ', resp)
-        const baseBody = JSON.parse(resp.Body.toString('utf-8'))
-        baseBody.signed = turtleBucket.getSignedUrl('getObject', {
-          Bucket: 'turtleverse.albums',
-          Key: `generation-six/turtles/${baseBody.image.split('/')[6]}`,
-          Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
-        })
-        toSet.push(baseBody);
-        benchmark+=1;
-      }
-      setGallery(toSet)
-      setCurrentGallery(toSet)
-      setMarker(0)
+      dispatch(setFilteredAppliedGallery(filteredAppliedGallery))
+      setCurrentGallery(filteredAppliedGallery.slice(0,20))
+      setMarker(20)
       setCount({
         prev: 0,
         next: 20
       })
-
-      console.log('newGallery @ state change effect: ', newGallery)
-      // setGallery(newGallery)
-      // setCurrentGallery(newGallery)
-      // if (newGallery.length > 20) {
-      //   setHasMore(false)
-      // } else {
-      //   setHasMore(true)
-      // }
-      // setMarker(newGallery.length)
     } else {
       setAreFiltersOn(false)
     }
@@ -229,8 +119,8 @@ export default function Gallery() {
         { "Paint": '' },
         { "Skin": '' }
       ])
-      // setCurrentGallery(gallery) 
-      setCurrentGallery([]) 
+      setCurrentGallery(gallery.slice(0,20)) 
+      setMarker(20)
       setCount({
         prev: 0,
         next: 20
@@ -284,10 +174,10 @@ export default function Gallery() {
   return (
     <div id="gallery" className="gallery">
       {/* <LoadingOverlay loading={galleryState.loading}/> */}
-      {/* <FilterSelects 
+      <FilterSelects 
         filter={filter} 
         setAreFiltersClear={setAreFiltersClear}
-      /> */}
+      />
       <div className="iscroll-wrapper">
         <InfiniteScroll
           dataLength={currentGallery.length}

@@ -6,7 +6,12 @@
 import '../styles/globals.css'
 import Link from 'next/link';
 import GTM from 'react-gtm-module';
-import { useEffect, useReducer, useState } from "react";
+import { 
+  useEffect, 
+  useReducer, 
+  useState,
+  useRef 
+} from "react";
 import Header from './divisions/header'
 import Divider from './divisions/divider'
 import Footer from './divisions/footer'
@@ -19,37 +24,8 @@ import {
   stopLoading,
   setGallery,
   setAccessParams,
-  fetchGallery
+  pushAppliedGallery
 } from "../contexts/GalleryContext.js";
-// import styled from 'styled-components'
-// import * as Icon from 'react-bootstrap-icons'
-// import { DAppProvider } from '@usedapp/core'
-// import { Mainnet } from '@usedapp/core/src/model/chain/ethereum.ts'
-// import { Local } from '@usedapp/core/src/model/chain/local.ts'
-
-// const config = {
-//   readOnlyChainId: Local.chainId,
-//   // readOnlyUrls: {
-//   //   [Mainnet.chainId]: 'https://mainnet.infura.io/v3/62687d1a985d4508b2b7a24827551934',
-//   // },
-// }
-
-// const config = {
-//   readOnlyChainId: ChainId.Ropsten,
-//   readOnlyUrls: {
-//     // [ChainId.Mainnet]: 'https://mainnet.infura.io/v3/5ae4b97d4ee44b838e88224cb474d9bf',
-//     [ChainId.Ropsten]: 'https://ropsten.infura.io/v3/5ae4b97d4ee44b838e88224cb474d9bf',
-//   },
-// }
-// const Footer = styled.div`
-//   display: inline-block;
-//   width: 33.333%;
-//   margin: 13px auto;
-//   padding-left: 15.5%;
-//   @media only screen and (max-width: 900px) {
-//     padding-left: 12.5%;
-//   }
-// `
 
 AWS.config.update({
   accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
@@ -57,13 +33,18 @@ AWS.config.update({
 })
 
 function Marketplace({ Component, pageProps }) {
+  const appliedGalleryIdx = useRef(0);
   const [stsAccessParams, setSTSAccessParams] = useState({});
+  const [bucket, setBucket] = useState({})
   const [galleryState, dispatch] = useReducer(
     galleryReducer,
     {
       loading: null,
       gallery: [],
-      accessParams: {}
+      appliedGallery: [],
+      accessParams: {},
+      filteredGallery: [],
+      filteredAppliedGallery: [],
     }
   )
 
@@ -122,12 +103,38 @@ function Marketplace({ Component, pageProps }) {
         region: 'ca-central-1'
       })
       const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-six/metadata')
+      setBucket(turtleBucket)
       dispatch(setGallery(g))
     }
     dispatch(stopLoading(false))
   }, [stsAccessParams])
 
-  
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (galleryState.appliedGallery.length >= 10000) { return }
+      else {
+        for (let i = appliedGalleryIdx.current; i < appliedGalleryIdx.current+20; i++) {
+          const params = {
+            Bucket: 'turtleverse.albums',
+            Key: galleryState.gallery[i].Key
+          }
+          const resp = await bucket.getObject(params).promise();
+          // console.log('resp: ', resp)
+          const baseBody = JSON.parse(resp.Body.toString('utf-8'))
+          baseBody.signed = bucket.getSignedUrl('getObject', {
+            Bucket: 'turtleverse.albums',
+            Key: `generation-six/turtles/${baseBody.image.split('/')[6]}`,
+            Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
+          })
+          dispatch(pushAppliedGallery(baseBody))
+        }
+        appliedGalleryIdx.current = appliedGalleryIdx.current+20
+      }
+      console.log('This will run every five seconds!');
+    }, 500);
+    return () => clearInterval(interval);
+  }, [galleryState])
+
 
   return (
     <MoralisProvider
@@ -147,3 +154,24 @@ function Marketplace({ Component, pageProps }) {
 }
 
 export default Marketplace
+
+// import styled from 'styled-components'
+// import * as Icon from 'react-bootstrap-icons'
+// import { DAppProvider } from '@usedapp/core'
+// import { Mainnet } from '@usedapp/core/src/model/chain/ethereum.ts'
+// import { Local } from '@usedapp/core/src/model/chain/local.ts'
+
+// const config = {
+//   readOnlyChainId: Local.chainId,
+//   // readOnlyUrls: {
+//   //   [Mainnet.chainId]: 'https://mainnet.infura.io/v3/62687d1a985d4508b2b7a24827551934',
+//   // },
+// }
+
+// const config = {
+//   readOnlyChainId: ChainId.Ropsten,
+//   readOnlyUrls: {
+//     // [ChainId.Mainnet]: 'https://mainnet.infura.io/v3/5ae4b97d4ee44b838e88224cb474d9bf',
+//     [ChainId.Ropsten]: 'https://ropsten.infura.io/v3/5ae4b97d4ee44b838e88224cb474d9bf',
+//   },
+// }

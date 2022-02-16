@@ -36,6 +36,16 @@ export const resetGallery = (payload) => ({
     payload: payload
 })
 
+export const pushAppliedGallery = (payload) => ({
+    type: "PUSH_APPLIED_GALLERY",
+    payload: payload
+})
+
+export const setFilteredAppliedGallery = (payload) => ({
+    type: "SET_FILTERED_APPLIED_GALLERY",
+    payload: payload
+})
+
 export const GalleryContext = React.createContext({});
 
 export const galleryReducer = (state, action) => {
@@ -68,6 +78,18 @@ export const galleryReducer = (state, action) => {
     return {
         ...state,
         gallery: action.payload
+    }
+    case "PUSH_APPLIED_GALLERY":
+       // console.log('payload at push applied gall: ', action.payload)
+    return {
+        ...state,
+        appliedGallery: [...state.appliedGallery, action.payload]
+    }
+    case "SET_FILTERED_APPLIED_GALLERY":
+    console.log('SET_FILTERED_APPLIED_GALLERY: ', action.payload)
+    return {
+        ...state,
+        filteredAppliedGallery: action.payload
     }
   }
 };
