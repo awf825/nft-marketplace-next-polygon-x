@@ -5,6 +5,7 @@
 
 import '../styles/globals.css'
 import Link from 'next/link';
+import GTM from 'react-gtm-module';
 import { useEffect, useReducer, useState } from "react";
 import Header from './divisions/header'
 import Divider from './divisions/divider'
@@ -90,6 +91,10 @@ function Marketplace({ Component, pageProps }) {
     return elements;
   }
 
+  useEffect(() => {
+    GTM.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM });
+  }, [])
+
   useEffect(async () => {
     if (Object.keys(stsAccessParams).length === 0) {
       const sts = new AWS.STS();
@@ -116,10 +121,6 @@ function Marketplace({ Component, pageProps }) {
         bucket: 'turtleverse.albums',
         region: 'ca-central-1'
       })
-      const bucketParams = {
-        Bucket: 'turtleverse.albums',
-        Prefix: 'generation-six/metadata'
-      }
       const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-six/metadata')
       dispatch(setGallery(g))
     }
