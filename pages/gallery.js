@@ -18,8 +18,7 @@ import {
 
 // const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 // const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
-// const gateway = 'https://turtleverse.mypinata.cloud/ipfs/'
-
+// const gateway = 'https://turtleverse.mypinata.cloud/ipfs/
 const initialAttrState = [
   { "Background": '' },
   { "Clothes": '' },

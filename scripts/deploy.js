@@ -22,25 +22,15 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
-  const Biz = await hre.ethers.getContractFactory("Biz");
-  const biz = await Biz.deploy(wallet);
-  await biz.deployed()
-  console.log("deployed biz to:", biz.address)
+  // const Biz = await hre.ethers.getContractFactory("Biz");
+  // const biz = await Biz.deploy(wallet);
+  // await biz.deployed()
+  // console.log("deployed biz to:", biz.address)
 
-  const TurtleMinter = await hre.ethers.getContractFactory("TurtleMinter");
-  const turtleMinter = await TurtleMinter.deploy(biz.address);
-  await turtleMinter.deployed()
-  console.log("deployed turtleMinter to:", turtleMinter.address)
-
-  // const Market = await hre.ethers.getContractFactory("NFTMarket");
-  // const market = await Market.deploy();
-  // await market.deployed()
-  // console.log("deployed market to:", market.address)
-
-  // const NFT = await hre.ethers.getContractFactory("NFT");
-  // const nft = await NFT.deploy(market.address);
-  // await nft.deployed()
-  // console.log("deployed nft to:", nft.address)
+  const TV = await hre.ethers.getContractFactory("Turtleverse");
+  const tv = await TV.deploy("The Turtleverse", "NFTV", "https://gateway.pinata.cloud/ipfs/");
+  await tv.deployed()
+  console.log("deployed tv to:", tv.address)
 }
 
 // We recommend this pattern to be able to use async/await everywhere
