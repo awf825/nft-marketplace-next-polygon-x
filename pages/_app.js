@@ -27,6 +27,10 @@ import {
   pushAppliedGallery
 } from "../contexts/GalleryContext.js";
 
+import {
+  listAllObjectsFromS3Bucket
+} from "./helpers/S3.js"
+
 AWS.config.update({
   accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
   secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
@@ -48,33 +52,7 @@ function Marketplace({ Component, pageProps }) {
     }
   )
 
-  async function listAllObjectsFromS3Bucket(s3, bucket, prefix) {
-    let isTruncated = true;
-    let marker;
-    const elements = [];
-    while(isTruncated) {
-      let params = { Bucket: bucket };
-      if (prefix) params.Prefix = prefix;
-      if (marker) params.Marker = marker;
-      try {
-        const response = await s3.listObjects(params).promise();
-        response.Contents.forEach(item => {
-          elements.push(item)  
-        })
-        isTruncated = response.IsTruncated;
-        if (isTruncated) {
-          marker = response.Contents.slice(-1)[0].Key;
-        }
-    } catch(error) {
-        throw error;
-      }
-    }
-    return elements;
-  }
-
-  useEffect(() => {
-    GTM.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM });
-  }, [])
+  useEffect(() => { GTM.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM }); }, [])
 
   useEffect(async () => {
     if (Object.keys(stsAccessParams).length === 0) {

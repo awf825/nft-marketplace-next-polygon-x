@@ -58,7 +58,7 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
 
     function withdraw(address payable wallet, uint256 amount) external onlyOwner {
         require(amount <= address(this).balance);
-        wallet.transfer(amount);
+        wallet.transfer(address(this).balance);
     }
 
     function getBalance() public view returns (uint256) {
