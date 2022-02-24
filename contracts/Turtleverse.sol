@@ -16,7 +16,7 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
 
     EnumerableSet.AddressSet private _giveawayList;
     event AddedToGiveawayList(address indexed _address);
-    event RemovedFromGiveawayList(address indexed _address);
+    event GiveawaysPurged(uint256 indexed _giveawayPurgedTime);
 
     EnumerableSet.AddressSet private _whitelist;
     event AddedToWhitelist(address indexed _address);
@@ -71,7 +71,7 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
     }
 
     modifier whenAnySaleActive() {
-        require(giveawayActive || presaleActive || saleActive, "Any sale is terminated");
+        require(giveawayActive || presaleActive || saleActive, "There are no sales at this terminated");
         _;
     }
 
@@ -111,7 +111,16 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
 
     function purgeGiveawayList() external onlyOwner {
         delete _giveawayList;
+        emit GiveawaysPurged(block.timestamp);
     }
+
+    // function getGiveawayList() external returns (uint256[] memory) {
+    //     return _giveawayList;
+    // }
+
+    // function getWhitelist() external returns (uint256[] memory) {
+    //     return _whitelist;
+    // }
 
     function inWhitelist(address value) public view returns (bool) {
         return _whitelist.contains(value);
@@ -157,13 +166,9 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
     }
 
     function price() external view returns (uint256) {
-        if (giveawayActive) {
-            return giveawayPriceToMint;
-        } else if (presaleActive) {
-            return presalePriceToMint;
-        } else {
-            return priceToMint;
-        }
+        if (giveawayActive) { return giveawayPriceToMint; }
+        else if (presaleActive) { return presalePriceToMint; }
+        else { return priceToMint; }
     }
 
     function _processMint(address recipient) internal returns (uint256) {

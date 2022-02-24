@@ -1,6 +1,10 @@
 @tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* @tailwind components;
+@tailwind utilities; */
+
+#minter {
+    font-size: 60% !important;
+}
 
 body { 
     background-color: black; 
@@ -330,6 +334,10 @@ select {
     font-weight: 800;
     font-style: "italic";
     font-size: 23px;
+}
+
+.minter form {
+    color: black;
 }
 
 @media only screen and (max-width: 1220px) {

@@ -89,29 +89,36 @@ export default function MinterPage() {
         const signer = provider.getSigner();
 
         const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
-        let priceToMint = await tvc.getPriceToMint();
+        // let priceToMint = await tvc.getPriceToMint();
         let owner = await tvc.owner();
         let balance = await provider.getBalance('0x5FbDB2315678afecb367f032d93F642f64180aa3')
+        let price = await tvc.price();
         // let userTxCount = await provider.getTransactionCount('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
 
         balance = balance.toString()
-        priceToMint = priceToMint;
+        price = price;
         // txCount = txCount;
         // let balance = await tvc.getBalance();
-        console.log('priceToMint: ', priceToMint);
+        console.log('price: ', price);
         console.log('balance: ', balance)
         // console.log('userTxCount: ', userTxCount)
         console.log('owner: ', owner)
 
         // requestedAmount is the state hook for select dropdown
         const tokensAmount = ethers.BigNumber.from(requestedAmount);
-        const v = priceToMint.mul(tokensAmount)
+        const v = price.mul(tokensAmount)
+
         console.log('tokensAmount: ', tokensAmount)
         console.log('value: ', v)
-        let transaction = await tvc.mintTokens(
-            tokensAmount, { value: v }
-        )
-        let tx = await transaction.wait(); 
+
+        tvc.mintTokens(tokensAmount, { value: v })
+        .then(resp => {
+            console.log(resp)
+            alert('tx complete! ', resp)
+        })
+        .catch(err => {
+            alert(err.data.message)
+        });  
     }
 
     async function withdraw() {
@@ -125,10 +132,10 @@ export default function MinterPage() {
 
         // // 200000000000000000 = .2 eth
         // amount to pass to withdraw function
-        const bn = ethers.BigNumber.from("200000000000000000")
+        const bn = ethers.BigNumber.from("100000000000000000")
+        await tvc.withdraw('0x36Cccbf2BC5dD1BAd8C45541E23c4Df7fB9c34cd', bn)
         try {
             /* This address is 'Account 1' in my metaamask */
-            await tvc.withdraw('0x36Cccbf2BC5dD1BAd8C45541E23c4Df7fB9c34cd', bn)
             alert('ether withdrawn')
         } catch(error) {
             console.error(error);
@@ -136,11 +143,133 @@ export default function MinterPage() {
         }
     }
 
+    async function startGiveaway() {
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        
+        try {
+            await tvc.startGiveaway();
+            alert('GIVEAWAY STARTED!')
+        } catch(error) {
+            alert('something is wrong: ', error);
+        }
+    }
+
+    async function stopGiveaway() {
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        
+        try {
+            await tvc.pauseGiveaway();
+            alert('GIVEAWAY PAUSED!')
+        } catch(error) {
+            alert('something is wrong: ', error);
+        }
+    }
+
+    async function startPreSale() {
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        
+        try {
+            const bn = ethers.BigNumber.from(3)
+            await tvc.startPresale(bn);
+            alert('PRESALE STARTED!')
+        } catch(error) {
+            alert('something is wrong: ', error);
+        }
+    }
+
+    async function stopPreSale() {
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        
+        try {
+            await tvc.pausePresale();
+            alert('PRESALE PAUSED!')
+        } catch(error) {
+            alert('something is wrong: ', error);
+        }
+    }
+
+    async function startPublicSale() {
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        
+        try {
+            await tvc.startPublicSale();
+            alert('PUBLIC SALE STARTED!')
+        } catch(error) {
+            alert('something is wrong: ', error);
+        }
+    }
+
+    async function stopPublicSale() {
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        
+        try {
+            await tvc.pausePublicSale();
+            alert('PUBLIC SALE PAUSED!')
+        } catch(error) {
+            alert('something is wrong: ', error);
+        }
+    }
+    
+    async function addToLists(e) {
+        e.preventDefault();
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
+        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        // const address = await signer.getAddress();
+        
+        const giveawayAddress = e.target[0].value;
+        const whitelistAddress = e.target[1].value;
+
+        try {
+            if (giveawayAddress) {
+                await tvc.addToGiveawayList([giveawayAddress]);
+            } if (whitelistAddress) {
+                await tvc.addToWhitelist([whitelistAddress]);
+            }
+            alert('addresses added to whitelist(s)')
+        } catch (error) {
+            console.error(error)
+            alert("something went wrong trying to add to whitelist")
+        }
+        //debugger
+    }
+
     function onSelectAmount(e) {
         console.log('event: ', e.target.value)
         setRequestedAmount(e.target.value)
     }
 
+    /*
+        Make button to pause and activate different sales.
+        Button to add and remove from whitelist, giveaway list
+    */
 
     return (
         <div className="minter">
@@ -171,6 +300,17 @@ export default function MinterPage() {
                 <br/>
                 <div>
                     <button type="submit" onClick={() => withdraw()}>WITHDRAW</button>
+                    <button type="submit" onClick={() => startGiveaway()}>START GIVEAWAY</button>
+                    <button type="submit" onClick={() => stopGiveaway()}>STOP GIVEAWAY</button>
+                    <button type="submit" onClick={() => startPreSale()}>START PRESALE</button>
+                    <button type="submit" onClick={() => stopPreSale()}>STOP PRESALE</button>
+                    <button type="submit" onClick={() => startPublicSale()}>START PUBLIC SALE</button>
+                    <button type="submit" onClick={() => stopPublicSale()}>STOP PUBLIC SALE</button>
+                    <form onSubmit={(e) => addToLists(e)}>
+                        <input id="give" type="text" placeholder="giveaway address"/>
+                        <input id="white" type="text" placeholder="whitelist address"/>
+                        <button type="submit">SUBMIT</button>
+                    </form>
                 </div>
             </div>
         </div>
