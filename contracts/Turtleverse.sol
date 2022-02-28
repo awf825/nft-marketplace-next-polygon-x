@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
     string private _baseTokenURI;
     mapping (uint256 => string) private _tokenURIs;
+
+    using Strings for uint256;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -169,11 +171,39 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
         _tokenURIs[tokenId] = _tokenURI;
     }
 
-    function _processMint(address recipient, string calldata tokenHash) internal returns (uint256) {
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        string memory _tokenURI = _tokenURIs[tokenId];
+        string memory base = _baseTokenURI;
+        
+        // If there is no base URI, return the token URI.
+        if (bytes(base).length == 0) {
+            return _tokenURI;
+        }
+        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
+        if (bytes(_tokenURI).length > 0) {
+            return string(abi.encodePacked(base, _tokenURI));
+        }
+        // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
+        return string(abi.encodePacked(base, tokenId.toString()));
+    }
+
+    function mintTurtle(
+        address _to,
+        uint256 _tokenId,
+        string memory tokenURI_
+    ) internal {
+        _safeMint(_to, _tokenId);
+        _setTokenURI(_tokenId, tokenURI_);
+    }
+
+    function _processMint(address recipient, string memory tokenHash) internal returns (uint256) {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
-        _safeMint(recipient, newItemId);
-        _setTokenURI(newItemId, string(abi.encodePacked(_baseTokenURI,tokenHash)));
+        mintTurtle(recipient, newItemId, tokenHash);
+        // _safeMint(recipient, newItemId);
+        // _setTokenURI(newItemId, string(abi.encodePacked(_baseTokenURI,tokenHash)));
         return newItemId;
     }
 

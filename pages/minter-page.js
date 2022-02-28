@@ -169,7 +169,8 @@ export default function MinterPage() {
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
 
         const bn = ethers.BigNumber.from("100000000000000000")
-        await tvc.withdraw('0x36Cccbf2BC5dD1BAd8C45541E23c4Df7fB9c34cd', bn)
+        await tvc.withdraw('0xB154Dc24df1404946F304FFcDA78378BdF6501AA', bn, {gasLimit:"300000000000000000"});
+        
         try {
             /* This address is 'Account 1' in my metaamask */
             alert('ether withdrawn')
@@ -322,6 +323,7 @@ export default function MinterPage() {
                                 <option>2</option>
                                 <option>5</option>
                                 <option>10</option>
+                                <option>100</option>
                             </select>
                             <button type="submit" onClick={() => mint()}>
                                 MINT
