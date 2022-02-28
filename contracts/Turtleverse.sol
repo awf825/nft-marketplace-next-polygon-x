@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
     string private _baseTokenURI;
+    mapping (uint256 => string) private _tokenURIs;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -31,7 +32,7 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
     bool public saleActive;
 
     uint8 public presaleLimit;
-    mapping(address => uint) public presalePurchasedAmount;  /* max of 3 for whitelist */
+    mapping(address => uint) public presalePurchasedAmount; 
 
     event GiveawayStart(uint256 indexed _giveawayStartTime);
     event GiveawayPaused(uint256 indexed _giveawayStopTime);
@@ -114,14 +115,6 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
         emit GiveawaysPurged(block.timestamp);
     }
 
-    // function getGiveawayList() external returns (uint256[] memory) {
-    //     return _giveawayList;
-    // }
-
-    // function getWhitelist() external returns (uint256[] memory) {
-    //     return _whitelist;
-    // }
-
     function inWhitelist(address value) public view returns (bool) {
         return _whitelist.contains(value);
     }
@@ -171,10 +164,16 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
         else { return priceToMint; }
     }
 
-    function _processMint(address recipient) internal returns (uint256) {
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+        require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
+        _tokenURIs[tokenId] = _tokenURI;
+    }
+
+    function _processMint(address recipient, string calldata tokenHash) internal returns (uint256) {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _safeMint(recipient, newItemId);
+        _setTokenURI(newItemId, string(abi.encodePacked(_baseTokenURI,tokenHash)));
         return newItemId;
     }
 
@@ -193,11 +192,12 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
         }
     }
 
-    function mintTokens(uint256 tokensAmount) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
+    function mintTokens(uint256 tokensAmount, string[] calldata tokenHashes) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
         _preValidatePurchase(tokensAmount);
         uint256[] memory tokens = new uint256[](tokensAmount);
         for (uint index = 0; index < tokensAmount; index += 1) {
-            tokens[index] = _processMint(msg.sender);
+            tokens[index] = _processMint(msg.sender, tokenHashes[index]);
+            // _setTokenURI(tokens[index], tokenURIs[index]);
         }
         if (presaleActive) {
             presalePurchasedAmount[msg.sender] += tokensAmount;

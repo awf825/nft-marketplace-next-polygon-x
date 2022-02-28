@@ -28,7 +28,7 @@ async function main() {
   // console.log("deployed biz to:", biz.address)
 
   const TV = await hre.ethers.getContractFactory("Turtleverse");
-  const tv = await TV.deploy("The Turtleverse", "NFTV", "https://gateway.pinata.cloud/ipfs/");
+  const tv = await TV.deploy("The Turtleverse", "NFTV", "https://ipfs.infura.io/ipfs/");
   await tv.deployed()
   console.log("deployed tv to:", tv.address)
 }

@@ -1,10 +1,12 @@
 import Image from 'next/image'
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
+import { create as ipfsHttpClient } from 'ipfs-http-client';
 // import MetaMaskSvg from './MetaMaskSvg';
 import {
     listAllObjectsFromS3Bucket,
-    getRequestedMetadata
+    getRequestedMetadata,
+    updateRequestedMetadata
 } from './helpers/S3.js'
 
 import AWS from 'aws-sdk'
@@ -22,6 +24,8 @@ AWS.config.update({
 
 import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
 
+const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
+
 export default function MinterPage() {
     const [signer, setSigner] = useState(null);
     const [requestedAmount, setRequestedAmount] = useState(0)
@@ -37,7 +41,7 @@ export default function MinterPage() {
             bucket: 'turtleverse.albums',
             region: 'ca-central-1'
         })
-        const allMetadata = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-six/metadata')
+        const allMetadata = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-five/metadata')
         console.log(allMetadata)
         setAllMetadata(allMetadata)
     }, [])
@@ -78,8 +82,8 @@ export default function MinterPage() {
             bucket: 'turtleverse.albums',
             region: 'ca-central-1'
         })
+
         const tokensToMintMetadata = await getRequestedMetadata(tokensToMint, s3);
-        console.log('tokensToMintMetadata: ', tokensToMintMetadata)
 
         //console.log('tokensToMint: ', tokensToMint)
 
@@ -88,33 +92,67 @@ export default function MinterPage() {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
-        // let priceToMint = await tvc.getPriceToMint();
-        let owner = await tvc.owner();
-        let balance = await provider.getBalance('0x5FbDB2315678afecb367f032d93F642f64180aa3')
-        let price = await tvc.price();
-        // let userTxCount = await provider.getTransactionCount('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
 
+        let owner = await tvc.owner();
+        let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK)
+        let price = await tvc.price();
         balance = balance.toString()
         price = price;
-        // txCount = txCount;
-        // let balance = await tvc.getBalance();
+
         console.log('price: ', price);
         console.log('balance: ', balance)
-        // console.log('userTxCount: ', userTxCount)
         console.log('owner: ', owner)
 
         // requestedAmount is the state hook for select dropdown
         const tokensAmount = ethers.BigNumber.from(requestedAmount);
         const v = price.mul(tokensAmount)
 
-        console.log('tokensAmount: ', tokensAmount)
-        console.log('value: ', v)
+        let metadataTokenPaths = [];
+        let l = tokensToMintMetadata.length;
+        while (l > 0) {
+            const md = tokensToMintMetadata[l-1]
+            try {
+                const addedImage = await client.add(
+                    new File([md.turtle.Body], `${md.metadata.name}.png`),
+                    {
+                        progress: (p) => console.log(`received: ${p}`)
+                    }
+                )
+                const imageUrl = `https://ipfs.infura.io/ipfs/${addedImage.path}`;
+                // TODO: NOT ALL METADATA IS NEEDED ON IPFS i.e PUBLIC INTERFACE
+                md.metadata.image = imageUrl;
 
-        tvc.mintTokens(tokensAmount, { value: v })
+                const addedMetadata = await client.add(
+                    new File([JSON.stringify(md.metadata)], `${md.metadata.name}.json`),
+                    {
+                        progress: (p) => console.log(`received: ${p}`)
+                    }
+                )
+                console.log('addedMetadata: ', addedMetadata);
+                console.log('addedImage: ', addedImage)
+                metadataTokenPaths.push(addedMetadata.path)
+            } catch (err) {
+                console.log(err)
+            }
+            l--;
+        }
+
+        tvc.mintTokens(tokensAmount, metadataTokenPaths, { value: v })
         .then(resp => {
+            // send updated metadata back to s3
             console.log(resp)
-            alert('tx complete! ', resp)
+            try {
+                tokensToMintMetadata.forEach(async tmd => {
+                    tmd.metadata.transactionHash = resp.hash;
+                    tmd.metadata.minted = true;
+                    //debugger
+                    await updateRequestedMetadata(tmd.metadata, s3);
+                })
+                alert('tx complete! ', resp)
+            } catch (err) {
+                alert(err.data.message)
+            }
         })
         .catch(err => {
             alert(err.data.message)
@@ -128,10 +166,8 @@ export default function MinterPage() {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
 
-        // // 200000000000000000 = .2 eth
-        // amount to pass to withdraw function
         const bn = ethers.BigNumber.from("100000000000000000")
         await tvc.withdraw('0x36Cccbf2BC5dD1BAd8C45541E23c4Df7fB9c34cd', bn)
         try {
@@ -148,7 +184,7 @@ export default function MinterPage() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
         
         try {
             await tvc.startGiveaway();
@@ -163,7 +199,7 @@ export default function MinterPage() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
         
         try {
             await tvc.pauseGiveaway();
@@ -178,7 +214,7 @@ export default function MinterPage() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
         
         try {
             const bn = ethers.BigNumber.from(3)
@@ -194,7 +230,7 @@ export default function MinterPage() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
         
         try {
             await tvc.pausePresale();
@@ -209,7 +245,7 @@ export default function MinterPage() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
         
         try {
             await tvc.startPublicSale();
@@ -224,7 +260,7 @@ export default function MinterPage() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
         
         try {
             await tvc.pausePublicSale();
@@ -241,7 +277,7 @@ export default function MinterPage() {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
-        const tvc = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
         // const address = await signer.getAddress();
         
         const giveawayAddress = e.target[0].value;

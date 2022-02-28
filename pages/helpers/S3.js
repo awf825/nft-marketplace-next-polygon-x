@@ -40,3 +40,16 @@ export const getRequestedMetadata = async (requested, s3) => {
     return output;
 }
 
+export const updateRequestedMetadata = async (requested, s3) => {
+  console.log('requested @ updateRequestedMetadata: ', requested)
+  const params = { 
+    Bucket: 'turtleverse.albums', 
+    Key: requested.key, 
+    Body: JSON.stringify(requested), 
+    ContentType: "application/json" 
+  }
+  const resp = await s3.putObject(params).promise();
+  console.log('resp @ updateRequestedMetadata: ', resp)
+}
+
+
