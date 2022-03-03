@@ -80,7 +80,7 @@ function Marketplace({ Component, pageProps }) {
         bucket: 'turtleverse.albums',
         region: 'ca-central-1'
       })
-      const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-six/metadata')
+      const g = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', `${process.env.NEXT_PUBLIC_GENERATION}/metadata`)
       setBucket(turtleBucket)
       dispatch(setGallery(g))
     }
@@ -101,7 +101,7 @@ function Marketplace({ Component, pageProps }) {
           const baseBody = JSON.parse(resp.Body.toString('utf-8'))
           baseBody.signed = bucket.getSignedUrl('getObject', {
             Bucket: 'turtleverse.albums',
-            Key: `generation-six/turtles/${baseBody.image.split('/')[6]}`,
+            Key: `${process.env.NEXT_PUBLIC_GENERATION}/turtles/${baseBody.image.split('/')[6]}`,
             Expires: 60 * 30 // time in seconds: e.g. 60 * 5 = 5 mins
           })
           dispatch(pushAppliedGallery(baseBody))

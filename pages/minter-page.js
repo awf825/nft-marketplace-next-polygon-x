@@ -24,7 +24,20 @@ AWS.config.update({
 
 import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
 
-const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
+const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
+// const projectId = "25iBhse02RRgcplofG9dZLliwit"
+const projectSecret = process.env.NEXT_PUBLIC_INFURA_PROJECT_SECRET
+// const projectSecret = "838e8e5e52a5af4719e94d695e5ea8c1"
+const auth = 'Basic '+projectId+':'+projectSecret 
+// const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
+const client = ipfsHttpClient({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+    },
+});
 
 export default function MinterPage() {
     const [signer, setSigner] = useState(null);
@@ -41,7 +54,7 @@ export default function MinterPage() {
             bucket: 'turtleverse.albums',
             region: 'ca-central-1'
         })
-        const allMetadata = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', 'generation-five/metadata')
+        const allMetadata = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', `${process.env.NEXT_PUBLIC_GENERATION}/metadata`)
         console.log(allMetadata)
         setAllMetadata(allMetadata)
     }, [])
@@ -138,6 +151,10 @@ export default function MinterPage() {
             l--;
         }
 
+        /*
+            When setting gasLimit for giveaway, no problems came. Priced transaction fails
+            I GUESS WHEN THERES NO VALUE TO MINE, ETHEREUM GETS CONFUSED?
+        */
         tvc.mintTokens(tokensAmount, metadataTokenPaths, { value: v })
         .then(resp => {
             // send updated metadata back to s3
@@ -166,10 +183,15 @@ export default function MinterPage() {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
+        let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK);
+        balance = balance.toString();
+        const gasLimit = (balance*.00000000009).toString()
+        console.log('balance: ', balance)
+
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
 
         const bn = ethers.BigNumber.from("100000000000000000")
-        await tvc.withdraw('0xB154Dc24df1404946F304FFcDA78378BdF6501AA', bn, {gasLimit:"300000000000000000"});
+        await tvc.withdraw('0xB154Dc24df1404946F304FFcDA78378BdF6501AA', bn);
         
         try {
             /* This address is 'Account 1' in my metaamask */
