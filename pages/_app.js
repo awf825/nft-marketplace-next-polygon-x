@@ -16,6 +16,7 @@ import Header from './divisions/header'
 import Divider from './divisions/divider'
 import Footer from './divisions/footer'
 import { MoralisProvider } from "react-moralis";
+import { DAppProvider } from "@usedapp/core";
 import AWS from 'aws-sdk'
 import {
   GalleryContext,
@@ -108,7 +109,7 @@ function Marketplace({ Component, pageProps }) {
         }
         appliedGalleryIdx.current = appliedGalleryIdx.current+20
       }
-      console.log('This will run every five seconds!');
+      console.log('This will run every half second!');
     }, 500);
     return () => clearInterval(interval);
   }, [galleryState])
@@ -119,6 +120,7 @@ function Marketplace({ Component, pageProps }) {
       appId={process.env.NEXT_PUBLIC_MORALIS_APP_ID}
       serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_ID}
     >
+    {/* <DAppProvider config={{}}> */}
       <GalleryContext.Provider value={[galleryState, dispatch]}> 
         <div>
           <Header/>
@@ -127,6 +129,7 @@ function Marketplace({ Component, pageProps }) {
           <Footer />
         </div>
       </GalleryContext.Provider> 
+    {/* </DAppProvider> */}
     </MoralisProvider>
   )
 }

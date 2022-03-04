@@ -3,6 +3,7 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router';
+import { useMoralis } from 'react-moralis';
 
 const Nav = styled.nav`
   width: 100%;
@@ -88,8 +89,10 @@ export default function HeaderElements() {
     const router = useRouter();
     const [open, setOpen] = useState(false)
     const [isHome, setIsHome] = useState(true)
+    const { isAuthenticated, user } = useMoralis();
 
     useEffect(() => {
+      // if (user) { console.log('moralis user: ', user.attributes.ethAddress) }
       const p = window.location.pathname;
       if (p === "/") {
         setIsHome(true)
@@ -121,6 +124,15 @@ export default function HeaderElements() {
                   <Link href="/minter-page">
                       Mint
                   </Link>
+                  {
+                    ( user && ( user.attributes.ethAddress === process.env.NEXT_PUBLIC_AIDEN ) )
+                    ? 
+                    <Link href="/admin">
+                        Admin
+                    </Link>
+                    : 
+                    null
+                  }
               </Menu> 
               :
               <Menu open={open}>
@@ -129,6 +141,15 @@ export default function HeaderElements() {
                 <Link href="/minter-page">
                     Mint
                 </Link>
+                {
+                    ( user && ( user.attributes.ethAddress === process.env.NEXT_PUBLIC_AIDEN ) )
+                    ? 
+                    <Link href="/admin">
+                        Admin
+                    </Link>
+                    : 
+                    null
+                }
               </Menu> 
             }
         </div>

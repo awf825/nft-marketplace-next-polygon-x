@@ -10,6 +10,13 @@ body {
     background-color: black; 
     color: white;
 }
+
+button {
+    padding: 8px;
+    margin: 5px 5px;
+    color: red;
+    background-color: white !important;
+}
 svg {
     height: 2em;
     width: 2em;
@@ -71,7 +78,8 @@ select {
 .founders, 
 .roadmap, 
 .gallery,
-.vis-blurb-row { color: white; margin: 0 5% 0 5%; }
+.vis-blurb-row,
+.admin { color: white; margin: 0 5% 0 5%; }
 
 .header,
 .tv-blurb, 
@@ -82,7 +90,8 @@ select {
 .tv-text-header,
 .vis-blurb-row,
 .rdmp-header,
-.gallery { display: flex; }
+.gallery,
+.admin { display: flex; }
 
 .tv-text-header, .rdmp-header {
     align-items: center;
@@ -160,7 +169,6 @@ select {
 .tv-text-blurb {
     font-size: 20px;
     word-spacing: 0.4em;
-    /* padding: 0px 55px 0px 55px; */
     width: 60%;
     text-align: justify;
 }
@@ -172,9 +180,7 @@ select {
     width: 12.5%;
 }
 .turtle-img-blurb { width: 20% !important; }
-/* next images appear as span tags */
-/* .vis-blurb { width: 60%; } */
-/* .vis-img { width: 40%; } */
+
 .vision {
     margin-top: 3%
 }
@@ -212,7 +218,6 @@ select {
 .fndr-text {
     width: 80%;
     margin-top: -1%;
-    /* position: relative; */
 }
 .fndr-img {
     width: 20%;
@@ -225,8 +230,6 @@ select {
     text-align: left;
     font-size: 20px;
     padding: 21px;
-    /* padding: 34px 0 34px 21px;
-    margin-left: 2%; */
 }
 .fndr-ul > li::before {
     content: " • ";
@@ -237,7 +240,6 @@ select {
     padding-bottom: 2%;
 }
 .fndr-discord {
-    /* font-size: 21px; */
     margin: -1.5% 0% 2% 1.7%;
     padding-left: 1%;
     width: 30%;
@@ -265,14 +267,6 @@ select {
     margin: 3%;
     font-size: 24px;
 }
-/* .rdmp-li:after {
-    content: 'l';
-    color: #fff;
-    font-size: 60px;
-    position: absolute;
-    padding: 1%;
-    margin: -1% 0 0% 0.5%;
-} */
 
 .attr-lines {
     width: 50%;
@@ -294,17 +288,9 @@ select {
     padding-left: 15.5%;
 }
 
-/* .gallery {
-    margin: 5% 0 5% 0 !important;
-} */
-
 .filter-selects-wrapper {
     width: 25%;
 }
-/* 
-.iscroll-wrapper {
-    width: 75%;
-} */
 
 .iscroll-wrapper {
     width: 100%;
@@ -338,6 +324,26 @@ select {
 
 .minter form {
     color: black;
+}
+
+.admin > * {
+    margin: 13px 13px;
+}
+.admin-btns {
+    display: flex;
+    flex-direction: column;
+}
+.admin-lists > form {
+    display: flex;
+    flex-direction: column;
+}
+
+form > input {
+    padding: 5px;
+    margin: 8px auto;
+    color: pink;
+    width: 500%;
+
 }
 
 @media only screen and (max-width: 1220px) {

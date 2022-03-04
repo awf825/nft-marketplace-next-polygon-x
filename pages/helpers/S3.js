@@ -22,20 +22,51 @@ export const listAllObjectsFromS3Bucket = async (s3, bucket, prefix) => {
     return elements;
 }
 
-export const getRequestedMetadata = async (requested, s3) => {
+export const getRequestedGiveawayMetadata = async (user, s3) => {
+  const wallet = user.attributes.ethAddress;
+  const giveawaysJSON = await s3.getObject({ Bucket: 'turtleverse.albums', Key: 'generation-five/giveawayStructure.json'}).promise()
+  const giveaways = JSON.parse(giveawaysJSON.Body.toString('utf-8'))
+  let output = [];
+  if (giveaways[wallet] !== undefined) {
+    const giveawayBatch = giveaways[wallet];
+    const arr = giveawayBatch.split(',');
+    while (arr.length > 0) {
+      const resp = await s3.getObject({ Bucket: 'turtleverse.albums', Key: `generation-five/metadata/${arr[0]}`}).promise()
+      const metadata = JSON.parse(resp.Body.toString('utf-8'))
+      metadata.key = `generation-five/metadata/${arr[0]}`;
+      const png = await s3.getObject({ Bucket: 'turtleverse.albums', Key: metadata.image.split('turtleverse.albums/')[1]}).promise()
+      output.push({
+          metadata: metadata,
+          turtle: png
+      })
+      arr.shift();
+    }
+  } else {
+    alert('no tokens reserved for this address')
+  }
+  return output
+}
+
+export const getRequestedMetadata = async (requested, s3, n) => {
     let output = [];
-    for (let i=0; i < requested.length; i++) {
-        const params = { Bucket: 'turtleverse.albums', Key: requested[i].Key }
-        const resp = await s3.getObject(params).promise();
-        //console.log('raw resp @ getRequestedMetadata: ', resp)
-        const metadata = JSON.parse(resp.Body.toString('utf-8'))
+    let i = 0
+    while (n > 0) {
+      const params = { Bucket: 'turtleverse.albums', Key: requested[i].Key }
+      const resp = await s3.getObject(params).promise();
+      const metadata = JSON.parse(resp.Body.toString('utf-8'))
+      console.log('metadata.minted @ getdata: ', metadata.minted)
+      if (metadata.minted === false) {
         metadata.key = requested[i].Key
         const png = await s3.getObject({ Bucket: 'turtleverse.albums', Key: metadata.image.split('turtleverse.albums/')[1]}).promise()
-
         output.push({
             metadata: metadata,
             turtle: png
         })
+        n--;
+      } else {
+        console.log('turtle already minted!')
+      }
+      i++;
     }
     return output;
 }
