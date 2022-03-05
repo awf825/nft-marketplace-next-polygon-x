@@ -49,7 +49,6 @@ export default function MinterPage() {
     const { isAuthenticated, user } = useMoralis();
 
     useEffect(async () => {
-        //authenticate();
         const turtleBucket = new AWS.S3({
             accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
             secretAccessKey: galleryState.accessParams.Credentials.SecretAccessKey,
@@ -73,6 +72,7 @@ export default function MinterPage() {
                 https://docs.ethers.io/v5/api/contract/contract/
                 https://docs.ethers.io/v5/api/utils/bignumber/
             */
+           
             const web3Modal = new Web3Modal();
             const connection = await web3Modal.connect();
             const provider = new ethers.providers.Web3Provider(connection);

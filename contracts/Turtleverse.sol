@@ -2,24 +2,24 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
+contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
+    using Strings for uint256;
+    using Counters for Counters.Counter;
+    using EnumerableSet for EnumerableSet.AddressSet;
+
     string private _baseTokenURI;
     mapping (uint256 => string) private _tokenURIs;
 
-    using Strings for uint256;
-    using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-
-    using EnumerableSet for EnumerableSet.AddressSet;
 
     EnumerableSet.AddressSet private _giveawayList;
     event AddedToGiveawayList(address indexed _address);
-    event GiveawaysPurged(uint256 indexed _giveawayPurgedTime);
 
     EnumerableSet.AddressSet private _whitelist;
     event AddedToWhitelist(address indexed _address);
@@ -32,9 +32,13 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
     bool public giveawayActive;
     bool public presaleActive;
     bool public saleActive;
+    bool public royaltiesActive;
 
     uint8 public presaleLimit;
     mapping(address => uint) public presalePurchasedAmount; 
+
+    uint8 public saleLimit;
+    mapping(address => uint) public salePurchasedAmount;
 
     event GiveawayStart(uint256 indexed _giveawayStartTime);
     event GiveawayPaused(uint256 indexed _giveawayStopTime);
@@ -43,47 +47,22 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
     event SaleStart(uint256 indexed _saleStartTime);
     event SalePaused(uint256 indexed _saleStopTime);
 
-    modifier whenGiveawayActive() {
-        require(giveawayActive, "Giveaway not active");
-        _;
-    }
-
-    modifier whenGiveawayPaused() {
-        require(!giveawayActive, "Giveaway not paused");
-        _;
-    }
-
-    modifier whenPresaleActive() {
-        require(presaleActive, "Presale is not active");
-        _;
-    }
-
-    modifier whenPresalePaused() {
-        require(!presaleActive, "Presale is not paused");
-        _;
-    }
-
-    modifier whenSaleActive() {
-        require(saleActive, "Sale is not active");
-        _;
-    }
-
-    modifier whenSalePaused() {
-        require(!saleActive, "Sale is not paused");
-        _;
-    }
-
-    modifier whenAnySaleActive() {
-        require(giveawayActive || presaleActive || saleActive, "There are no sales at this terminated");
-        _;
-    }
+    modifier whenGiveawayActive() { require(giveawayActive, "Giveaway not active"); _; }
+    modifier whenGiveawayPaused() { require(!giveawayActive, "Giveaway not paused"); _; }
+    modifier whenPresaleActive() { require(presaleActive, "Presale is not active"); _; }
+    modifier whenPresalePaused() { require(!presaleActive, "Presale is not paused"); _; }
+    modifier whenSaleActive() { require(saleActive, "Sale is not active"); _; }
+    modifier whenSalePaused() { require(!saleActive, "Sale is not paused"); _; }
+    modifier whenAnySaleActive() { require(giveawayActive || presaleActive || saleActive, "There are no sales at this terminated"); _; }
 
     constructor(
         string memory name_,
         string memory symbol_,
-        string memory baseURI_
+        string memory baseURI_,
+        bool royaltiesActive_
     ) ERC721(name_, symbol_) {
         _baseTokenURI = baseURI_;
+        royaltiesActive = royaltiesActive_;
     }
 
     function addToWhitelist(address[] memory addresses) external onlyOwner {
@@ -112,19 +91,9 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
         }
     }
 
-    function purgeGiveawayList() external onlyOwner {
-        delete _giveawayList;
-        emit GiveawaysPurged(block.timestamp);
-    }
+    function inWhitelist(address value) public view returns (bool) { return _whitelist.contains(value); }
+    function inGiveawayList(address value) public view returns (bool) { return _giveawayList.contains(value); }
 
-    function inWhitelist(address value) public view returns (bool) {
-        return _whitelist.contains(value);
-    }
-
-    function inGiveawayList(address value) public view returns (bool) {
-        return _giveawayList.contains(value);
-    }
-    /* giveaway */
     function startGiveaway() external onlyOwner whenGiveawayPaused whenPresalePaused whenSalePaused {
         giveawayActive = true;
         emit GiveawayStart(block.timestamp);
@@ -150,7 +119,8 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
 
     /* real sale */ 
 
-    function startPublicSale() external onlyOwner whenGiveawayPaused whenPresalePaused whenSalePaused {
+    function startPublicSale(uint8 saleLimit_) external onlyOwner whenGiveawayPaused whenPresalePaused whenSalePaused {
+        saleLimit = saleLimit_;
         saleActive = true;
         emit SaleStart(block.timestamp);
     }
@@ -177,15 +147,9 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
         string memory _tokenURI = _tokenURIs[tokenId];
         string memory base = _baseTokenURI;
         
-        // If there is no base URI, return the token URI.
-        if (bytes(base).length == 0) {
-            return _tokenURI;
-        }
-        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-        if (bytes(_tokenURI).length > 0) {
-            return string(abi.encodePacked(base, _tokenURI));
-        }
-        // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
+        if (bytes(base).length == 0) { return _tokenURI; }
+        if (bytes(_tokenURI).length > 0) { return string(abi.encodePacked(base, _tokenURI)); }
+
         return string(abi.encodePacked(base, tokenId.toString()));
     }
 
@@ -202,15 +166,12 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         mintTurtle(recipient, newItemId, tokenHash);
-        // _safeMint(recipient, newItemId);
-        // _setTokenURI(newItemId, string(abi.encodePacked(_baseTokenURI,tokenHash)));
         return newItemId;
     }
 
     function _preValidatePurchase(uint256 tokensAmount) internal view {
         require(msg.sender != address(0));
         require(tokensAmount > 0, "Must mint at least one token");
-        //require(totalSupply() + tokensAmount <= publicLimit(), "DA: Minting would exceed max supply");
         if (giveawayActive) {
             require(inGiveawayList(msg.sender), "Address isn't whitelisted");
         } else if (presaleActive) {
@@ -218,6 +179,7 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
             require(tokensAmount + presalePurchasedAmount[msg.sender] <= presaleLimit, "Presale, limited amount of tokens");
             require(presalePriceToMint * tokensAmount <= msg.value, "Presale, insufficient funds");
         } else {
+            require(tokensAmount + salePurchasedAmount[msg.sender] <= saleLimit, "Cannot mint more than 25 tokens");
             require(priceToMint * tokensAmount <= msg.value, "Insufficient funds");
         }
     }
@@ -225,18 +187,29 @@ contract Turtleverse is ERC721, Ownable, ReentrancyGuard {
     function mintTokens(uint256 tokensAmount, string[] calldata tokenHashes) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
         _preValidatePurchase(tokensAmount);
         uint256[] memory tokens = new uint256[](tokensAmount);
-        for (uint index = 0; index < tokensAmount; index += 1) {
-            tokens[index] = _processMint(msg.sender, tokenHashes[index]);
-            // _setTokenURI(tokens[index], tokenURIs[index]);
-        }
-        if (presaleActive) {
-            presalePurchasedAmount[msg.sender] += tokensAmount;
-        }
+        for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender, tokenHashes[index]); }\
+
+        if (presaleActive) { presalePurchasedAmount[msg.sender] += tokensAmount; } 
+        else if (saleActive) { salePurchasedAmount[msg.sender] += tokensAmount; }
+
         return tokens;
     }
 
     function withdraw(address payable wallet, uint256 amount) external onlyOwner {
-        require(amount <= address(this).balance);
-        wallet.transfer(address(this).balance);
+        require(amount <= address(this).balance, "Balance is less than .5 eth");
+        wallet.transfer(amount);
     }
+
+    function tglRoyalties() external onlyOwner { royaltiesActive = !royaltiesActive; }
+    function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
+        external
+        view
+        override
+        returns (address receiver, uint256 royaltyAmount)
+    {
+        require(_exists(_tokenId), "Nonexistent token for royalty payment");
+        require(royaltiesActive == true, "Royalties dissabled");
+
+        return (address(this), (_salePrice * 1000) / 10000);
+    } 
 }

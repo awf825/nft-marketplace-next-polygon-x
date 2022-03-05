@@ -6,6 +6,7 @@ import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json
 export default function Admin() {
     async function withdraw() {
         //console.log('withdraw')
+        // 500000000000000000 = .5 eth
         const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
@@ -18,12 +19,10 @@ export default function Admin() {
 
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
 
-        //"50000000000000000"
-        const bn = ethers.BigNumber.from("50000000000000000")
-        await tvc.withdraw('0xB154Dc24df1404946F304FFcDA78378BdF6501AA', bn, { gasLimit: "21000" });
+        const bn = ethers.BigNumber.from("500000000000000000")
+        await tvc.withdraw('0xB154Dc24df1404946F304FFcDA78378BdF6501AA', bn);
         
         try {
-            /* This address is 'Account 1' in my metaamask */
             alert('ether withdrawn')
         } catch(error) {
             console.error(error);
@@ -100,7 +99,8 @@ export default function Admin() {
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
         
         try {
-            await tvc.startPublicSale();
+            const bn = ethers.BigNumber.from(25)
+            await tvc.startPublicSale(bn);
             alert('PUBLIC SALE STARTED!')
         } catch(error) {
             alert('something is wrong: ', error);
@@ -149,7 +149,7 @@ export default function Admin() {
         // const address = await signer.getAddress();
         
         const giveawayAddresses = e.target[0].value.split(',');
-        const whitelistAddresses = e.target[1].value;
+        const whitelistAddresses = e.target[1].value.split(',');
 
         try {
             if (giveawayAddresses.length > 0) {

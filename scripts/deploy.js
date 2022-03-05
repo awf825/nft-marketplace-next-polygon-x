@@ -15,20 +15,8 @@ const wallet = fs.readFileSync(".wallet").toString();
   npx hardhat run scripts/deploy.js --network localhost
 */
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
-
-  // const Biz = await hre.ethers.getContractFactory("Biz");
-  // const biz = await Biz.deploy(wallet);
-  // await biz.deployed()
-  // console.log("deployed biz to:", biz.address)
-
   const TV = await hre.ethers.getContractFactory("Turtleverse");
-  const tv = await TV.deploy("The Turtleverse", "NFTV", "https://ipfs.infura.io/ipfs/");
+  const tv = await TV.deploy("The Turtleverse", "NFTV", "https://ipfs.infura.io/ipfs/", true);
   await tv.deployed()
   console.log("deployed tv to:", tv.address)
 }
