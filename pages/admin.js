@@ -19,8 +19,8 @@ export default function Admin() {
 
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
 
-        const bn = ethers.BigNumber.from("500000000000000000")
-        await tvc.withdraw('0xB154Dc24df1404946F304FFcDA78378BdF6501AA', bn);
+        const bn = ethers.BigNumber.from(process.env.NEXT_PUBLIC_WITHDRAWAL_AMOUNT)
+        await tvc.withdraw(process.env.NEXT_PUBLIC_AIDEN, bn);
         
         try {
             alert('ether withdrawn')
