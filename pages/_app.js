@@ -30,7 +30,7 @@ import {
 
 import {
   listAllObjectsFromS3Bucket
-} from "./helpers/S3.js"
+} from "../helpers/S3.js"
 
 AWS.config.update({
   accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,

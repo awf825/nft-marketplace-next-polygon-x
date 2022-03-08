@@ -12,7 +12,7 @@ import {
     getRequestedMetadata,
     updateRequestedMetadata,
     getRequestedGiveawayMetadata
-} from './helpers/S3.js'
+} from '../helpers/S3.js'
 
 import AWS, { Connect } from 'aws-sdk'
 import { useMoralis } from 'react-moralis';
