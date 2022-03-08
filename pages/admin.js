@@ -165,8 +165,8 @@ export default function Admin() {
         //debugger
     }
     return (
-        <div class="admin">
-            <div class="admin-btns">
+        <div className="admin">
+            <div className="admin-btns">
                 <button type="submit" onClick={() => withdraw()}>WITHDRAW</button>
                 <button type="submit" onClick={() => startGiveaway()}>START GIVEAWAY</button>
                 <button type="submit" onClick={() => stopGiveaway()}>STOP GIVEAWAY</button>
@@ -176,7 +176,7 @@ export default function Admin() {
                 <button type="submit" onClick={() => stopPublicSale()}>STOP PUBLIC SALE</button>
                 {/* <button type="submit" onClick={() => purgeGiveawayList()}>PURGE GIVEAWAY LIST</button> */}
             </div>
-            <div class="admin-lists">
+            <div className="admin-lists">
                 <form onSubmit={(e) => addToLists(e)}>
                     <input id="give" type="text" placeholder="giveaway address"/>
                     <input id="white" type="text" placeholder="whitelist address"/>
