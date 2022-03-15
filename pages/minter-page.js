@@ -11,7 +11,8 @@ import {
     listAllObjectsFromS3Bucket,
     getRequestedMetadata,
     updateRequestedMetadata,
-    getRequestedGiveawayMetadata
+    getRequestedGiveawayMetadata,
+    getAbiFromBucket
 } from '../helpers/S3.js'
 
 import AWS, { Connect } from 'aws-sdk'
@@ -27,8 +28,6 @@ AWS.config.update({
     secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
 
-import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
-
 const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
 const projectSecret = process.env.NEXT_PUBLIC_INFURA_PROJECT_SECRET
 const auth = 'Basic '+projectId+':'+projectSecret 
@@ -43,8 +42,9 @@ const client = ipfsHttpClient({
 });
 
 export default function MinterPage() {
-    const [requestedAmount, setRequestedAmount] = useState(0)
-    const [allMetadata, setAllMetadata] = useState([])
+    const [requestedAmount, setRequestedAmount] = useState(0);
+    const [abi, setAbi] = useState(null);
+    const [allMetadata, setAllMetadata] = useState([]);
     const [galleryState, dispatch] = useContext(GalleryContext);
     const { isAuthenticated, user } = useMoralis();
 
@@ -55,15 +55,18 @@ export default function MinterPage() {
             sessionToken: galleryState.accessParams.Credentials.SessionToken,
             bucket: 'turtleverse.albums',
             region: 'ca-central-1'
-        })
-        const allMetadata = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', `${process.env.NEXT_PUBLIC_GENERATION}/metadata`)
-        console.log(allMetadata)
-        setAllMetadata(allMetadata)
+        });
+        const allMetadata = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', `${process.env.NEXT_PUBLIC_GENERATION}/metadata`);
+        /* uploaded hardhat produced abi to s3 to consume here */
+        const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
+
+        setAllMetadata(allMetadata);
+        setAbi(artifact.abi);
     }, [])
 
     async function mint() {
-        if (requestedAmount === 0) { alert('must select tokens'); return;}
-        if (!isAuthenticated) { alert('must enable metamask to mint tokens, please try again'); return;}
+        if (requestedAmount === 0) { alert('must select tokens'); return; }
+        if (!isAuthenticated) { alert('must enable metamask to mint tokens, please try again'); return; }
         else 
         {
             /*
@@ -77,7 +80,7 @@ export default function MinterPage() {
             const connection = await web3Modal.connect();
             const provider = new ethers.providers.Web3Provider(connection);
             const signer = provider.getSigner();
-            const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
+            const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
             let owner = await tvc.owner();
             let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK)
@@ -104,12 +107,12 @@ export default function MinterPage() {
             else { tokensToMintMetadata = await getRequestedMetadata(metadata, s3, requestedAmount); }
 
             console.log('price: ', price);
-            console.log('balance: ', balance)
-            console.log('owner: ', owner)
+            console.log('balance: ', balance);
+            console.log('owner: ', owner);
     
             //requestedAmount is the state hook for select dropdown
             const tokensAmount = ethers.BigNumber.from(requestedAmount);
-            const v = price.mul(tokensAmount)
+            const v = price.mul(tokensAmount);
     
             let metadataTokenPaths = [];
             let l = tokensToMintMetadata.length;
@@ -164,10 +167,7 @@ export default function MinterPage() {
         }
     }
 
-    function onSelectAmount(e) {
-        console.log('event: ', e.target.value)
-        setRequestedAmount(e.target.value)
-    }
+    function onSelectAmount(e) { setRequestedAmount(e.target.value) }
 
     return (
         <div className="minter">

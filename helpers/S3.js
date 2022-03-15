@@ -83,4 +83,10 @@ export const updateRequestedMetadata = async (requested, s3) => {
   console.log('resp @ updateRequestedMetadata: ', resp)
 }
 
+export const getAbiFromBucket = async (s3, bucket) => {
+  const resp = await s3.getObject({ Bucket: bucket, Key: 'abi/artifacts/contracts/Turtleverse.sol/Turtleverse.json' }).promise()
+  const payload = JSON.parse(resp.Body.toString('utf-8'))
+  return payload
+}
+
 

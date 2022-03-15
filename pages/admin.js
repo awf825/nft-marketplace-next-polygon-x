@@ -1,11 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { getAbiFromBucket } from '../helpers/S3.js';
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
-import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
+import {
+    GalleryContext,
+} from "../contexts/GalleryContext.js";
+
+AWS.config.update({
+    accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
+})
 
 export default function Admin() {
+    const [galleryState, dispatch] = useContext(GalleryContext);
+    const [abi, setAbi] = useState(null);
+    useEffect(async () => {
+        const turtleBucket = new AWS.S3({
+            accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
+            secretAccessKey: galleryState.accessParams.Credentials.SecretAccessKey,
+            sessionToken: galleryState.accessParams.Credentials.SessionToken,
+            bucket: 'turtleverse.albums',
+            region: 'ca-central-1'
+        });
+        /* uploaded hardhat produced abi to s3 to consume here */
+        const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
+
+        setAbi(artifact.abi);
+    }, [])
+
     async function withdraw() {
-        //console.log('withdraw')
         // 500000000000000000 = .5 eth
         const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
@@ -17,7 +40,7 @@ export default function Admin() {
         const gasLimit = (balance*.00000000009).toString()
         console.log('balance: ', balance)
 
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
 
         const bn = ethers.BigNumber.from(process.env.NEXT_PUBLIC_WITHDRAWAL_AMOUNT)
         await tvc.withdraw(process.env.NEXT_PUBLIC_AIDEN, bn);
@@ -35,7 +58,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
 
         try {
             await tvc.startGiveaway();
@@ -50,7 +73,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
         try {
             await tvc.pauseGiveaway();
@@ -65,7 +88,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
         try {
             const bn = ethers.BigNumber.from(3)
@@ -81,7 +104,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
         try {
             await tvc.pausePresale();
@@ -96,7 +119,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
         try {
             const bn = ethers.BigNumber.from(25)
@@ -112,7 +135,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
         try {
             await tvc.pausePublicSale();
@@ -122,34 +145,19 @@ export default function Admin() {
         }
     }
 
-    // async function purgeGiveawayList() {
-    //     const web3Modal = new Web3Modal();
-    //     const connection = await web3Modal.connect();
-    //     const provider = new ethers.providers.Web3Provider(connection);
-    //     const signer = provider.getSigner();
-    //     const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
-        
-    //     try {
-    //         await tvc.purgeGiveawayList();
-    //         alert('GIVEAWAYS PURGED!')
-    //     } catch(error) {
-    //         alert('something is wrong: ', error);
-    //     }
-
-    // }
-    
     async function addToLists(e) {
         e.preventDefault();
         const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, Turtleverse.abi, signer)
-        // const address = await signer.getAddress();
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
-        const giveawayAddresses = e.target[0].value.split(',');
-        const whitelistAddresses = e.target[1].value.split(',');
+        const glv = e.target[0].value;
+        const wlv = e.target[1].value;
+
+        const giveawayAddresses = (glv.length > 0) ? glv.split(',') : [];
+        const whitelistAddresses = (wlv.length > 0) ? wlv.split(',') : [];
 
         try {
             if (giveawayAddresses.length > 0) {
@@ -162,7 +170,6 @@ export default function Admin() {
             console.error(error)
             alert("something went wrong trying to add to whitelist")
         }
-        //debugger
     }
     return (
         <div className="admin">
@@ -174,7 +181,6 @@ export default function Admin() {
                 <button type="submit" onClick={() => stopPreSale()}>STOP PRESALE</button>
                 <button type="submit" onClick={() => startPublicSale()}>START PUBLIC SALE</button>
                 <button type="submit" onClick={() => stopPublicSale()}>STOP PUBLIC SALE</button>
-                {/* <button type="submit" onClick={() => purgeGiveawayList()}>PURGE GIVEAWAY LIST</button> */}
             </div>
             <div className="admin-lists">
                 <form onSubmit={(e) => addToLists(e)}>

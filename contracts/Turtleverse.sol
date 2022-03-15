@@ -187,7 +187,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
     function mintTokens(uint256 tokensAmount, string[] calldata tokenHashes) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
         _preValidatePurchase(tokensAmount);
         uint256[] memory tokens = new uint256[](tokensAmount);
-        for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender, tokenHashes[index]); }\
+        for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender, tokenHashes[index]); }
 
         if (presaleActive) { presalePurchasedAmount[msg.sender] += tokensAmount; } 
         else if (saleActive) { salePurchasedAmount[msg.sender] += tokensAmount; }
@@ -201,6 +201,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
     }
 
     function tglRoyalties() external onlyOwner { royaltiesActive = !royaltiesActive; }
+    
     function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
         external
         view

@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 /.archive
+/contracts
+/artifacts
 
 # dependencies
 /node_modules
@@ -46,6 +48,3 @@ cache
 
 .secret
 .wallet
-
-/contracts
-/artifacts

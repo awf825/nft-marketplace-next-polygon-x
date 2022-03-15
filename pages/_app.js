@@ -120,7 +120,6 @@ function Marketplace({ Component, pageProps }) {
       appId={process.env.NEXT_PUBLIC_MORALIS_APP_ID}
       serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_ID}
     >
-    {/* <DAppProvider config={{}}> */}
       <GalleryContext.Provider value={[galleryState, dispatch]}> 
         <div>
           <Header/>
@@ -129,7 +128,6 @@ function Marketplace({ Component, pageProps }) {
           <Footer />
         </div>
       </GalleryContext.Provider> 
-    {/* </DAppProvider> */}
     </MoralisProvider>
   )
 }
