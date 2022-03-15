@@ -6,6 +6,8 @@ import {
     GalleryContext,
 } from "../contexts/GalleryContext.js";
 
+import AWS, { Connect } from 'aws-sdk';
+
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
