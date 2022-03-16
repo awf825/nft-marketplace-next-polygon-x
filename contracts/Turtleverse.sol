@@ -136,37 +136,15 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         else { return priceToMint; }
     }
 
-    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
-        require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
-        _tokenURIs[tokenId] = _tokenURI;
-    }
+    function mintTokens(uint256 tokensAmount, string[] calldata tokenHashes) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
+        _preValidatePurchase(tokensAmount);
+        uint256[] memory tokens = new uint256[](tokensAmount);
+        for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender, tokenHashes[index]); }
 
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        if (presaleActive) { presalePurchasedAmount[msg.sender] += tokensAmount; } 
+        else if (saleActive) { salePurchasedAmount[msg.sender] += tokensAmount; }
 
-        string memory _tokenURI = _tokenURIs[tokenId];
-        string memory base = _baseTokenURI;
-        
-        if (bytes(base).length == 0) { return _tokenURI; }
-        if (bytes(_tokenURI).length > 0) { return string(abi.encodePacked(base, _tokenURI)); }
-
-        return string(abi.encodePacked(base, tokenId.toString()));
-    }
-
-    function mintTurtle(
-        address _to,
-        uint256 _tokenId,
-        string memory tokenURI_
-    ) internal {
-        _safeMint(_to, _tokenId);
-        _setTokenURI(_tokenId, tokenURI_);
-    }
-
-    function _processMint(address recipient, string memory tokenHash) internal returns (uint256) {
-        _tokenIds.increment();
-        uint256 newItemId = _tokenIds.current();
-        mintTurtle(recipient, newItemId, tokenHash);
-        return newItemId;
+        return tokens;
     }
 
     function _preValidatePurchase(uint256 tokensAmount) internal view {
@@ -184,15 +162,37 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         }
     }
 
-    function mintTokens(uint256 tokensAmount, string[] calldata tokenHashes) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
-        _preValidatePurchase(tokensAmount);
-        uint256[] memory tokens = new uint256[](tokensAmount);
-        for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender, tokenHashes[index]); }
+    function _processMint(address recipient, string memory tokenHash) internal returns (uint256) {
+        _tokenIds.increment();
+        uint256 newItemId = _tokenIds.current();
+        mintTurtle(recipient, newItemId, tokenHash);
+        return newItemId;
+    }
 
-        if (presaleActive) { presalePurchasedAmount[msg.sender] += tokensAmount; } 
-        else if (saleActive) { salePurchasedAmount[msg.sender] += tokensAmount; }
+    function mintTurtle(
+        address _to,
+        uint256 _tokenId,
+        string memory tokenURI_
+    ) internal {
+        _safeMint(_to, _tokenId);
+        _setTokenURI(_tokenId, tokenURI_);
+    }
 
-        return tokens;
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+        require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
+        _tokenURIs[tokenId] = _tokenURI;
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        string memory _tokenURI = _tokenURIs[tokenId];
+        string memory base = _baseTokenURI;
+        
+        if (bytes(base).length == 0) { return _tokenURI; }
+        if (bytes(_tokenURI).length > 0) { return string(abi.encodePacked(base, _tokenURI)); }
+
+        return string(abi.encodePacked(base, tokenId.toString()));
     }
 
     function withdraw(address payable wallet, uint256 amount) external onlyOwner {
