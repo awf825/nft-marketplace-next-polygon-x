@@ -1,6 +1,6 @@
 import { useMoralis } from 'react-moralis';
 
-export function AuthGuard({ children }) {
+export default function AuthGuard({ children }) {
   const { isAuthenticated, user } = useMoralis();
 
   // if moralis initialized with a valid user show protected page
@@ -12,5 +12,5 @@ export function AuthGuard({ children }) {
       <><h1 style={{textAlign: 'center', fontSize: '180px'}}>HEY, DICKHEAD!</h1></>
     )
   }
-  
+
 }
