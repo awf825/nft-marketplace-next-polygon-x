@@ -28,7 +28,7 @@ import {
   pushAppliedGallery
 } from "../contexts/GalleryContext.js";
 
-import { AuthGuard } from './components/AuthGuard';
+import AuthGuard from './components/AuthGuard';
 
 import {
   listAllObjectsFromS3Bucket
