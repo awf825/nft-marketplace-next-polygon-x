@@ -28,6 +28,8 @@ import {
   pushAppliedGallery
 } from "../contexts/GalleryContext.js";
 
+import { AuthGuard } from './components/AuthGuard';
+
 import {
   listAllObjectsFromS3Bucket
 } from "../helpers/S3.js"
@@ -123,7 +125,17 @@ function Marketplace({ Component, pageProps }) {
       <GalleryContext.Provider value={[galleryState, dispatch]}> 
         <div>
           <Header/>
-          <Component {...pageProps} />
+          {
+            Component.requireAuth ? (
+              <AuthGuard>
+                <Component {...pageProps} />
+              </AuthGuard>
+            ) : (
+              // public page
+              <Component {...pageProps} />
+            )
+          }
+          {/* <Component {...pageProps} /> */}
           <Divider />
           <Footer />
         </div>

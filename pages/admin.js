@@ -195,3 +195,5 @@ export default function Admin() {
         </div>
     )
 }
+
+Admin.requireAuth = true
