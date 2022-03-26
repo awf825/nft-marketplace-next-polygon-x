@@ -86,7 +86,6 @@ export const galleryReducer = (state, action) => {
         appliedGallery: [...state.appliedGallery, action.payload]
     }
     case "SET_FILTERED_APPLIED_GALLERY":
-    console.log('SET_FILTERED_APPLIED_GALLERY: ', action.payload)
     return {
         ...state,
         filteredAppliedGallery: action.payload
