@@ -16,9 +16,24 @@ const wallet = fs.readFileSync(".wallet").toString();
 */
 async function main() {
   const TV = await hre.ethers.getContractFactory("Turtleverse");
-  const tv = await TV.deploy("The Turtleverse", "NFTV", "https://ipfs.infura.io/ipfs/", true);
+  const maxSupply =  hre.ethers.BigNumber.from("10000");
+  const maxWithdrawal = hre.ethers.BigNumber.from("100000000000000000");
+  const presaleLimit = hre.ethers.BigNumber.from(3);
+  const saleLimit = hre.ethers.BigNumber.from(25);
+  const tv = await TV.deploy(
+    "The Turtleverse",
+    "NFTV", 
+    "https://ipfs.infura.io/ipfs/", 
+    maxSupply,
+    maxWithdrawal,
+    presaleLimit,
+    saleLimit,
+    wallet
+  );
   await tv.deployed()
   console.log("deployed tv to:", tv.address)
+  let owner = await tv.owner();
+  console.log("tv.owner: ", owner)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

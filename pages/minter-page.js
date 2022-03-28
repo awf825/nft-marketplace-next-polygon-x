@@ -1,9 +1,7 @@
-import Image from 'next/image'
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 
-import { DAppProvider } from "@usedapp/core"; 
 import ConnectButton from "./components/ConnectButton";
 
 // import MetaMaskSvg from './MetaMaskSvg';
@@ -22,6 +20,9 @@ import { useEffect, useState, useContext } from 'react'
 import {
     GalleryContext,
 } from "../contexts/GalleryContext.js";
+
+// use for local development. setAbi to Turtleverse.abi. Change env var to reflect local contract
+import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
 
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
@@ -62,6 +63,7 @@ export default function MinterPage() {
 
         setAllMetadata(allMetadata);
         setAbi(artifact.abi);
+        // setAbi(Turtleverse.abi);
     }, [])
 
     async function mint() {
@@ -75,17 +77,17 @@ export default function MinterPage() {
                 https://docs.ethers.io/v5/api/contract/contract/
                 https://docs.ethers.io/v5/api/utils/bignumber/
             */
-           
             const web3Modal = new Web3Modal();
             const connection = await web3Modal.connect();
             const provider = new ethers.providers.Web3Provider(connection);
             const signer = provider.getSigner();
-            const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+            const addr = process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK;
+            const tvc = new ethers.Contract(addr, abi, signer)
         
             let owner = await tvc.owner();
             let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK)
             let price = await tvc.price();
-            balance = balance.toString()
+            balance = balance.toString();
             price = price;
 
             // if price is 0, we know we're in the giveaway, so we have to call specific function to grab special 
