@@ -8,6 +8,9 @@ import {
 
 import AWS, { Connect } from 'aws-sdk';
 
+// use for local development. setAbi to Turtleverse.abi. Change env var to reflect local contract
+import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
+
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
@@ -15,7 +18,7 @@ AWS.config.update({
 
 export default function Admin() {
     const [galleryState, dispatch] = useContext(GalleryContext);
-    const [abi, setAbi] = useState(null);
+    const [abi, setAbi] = useState([]);
     useEffect(async () => {
         const turtleBucket = new AWS.S3({
             accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
@@ -26,12 +29,11 @@ export default function Admin() {
         });
         /* uploaded hardhat produced abi to s3 to consume here */
         const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
-
         setAbi(artifact.abi);
+        // setAbi(Turtleverse.abi);
     }, [])
 
     async function withdraw() {
-        // 500000000000000000 = .5 eth
         const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
@@ -39,20 +41,13 @@ export default function Admin() {
 
         let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK);
         balance = balance.toString();
-        const gasLimit = (balance*.00000000009).toString()
-        console.log('balance: ', balance)
 
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
 
-        const bn = ethers.BigNumber.from(process.env.NEXT_PUBLIC_WITHDRAWAL_AMOUNT)
-        await tvc.withdraw(process.env.NEXT_PUBLIC_AIDEN, bn);
-        
         try {
-            alert('ether withdrawn')
-        } catch(error) {
-            console.error(error);
-            alert('could not withdraw: ', error)
-        }
+            await tvc.withdraw();
+            alert('ether withdrawn, new balance: ', balance)
+        } catch(error) { alert(error.message); }
     }
 
     async function startGiveaway() {
@@ -65,9 +60,7 @@ export default function Admin() {
         try {
             await tvc.startGiveaway();
             alert('GIVEAWAY STARTED!')
-        } catch(error) {
-            alert('something is wrong: ', error);
-        }
+        } catch(error) { alert(error.message); }
     }
 
     async function stopGiveaway() {
@@ -80,9 +73,7 @@ export default function Admin() {
         try {
             await tvc.pauseGiveaway();
             alert('GIVEAWAY PAUSED!')
-        } catch(error) {
-            alert('something is wrong: ', error);
-        }
+        } catch(error) { alert(error.data.message); }
     }
 
     async function startPreSale() {
@@ -93,12 +84,10 @@ export default function Admin() {
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
         try {
-            const bn = ethers.BigNumber.from(3)
-            await tvc.startPresale(bn);
+            // const bn = ethers.BigNumber.from(3)
+            await tvc.startPresale();
             alert('PRESALE STARTED!')
-        } catch(error) {
-            alert('something is wrong: ', error);
-        }
+        } catch(error) { alert(error.data.message); }
     }
 
     async function stopPreSale() {
@@ -111,9 +100,7 @@ export default function Admin() {
         try {
             await tvc.pausePresale();
             alert('PRESALE PAUSED!')
-        } catch(error) {
-            alert('something is wrong: ', error);
-        }
+        } catch(error) { alert(error.data.message); }
     }
 
     async function startPublicSale() {
@@ -124,12 +111,10 @@ export default function Admin() {
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
         try {
-            const bn = ethers.BigNumber.from(25)
-            await tvc.startPublicSale(bn);
+            // const bn = ethers.BigNumber.from(25)
+            await tvc.startPublicSale();
             alert('PUBLIC SALE STARTED!')
-        } catch(error) {
-            alert('something is wrong: ', error);
-        }
+        } catch(error) { alert(error.data.message) }
     }
 
     async function stopPublicSale() {
@@ -142,9 +127,7 @@ export default function Admin() {
         try {
             await tvc.pausePublicSale();
             alert('PUBLIC SALE PAUSED!')
-        } catch(error) {
-            alert('something is wrong: ', error);
-        }
+        } catch(error) { alert(error.data.message); }
     }
 
     async function addToLists(e) {
@@ -168,10 +151,7 @@ export default function Admin() {
                 await tvc.addToWhitelist(whitelistAddresses);
             }
             alert('addresses added to whitelist(s)')
-        } catch (error) {
-            console.error(error)
-            alert("something went wrong trying to add to whitelist")
-        }
+        } catch (error) { alert(error.data.message); }
     }
     return (
         <div className="admin">
@@ -195,3 +175,5 @@ export default function Admin() {
         </div>
     )
 }
+
+Admin.requireAuth = true
