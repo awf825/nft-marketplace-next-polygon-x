@@ -173,7 +173,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
             require(tokensAmount + presalePurchasedAmount[msg.sender] <= _presaleLimit, "Presale, limited amount of tokens");
             require(presalePriceToMint * tokensAmount <= msg.value, "Insufficient funds");
         } else {
-            require(tokensAmount + salePurchasedAmount[msg.sender] <= _saleLimit, "Cannot mint more than 25 tokens");
+            //require(tokensAmount + salePurchasedAmount[msg.sender] <= _saleLimit, "Cannot mint more than 25 tokens");
             require(priceToMint * tokensAmount <= msg.value, "Insufficient funds");
         }
     }

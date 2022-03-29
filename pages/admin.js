@@ -29,8 +29,8 @@ export default function Admin() {
         });
         /* uploaded hardhat produced abi to s3 to consume here */
         const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
-        setAbi(artifact.abi);
-        // setAbi(Turtleverse.abi);
+        // setAbi(artifact.abi);
+        setAbi(Turtleverse.abi);
     }, [])
 
     async function withdraw() {
@@ -73,7 +73,7 @@ export default function Admin() {
         try {
             await tvc.pauseGiveaway();
             alert('GIVEAWAY PAUSED!')
-        } catch(error) { alert(error.data.message); }
+        } catch(error) { alert(error.message); }
     }
 
     async function startPreSale() {
@@ -87,7 +87,7 @@ export default function Admin() {
             // const bn = ethers.BigNumber.from(3)
             await tvc.startPresale();
             alert('PRESALE STARTED!')
-        } catch(error) { alert(error.data.message); }
+        } catch(error) { alert(error.message); }
     }
 
     async function stopPreSale() {
@@ -100,7 +100,7 @@ export default function Admin() {
         try {
             await tvc.pausePresale();
             alert('PRESALE PAUSED!')
-        } catch(error) { alert(error.data.message); }
+        } catch(error) { alert(error.message); }
     }
 
     async function startPublicSale() {
