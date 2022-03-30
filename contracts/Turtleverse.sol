@@ -71,13 +71,13 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         _payout = payout_;
     }
 
-    function getCurrentToken() external view onlyOwner returns (uint256) {
-        return  _tokenIds.current();
-    }
+    // function getCurrentToken() external view onlyOwner returns (uint256) {
+    //     return  _tokenIds.current();
+    // }
 
-    function getMaxSupply() external view onlyOwner returns (uint256) {
-        return _maxSupply;
-    }
+    // function getMaxSupply() external view onlyOwner returns (uint256) {
+    //     return _maxSupply;
+    // }
 
     function addToWhitelist(address[] memory addresses) external onlyOwner {
         require(addresses.length <= 2000, "Whitelist cannot exceed 2000");
@@ -142,7 +142,8 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
     function mintTokens(uint256 tokensAmount, string[] calldata tokenHashes) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
         _preValidatePurchase(tokensAmount);
         uint256[] memory tokens = new uint256[](tokensAmount);
-        for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender, tokenHashes[index]); }
+        for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender); }
+        for (uint index = 0; index < tokensAmount; index += 1) { _setTokenURI(tokens[index], tokenHashes[index]); }
 
         if (presaleActive) { presalePurchasedAmount[msg.sender] += tokensAmount; } 
         else if (saleActive) { salePurchasedAmount[msg.sender] += tokensAmount; }
@@ -150,13 +151,20 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         return tokens;
     }
 
-    function _processMint(address recipient, string memory tokenHash) internal returns (uint256) {
+    function _processMint(address recipient) internal returns (uint256) {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _safeMint(recipient, newItemId);
-        _setTokenURI(newItemId, tokenHash);
         return newItemId;
     }
+
+    // function _processMint(address recipient, string memory tokenHash) internal returns (uint256) {
+    //     _tokenIds.increment();
+    //     uint256 newItemId = _tokenIds.current();
+    //     _safeMint(recipient, newItemId);
+    //     // _setTokenURI(newItemId, tokenHash);
+    //     return newItemId;
+    // }
 
     function _preValidatePurchase(uint256 tokensAmount) internal view {
         require(msg.sender != address(0));
