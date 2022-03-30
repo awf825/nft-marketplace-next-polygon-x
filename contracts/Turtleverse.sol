@@ -26,9 +26,6 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
 
     Counters.Counter private _tokenIds;
 
-    EnumerableSet.AddressSet private _giveawayList;
-    event AddedToGiveawayList(address indexed _address);
-
     EnumerableSet.AddressSet private _whitelist;
     event AddedToWhitelist(address indexed _address);
     event RemovedFromWhitelist(address indexed _address);
@@ -74,6 +71,14 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         _payout = payout_;
     }
 
+    function getCurrentToken() external view onlyOwner returns (uint256) {
+        return  _tokenIds.current();
+    }
+
+    function getMaxSupply() external view onlyOwner returns (uint256) {
+        return _maxSupply;
+    }
+
     function addToWhitelist(address[] memory addresses) external onlyOwner {
         require(addresses.length <= 2000, "Whitelist cannot exceed 2000");
         for(uint index = 0; index < addresses.length; index+=1) {
@@ -92,16 +97,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         }
     }
 
-    function addToGiveawayList(address[] memory addresses) external onlyOwner {
-        for(uint index = 0; index < addresses.length; index+=1) {
-            if (_giveawayList.add(addresses[index])) {
-                emit AddedToGiveawayList(addresses[index]);
-            }
-        }
-    }
-
     function inWhitelist(address value) internal view returns (bool) { return _whitelist.contains(value); }
-    function inGiveawayList(address value) internal view returns (bool) { return _giveawayList.contains(value); }
 
     function startGiveaway() external onlyOwner whenGiveawayPaused whenPresalePaused whenSalePaused {
         giveawayActive = true;
@@ -164,17 +160,17 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
 
     function _preValidatePurchase(uint256 tokensAmount) internal view {
         require(msg.sender != address(0));
-        require(_tokenIds.current() <= _maxSupply, "No tokens left!");
+        require(_tokenIds.current() < _maxSupply, "No tokens left!");
         require(tokensAmount > 0, "Must mint at least one token");
         if (giveawayActive) {
-            require(inGiveawayList(msg.sender), "We're sorry, you are not a giveaway address");
+            require(inWhitelist(msg.sender), "We're sorry, your address isn't whitelisted");
         } else if (presaleActive) {
             require(inWhitelist(msg.sender), "We're sorry, your address isn't whitelisted");
             require(tokensAmount + presalePurchasedAmount[msg.sender] <= _presaleLimit, "Presale, limited amount of tokens");
-            require(presalePriceToMint * tokensAmount <= msg.value, "Insufficient funds");
+            require(presalePriceToMint * tokensAmount <= msg.value, "Insufficient funds: Ether value does not match presale price.");
         } else {
-            //require(tokensAmount + salePurchasedAmount[msg.sender] <= _saleLimit, "Cannot mint more than 25 tokens");
-            require(priceToMint * tokensAmount <= msg.value, "Insufficient funds");
+            require(tokensAmount + salePurchasedAmount[msg.sender] <= _saleLimit, "Cannot mint more than 25 tokens");
+            require(priceToMint * tokensAmount <= msg.value, "Insufficient funds: Ether value does not match public sale price.");
         }
     }
 
