@@ -124,6 +124,9 @@ export default function HeaderElements() {
                   <Link href="/minter-page">
                       Mint
                   </Link>
+                  <Link href="/admin">
+                        Admin
+                    </Link>
                   {
                     ( user && ( user.attributes.ethAddress === process.env.NEXT_PUBLIC_AIDEN ) )
                     ? 

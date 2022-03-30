@@ -15,6 +15,7 @@ import {
 
 import AWS, { Connect } from 'aws-sdk'
 import { useMoralis } from 'react-moralis';
+import { Moralis } from 'moralis'
 import { useEffect, useState, useContext } from 'react'
 
 import {
@@ -44,7 +45,7 @@ const client = ipfsHttpClient({
 
 export default function MinterPage() {
     const [requestedAmount, setRequestedAmount] = useState(0);
-    const [abi, setAbi] = useState(null);
+    const [abi, setAbi] = useState([]);
     const [allMetadata, setAllMetadata] = useState([]);
     const [galleryState, dispatch] = useContext(GalleryContext);
     const { isAuthenticated, user } = useMoralis();
@@ -62,8 +63,8 @@ export default function MinterPage() {
         const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
 
         setAllMetadata(allMetadata);
-        setAbi(artifact.abi);
-        // setAbi(Turtleverse.abi);
+        // setAbi(artifact.abi);
+        setAbi(Turtleverse.abi);
     }, [])
 
     async function mint() {
@@ -76,6 +77,10 @@ export default function MinterPage() {
                 https://docs.ethers.io/v5/api/providers/provider/
                 https://docs.ethers.io/v5/api/contract/contract/
                 https://docs.ethers.io/v5/api/utils/bignumber/
+
+                Trying moralis for IPFS, may want to take hook approach, is this main library too clunky ?
+                https://docs.moralis.io/moralis-dapp/files/ipfs
+                https://forum.moralis.io/t/moralis-react-savefile-on-ipfs/1289
             */
             const web3Modal = new Web3Modal();
             const connection = await web3Modal.connect();
@@ -84,7 +89,7 @@ export default function MinterPage() {
             const addr = process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK;
             const tvc = new ethers.Contract(addr, abi, signer)
         
-            let owner = await tvc.owner();
+            // let owner = await tvc.owner();
             let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK)
             let price = await tvc.price();
             balance = balance.toString();
@@ -110,7 +115,7 @@ export default function MinterPage() {
 
             console.log('price: ', price);
             console.log('balance: ', balance);
-            console.log('owner: ', owner);
+            // console.log('owner: ', owner);
     
             //requestedAmount is the state hook for select dropdown
             const tokensAmount = ethers.BigNumber.from(requestedAmount);
@@ -121,25 +126,23 @@ export default function MinterPage() {
             while (l > 0) {
                 const md = tokensToMintMetadata[l-1]
                 try {
-                    const addedImage = await client.add(
-                        new File([md.turtle.Body], `${md.metadata.name}.png`),
-                        {
-                            progress: (p) => console.log(`received: ${p}`)
-                        }
-                    )
-                    const imageUrl = `https://ipfs.infura.io/ipfs/${addedImage.path}`;
-                    // TODO: NOT ALL METADATA IS NEEDED ON IPFS i.e PUBLIC INTERFACE
-                    md.metadata.image = imageUrl;
-    
-                    const addedMetadata = await client.add(
-                        new File([JSON.stringify(md.metadata)], `${md.metadata.name}.json`),
-                        {
-                            progress: (p) => console.log(`received: ${p}`)
-                        }
-                    )
-                    console.log('addedMetadata: ', addedMetadata);
-                    console.log('addedImage: ', addedImage)
-                    metadataTokenPaths.push(addedMetadata.path)
+                    const data = new File([md.turtle.Body], `${md.metadata.name}.png`)
+                    const file = new Moralis.File(data.name, data)
+                    await file.saveIPFS();
+                    console.log("file.ipfs(), file.hash()): ", [file.ipfs(), file.hash()]);
+
+                    let obj = {}
+                    // md.metadata.image = file.ipfs();
+                    obj.name = md.metadata.name;
+                    obj.image = file.ipfs();
+                    obj.attributes = md.metadata.atributes;
+                    obj.comboCode = md.metadata.comboCode;
+                    
+                    const metadata = new Moralis.File("test.json", {base64 : btoa(JSON.stringify(obj))});
+                    await metadata.saveIPFS()
+                    console.log('metadata: ', metadata)
+
+                    metadataTokenPaths.push(metadata._hash)
                 } catch (err) {
                     console.log(err)
                 }
@@ -162,10 +165,9 @@ export default function MinterPage() {
                     alert(err.data.message)
                 }
             })
-            .catch(err => {
-                alert(err.data.message)
+            .catch(err => { 
+                console.log(err)
             });  
-
         }
     }
 
