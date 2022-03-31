@@ -138,16 +138,12 @@ export default function Admin() {
         const signer = provider.getSigner();
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
-        const glv = e.target[0].value;
-        const wlv = e.target[1].value;
+        const wlv = e.target[0].value;
 
-        const giveawayAddresses = (glv.length > 0) ? glv.split(',') : [];
         const whitelistAddresses = (wlv.length > 0) ? wlv.split(',') : [];
 
         try {
-            if (giveawayAddresses.length > 0) {
-                await tvc.addToGiveawayList(giveawayAddresses);
-            } if (whitelistAddresses.length > 0) {
+            if (whitelistAddresses.length > 0) {
                 await tvc.addToWhitelist(whitelistAddresses);
             }
             alert('addresses added to whitelist(s)')
@@ -166,7 +162,6 @@ export default function Admin() {
             </div>
             <div className="admin-lists">
                 <form onSubmit={(e) => addToLists(e)}>
-                    <input id="give" type="text" placeholder="giveaway address"/>
                     <input id="white" type="text" placeholder="whitelist address"/>
                     <input id="remove" type="text" placeholder="remove from whitelist"/>
                     <button type="submit">SUBMIT</button>

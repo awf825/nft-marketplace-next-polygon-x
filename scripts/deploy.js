@@ -23,7 +23,7 @@ async function main() {
   const tv = await TV.deploy(
     "The Turtleverse",
     "NFTV", 
-    "https://ipfs.infura.io/ipfs/", 
+    "https://gateway.moralisipfs.com/ipfs/", 
     maxSupply,
     maxWithdrawal,
     presaleLimit,

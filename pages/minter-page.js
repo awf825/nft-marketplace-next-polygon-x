@@ -47,6 +47,7 @@ export default function MinterPage() {
     const [requestedAmount, setRequestedAmount] = useState(0);
     const [abi, setAbi] = useState([]);
     const [allMetadata, setAllMetadata] = useState([]);
+    const [isMinting, setIsMinting] = useState(false);
     const [galleryState, dispatch] = useContext(GalleryContext);
     const { isAuthenticated, user } = useMoralis();
 
@@ -82,6 +83,7 @@ export default function MinterPage() {
                 https://docs.moralis.io/moralis-dapp/files/ipfs
                 https://forum.moralis.io/t/moralis-react-savefile-on-ipfs/1289
             */
+            setIsMinting(true)
             const web3Modal = new Web3Modal();
             const connection = await web3Modal.connect();
             const provider = new ethers.providers.Web3Provider(connection);
@@ -135,7 +137,7 @@ export default function MinterPage() {
                     // md.metadata.image = file.ipfs();
                     obj.name = md.metadata.name;
                     obj.image = file.ipfs();
-                    obj.attributes = md.metadata.atributes;
+                    obj.attributes = md.metadata.attributes;
                     obj.comboCode = md.metadata.comboCode;
                     
                     const metadata = new Moralis.File("test.json", {base64 : btoa(JSON.stringify(obj))});
@@ -148,10 +150,12 @@ export default function MinterPage() {
                 }
                 l--;
             }
+            setIsMinting(false)
             /*
                 When setting gasLimit for giveaway, no problems came. Priced transaction fails
                 I GUESS WHEN THERES NO VALUE TO MINE, ETHEREUM GETS CONFUSED?
             */
+           console.log('metadataTokenPaths: ', metadataTokenPaths)
             tvc.mintTokens(tokensAmount, metadataTokenPaths, { value: v })
             .then(resp => {
                 try {
@@ -194,6 +198,14 @@ export default function MinterPage() {
                 </div>
                 <br/>
             </div>
+            {
+                isMinting ?
+                <>
+                    <div>MINTING</div>
+                </>
+                :
+                null
+            }
         </div>
     )
 }
