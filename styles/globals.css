@@ -91,7 +91,8 @@ select {
 .vis-blurb-row,
 .rdmp-header,
 .gallery,
-.admin { display: flex; }
+.admin,
+.minting-stage { display: flex; }
 
 .tv-text-header, .rdmp-header {
     align-items: center;
@@ -343,7 +344,12 @@ form > input {
     margin: 8px auto;
     color: pink;
     width: 500%;
+}
 
+.minting-stage {
+    padding: 13px;
+    margin: 13px;
+    justify-content: center;
 }
 
 @media only screen and (max-width: 1220px) {

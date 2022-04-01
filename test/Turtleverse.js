@@ -7,6 +7,14 @@
     function getMaxSupply() external view onlyOwner returns (uint256) {
         return _maxSupply;
     }
+
+        // function _processMint(address recipient, string memory tokenHash) internal returns (uint256) {
+    //     _tokenIds.increment();
+    //     uint256 newItemId = _tokenIds.current();
+    //     _safeMint(recipient, newItemId);
+    //     // _setTokenURI(newItemId, tokenHash);
+    //     return newItemId;
+    // }
 */
 
 const { expect, assert } = require("chai");

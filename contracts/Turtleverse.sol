@@ -71,14 +71,6 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         _payout = payout_;
     }
 
-    // function getCurrentToken() external view onlyOwner returns (uint256) {
-    //     return  _tokenIds.current();
-    // }
-
-    // function getMaxSupply() external view onlyOwner returns (uint256) {
-    //     return _maxSupply;
-    // }
-
     function addToWhitelist(address[] memory addresses) external onlyOwner {
         require(addresses.length <= 2000, "Whitelist cannot exceed 2000");
         for(uint index = 0; index < addresses.length; index+=1) {
@@ -155,16 +147,9 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _safeMint(recipient, newItemId);
+        // _setTokenURI(newItemId, tokenHash);
         return newItemId;
     }
-
-    // function _processMint(address recipient, string memory tokenHash) internal returns (uint256) {
-    //     _tokenIds.increment();
-    //     uint256 newItemId = _tokenIds.current();
-    //     _safeMint(recipient, newItemId);
-    //     // _setTokenURI(newItemId, tokenHash);
-    //     return newItemId;
-    // }
 
     function _preValidatePurchase(uint256 tokensAmount) internal view {
         require(msg.sender != address(0));

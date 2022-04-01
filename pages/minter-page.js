@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { Image } from 'next/image';
 import Web3Modal from 'web3modal';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 
@@ -45,9 +46,15 @@ const client = ipfsHttpClient({
 
 export default function MinterPage() {
     const [requestedAmount, setRequestedAmount] = useState(0);
+    const [requestedArray, setRequestedArray] = useState([])
+
     const [abi, setAbi] = useState([]);
     const [allMetadata, setAllMetadata] = useState([]);
+
+    const [mintingStage, setMintingStage] = useState(null);
+    const [stageImagePaths, setStageImagePaths] = useState([]);
     const [isMinting, setIsMinting] = useState(false);
+
     const [galleryState, dispatch] = useContext(GalleryContext);
     const { isAuthenticated, user } = useMoralis();
 
@@ -68,6 +75,24 @@ export default function MinterPage() {
         setAbi(Turtleverse.abi);
     }, [])
 
+    useEffect(() => {
+        console.log('stageImagePaths: ', stageImagePaths)
+        setMintingStage(
+            <div className="minting-stage">
+                {
+                    isMinting 
+                    ?
+                    requestedArray && requestedArray.map((x,i) => {
+                        const src = stageImagePaths[i] ? stageImagePaths[i] : '/turtles.gif'
+                        return <div className="minting-stage-tile"><img src={src} alt={src} width={300} height={300}/></div>
+                    })
+                    :
+                    null
+                }
+            </div>
+        )
+    }, [stageImagePaths])
+
     async function mint() {
         if (requestedAmount === 0) { alert('must select tokens'); return; }
         if (!isAuthenticated) { alert('must enable metamask to mint tokens, please try again'); return; }
@@ -83,6 +108,8 @@ export default function MinterPage() {
                 https://docs.moralis.io/moralis-dapp/files/ipfs
                 https://forum.moralis.io/t/moralis-react-savefile-on-ipfs/1289
             */
+            // setIsMinting(false)
+            // setStageImagePaths([]);
             setIsMinting(true)
             const web3Modal = new Web3Modal();
             const connection = await web3Modal.connect();
@@ -124,6 +151,7 @@ export default function MinterPage() {
             const v = price.mul(tokensAmount);
     
             let metadataTokenPaths = [];
+            let localImagesPathArr = [];
             let l = tokensToMintMetadata.length;
             while (l > 0) {
                 const md = tokensToMintMetadata[l-1]
@@ -134,13 +162,18 @@ export default function MinterPage() {
                     console.log("file.ipfs(), file.hash()): ", [file.ipfs(), file.hash()]);
 
                     let obj = {}
+                    let f = file.ipfs();
+
                     // md.metadata.image = file.ipfs();
+                    localImagesPathArr.push(f)
+                    console.log('localImagesPathArr: ', localImagesPathArr)
+                    setStageImagePaths(localImagesPathArr)
                     obj.name = md.metadata.name;
-                    obj.image = file.ipfs();
+                    obj.image = f;
                     obj.attributes = md.metadata.attributes;
                     obj.comboCode = md.metadata.comboCode;
-                    
-                    const metadata = new Moralis.File("test.json", {base64 : btoa(JSON.stringify(obj))});
+                    // Buffer.from(JSON.stringify(obj)).toString('base64')
+                    const metadata = new Moralis.File(`${md.metadata.name}.json`, { base64 : Buffer.from(JSON.stringify(obj)).toString('base64') });
                     await metadata.saveIPFS()
                     console.log('metadata: ', metadata)
 
@@ -150,21 +183,22 @@ export default function MinterPage() {
                 }
                 l--;
             }
-            setIsMinting(false)
             /*
-                When setting gasLimit for giveaway, no problems came. Priced transaction fails
-                I GUESS WHEN THERES NO VALUE TO MINE, ETHEREUM GETS CONFUSED?
+            When setting gasLimit for giveaway, no problems came. Priced transaction fails
+            I GUESS WHEN THERES NO VALUE TO MINE, ETHEREUM GETS CONFUSED?
             */
            console.log('metadataTokenPaths: ', metadataTokenPaths)
-            tvc.mintTokens(tokensAmount, metadataTokenPaths, { value: v })
-            .then(resp => {
-                try {
-                    tokensToMintMetadata.forEach(async tmd => {
-                        tmd.metadata.transactionHash = resp.hash;
-                        tmd.metadata.minted = true;
-                        await updateRequestedMetadata(tmd.metadata, s3);
+           tvc.mintTokens(tokensAmount, metadataTokenPaths, { value: v })
+           .then(resp => {
+               try {
+                   tokensToMintMetadata.forEach(async tmd => {
+                       tmd.metadata.transactionHash = resp.hash;
+                       tmd.metadata.minted = true;
+                       await updateRequestedMetadata(tmd.metadata, s3);
                     })
                     alert('tx complete! ', resp)
+                    //setIsMinting(false)
+                    setStageImagePaths([]);
                 } catch (err) {
                     alert(err.data.message)
                 }
@@ -172,10 +206,21 @@ export default function MinterPage() {
             .catch(err => { 
                 console.log(err)
             });  
+            // setStageImagePaths([]);
+            // setFireMintingStage(false)
+            // setStageLocked(true)
         }
     }
 
-    function onSelectAmount(e) { setRequestedAmount(e.target.value) }
+    function onSelectAmount(e) { 
+        var a = []
+        for (let i = 0; i < e.target.value; i++) {
+            a.push(i+1)
+        }
+        setRequestedAmount(e.target.value);
+        setRequestedArray(a);
+        setStageImagePaths([]);
+    }
 
     return (
         <div className="minter">
@@ -201,7 +246,9 @@ export default function MinterPage() {
             {
                 isMinting ?
                 <>
-                    <div>MINTING</div>
+                    <div>
+                        {mintingStage}
+                    </div>
                 </>
                 :
                 null
