@@ -51,8 +51,7 @@ export default function MinterPage() {
     const [abi, setAbi] = useState([]);
     const [allMetadata, setAllMetadata] = useState([]);
 
-    const [mintingStage, setMintingStage] = useState(null);
-    const [stageImagePaths, setStageImagePaths] = useState([]);
+    const [stageMedia, setStageMedia] = useState([])
     const [isMinting, setIsMinting] = useState(false);
 
     const [galleryState, dispatch] = useContext(GalleryContext);
@@ -75,27 +74,10 @@ export default function MinterPage() {
         setAbi(Turtleverse.abi);
     }, [])
 
-    useEffect(() => {
-        console.log('stageImagePaths: ', stageImagePaths)
-        setMintingStage(
-            <div className="minting-stage">
-                {
-                    isMinting 
-                    ?
-                    requestedArray && requestedArray.map((x,i) => {
-                        const src = stageImagePaths[i] ? stageImagePaths[i] : '/turtles.gif'
-                        return <div className="minting-stage-tile"><img src={src} alt={src} width={300} height={300}/></div>
-                    })
-                    :
-                    null
-                }
-            </div>
-        )
-    }, [stageImagePaths])
 
     async function mint() {
-        if (requestedAmount === 0) { alert('must select tokens'); return; }
-        if (!isAuthenticated) { alert('must enable metamask to mint tokens, please try again'); return; }
+        if (requestedAmount === 0) { alert('Must select at least one token.'); return; }
+        if (!isAuthenticated) { alert('You must enable metamask to mint tokens. Please try again after connecting your wallet by clicking the link in the nav burger.'); return; }
         else 
         {
             /*
@@ -108,8 +90,6 @@ export default function MinterPage() {
                 https://docs.moralis.io/moralis-dapp/files/ipfs
                 https://forum.moralis.io/t/moralis-react-savefile-on-ipfs/1289
             */
-            // setIsMinting(false)
-            // setStageImagePaths([]);
             setIsMinting(true)
             const web3Modal = new Web3Modal();
             const connection = await web3Modal.connect();
@@ -124,13 +104,11 @@ export default function MinterPage() {
             balance = balance.toString();
             price = price;
 
-            // if price is 0, we know we're in the giveaway, so we have to call specific function to grab special 
-            // json from bucket 
             let tokensToMintMetadata;
             // randomly select tokens based on amount requested 
             // maybe move this to the s3 function in order to filter by whether or not already minted?
-            // arbitrarily get 25 pieces of metadata, odds are there will be at least 
-            const metadata = allMetadata.sort(() => Math.random() - Math.random()).slice(0, 25)
+            // arbitrarily get 25 pieces of metadata, odds are there will be at least the amount selected non-minted
+            const metadata = allMetadata.sort(() => Math.random() - Math.random()).slice(0, 50)
             const s3 = new AWS.S3({
                 accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
                 secretAccessKey: galleryState.accessParams.Credentials.SecretAccessKey,
@@ -139,19 +117,18 @@ export default function MinterPage() {
                 region: 'ca-central-1'
             })
             
+            // if price is 0, we know we're in the giveaway, so we have to call specific function to grab special 
+            // json from bucket 
             if (price.toString() === '0') { tokensToMintMetadata = await getRequestedGiveawayMetadata(user, s3) }
             else { tokensToMintMetadata = await getRequestedMetadata(metadata, s3, requestedAmount); }
 
             console.log('price: ', price);
             console.log('balance: ', balance);
-            // console.log('owner: ', owner);
-    
-            //requestedAmount is the state hook for select dropdown
+
             const tokensAmount = ethers.BigNumber.from(requestedAmount);
             const v = price.mul(tokensAmount);
     
             let metadataTokenPaths = [];
-            let localImagesPathArr = [];
             let l = tokensToMintMetadata.length;
             while (l > 0) {
                 const md = tokensToMintMetadata[l-1]
@@ -163,31 +140,24 @@ export default function MinterPage() {
 
                     let obj = {}
                     let f = file.ipfs();
-
-                    // md.metadata.image = file.ipfs();
-                    localImagesPathArr.push(f)
-                    console.log('localImagesPathArr: ', localImagesPathArr)
-                    setStageImagePaths(localImagesPathArr)
+                    setStageMedia(stageMedia => [...stageMedia, f])
+                    
                     obj.name = md.metadata.name;
                     obj.image = f;
                     obj.attributes = md.metadata.attributes;
                     obj.comboCode = md.metadata.comboCode;
-                    // Buffer.from(JSON.stringify(obj)).toString('base64')
+
                     const metadata = new Moralis.File(`${md.metadata.name}.json`, { base64 : Buffer.from(JSON.stringify(obj)).toString('base64') });
                     await metadata.saveIPFS()
                     console.log('metadata: ', metadata)
-
+                    
                     metadataTokenPaths.push(metadata._hash)
                 } catch (err) {
                     console.log(err)
                 }
                 l--;
             }
-            /*
-            When setting gasLimit for giveaway, no problems came. Priced transaction fails
-            I GUESS WHEN THERES NO VALUE TO MINE, ETHEREUM GETS CONFUSED?
-            */
-           console.log('metadataTokenPaths: ', metadataTokenPaths)
+
            tvc.mintTokens(tokensAmount, metadataTokenPaths, { value: v })
            .then(resp => {
                try {
@@ -196,9 +166,9 @@ export default function MinterPage() {
                        tmd.metadata.minted = true;
                        await updateRequestedMetadata(tmd.metadata, s3);
                     })
-                    alert('tx complete! ', resp)
-                    //setIsMinting(false)
-                    setStageImagePaths([]);
+                    alert('Transaction complete! Thank you for ', resp)
+                    setIsMinting(false)
+                    setStageMedia([]);
                 } catch (err) {
                     alert(err.data.message)
                 }
@@ -206,20 +176,18 @@ export default function MinterPage() {
             .catch(err => { 
                 console.log(err)
             });  
-            // setStageImagePaths([]);
-            // setFireMintingStage(false)
-            // setStageLocked(true)
         }
     }
 
     function onSelectAmount(e) { 
         var a = []
         for (let i = 0; i < e.target.value; i++) {
-            a.push(i+1)
+            a.push("/turtles.gif")
         }
         setRequestedAmount(e.target.value);
+        // initialize empty array that is same length as requested amount, and full of default turtle gifs
         setRequestedArray(a);
-        setStageImagePaths([]);
+        setStageMedia([]);
     }
 
     return (
@@ -234,20 +202,25 @@ export default function MinterPage() {
                         <option>2</option>
                         <option>3</option>
                         <option>4</option>
-                        <option>5</option>
                     </select>
                     <button type="submit" onClick={() => mint()}>
                         MINT
                     </button>
-                    <ConnectButton/>
                 </div>
                 <br/>
             </div>
             {
                 isMinting ?
                 <>
-                    <div>
-                        {mintingStage}
+                    <div className="minting-stage">
+                        {
+                            requestedArray && requestedArray.map((x,i) => {
+                                let src;
+                                if (stageMedia[i] !== undefined) { src = stageMedia[i] } 
+                                else { src = x }
+                                return <div key={i} className="minting-stage-tile"><img src={src} alt={src} width={300} height={300}/></div>
+                            })
+                        }
                     </div>
                 </>
                 :

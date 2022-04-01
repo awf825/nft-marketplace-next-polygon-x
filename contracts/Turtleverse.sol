@@ -10,23 +10,24 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
     using Strings for uint256;
+
     using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+    mapping (uint256 => string) private _tokenURIs;
+
     using EnumerableSet for EnumerableSet.AddressSet;
+    EnumerableSet.AddressSet private _whitelist;
 
     string private _baseTokenURI;
     uint256 private _maxSupply;
     uint256 private _maxWithdrawal;
     uint8 private _presaleLimit;
-    mapping(address => uint) public presalePurchasedAmount; 
     uint8 private _saleLimit;
-    mapping(address => uint) public salePurchasedAmount;
     address payable private _payout;
 
-    mapping (uint256 => string) private _tokenURIs;
+    mapping(address => uint) public presalePurchasedAmount; 
+    mapping(address => uint) public salePurchasedAmount;
 
-    Counters.Counter private _tokenIds;
-
-    EnumerableSet.AddressSet private _whitelist;
     event AddedToWhitelist(address indexed _address);
     event RemovedFromWhitelist(address indexed _address);
     
@@ -147,7 +148,6 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _safeMint(recipient, newItemId);
-        // _setTokenURI(newItemId, tokenHash);
         return newItemId;
     }
 

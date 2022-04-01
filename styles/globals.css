@@ -17,12 +17,19 @@ button {
     color: red;
     background-color: white !important;
 }
+
 svg {
     height: 2em;
     width: 2em;
+    margin-left: 8px;
 }
 select {
     color: #000
+}
+.wallet-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .hidden {
     display: none !important;

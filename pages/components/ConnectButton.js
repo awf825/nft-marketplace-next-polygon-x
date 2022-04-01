@@ -15,9 +15,6 @@ export default function ConnectButton() {
 
     return user ? (
         <div>
-            {/* <p>
-                {user && JSON.stringify(user)} ETH
-            </p> */}
             <button onClick={handleDisconnectWallet}>Disconnect wallet</button>
         </div>
     ) : (
