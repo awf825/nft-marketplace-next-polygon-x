@@ -1,11 +1,7 @@
 import { ethers } from 'ethers';
-import { Image } from 'next/image';
 import Web3Modal from 'web3modal';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 
-import ConnectButton from "./components/ConnectButton";
-
-// import MetaMaskSvg from './MetaMaskSvg';
 import {
     listAllObjectsFromS3Bucket,
     getRequestedMetadata,
@@ -14,7 +10,7 @@ import {
     getAbiFromBucket
 } from '../helpers/S3.js'
 
-import AWS, { Connect } from 'aws-sdk'
+import AWS from 'aws-sdk'
 import { useMoralis } from 'react-moralis';
 import { Moralis } from 'moralis'
 import { useEffect, useState, useContext } from 'react'
@@ -24,35 +20,21 @@ import {
 } from "../contexts/GalleryContext.js";
 
 // use for local development. setAbi to Turtleverse.abi. Change env var to reflect local contract
-import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
+// import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
 
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
 
-const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
-const projectSecret = process.env.NEXT_PUBLIC_INFURA_PROJECT_SECRET
-const auth = 'Basic '+projectId+':'+projectSecret 
-// const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
-const client = ipfsHttpClient({
-    host: 'ipfs.infura.io',
-    port: 5001,
-    protocol: 'https',
-    headers: {
-        authorization: auth,
-    },
-});
-
 export default function MinterPage() {
     const [requestedAmount, setRequestedAmount] = useState(0);
     const [requestedArray, setRequestedArray] = useState([])
+    const [stageMedia, setStageMedia] = useState([])
+    const [isMinting, setIsMinting] = useState(false);
 
     const [abi, setAbi] = useState([]);
     const [allMetadata, setAllMetadata] = useState([]);
-
-    const [stageMedia, setStageMedia] = useState([])
-    const [isMinting, setIsMinting] = useState(false);
 
     const [galleryState, dispatch] = useContext(GalleryContext);
     const { isAuthenticated, user } = useMoralis();
@@ -70,13 +52,13 @@ export default function MinterPage() {
         const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
 
         setAllMetadata(allMetadata);
-        // setAbi(artifact.abi);
-        setAbi(Turtleverse.abi);
+        setAbi(artifact.abi);
     }, [])
 
 
     async function mint() {
         if (requestedAmount === 0) { alert('Must select at least one token.'); return; }
+        if (requestedAmount > 4) { alert('Cannot mint more than 4 tokens at once.'); return; }
         if (!isAuthenticated) { alert('You must enable metamask to mint tokens. Please try again after connecting your wallet by clicking the link in the nav burger.'); return; }
         else 
         {
@@ -97,17 +79,22 @@ export default function MinterPage() {
             const signer = provider.getSigner();
             const addr = process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK;
             const tvc = new ethers.Contract(addr, abi, signer)
-        
-            // let owner = await tvc.owner();
-            let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK)
-            let price = await tvc.price();
-            balance = balance.toString();
-            price = price;
+            let price;
+            // if price returns an undefined value, we know there is no sale so we can kill execution
+            try {
+                price = await tvc.price();
+                //price = price;
+            } catch(err) {
+                setIsMinting(false);
+                setStageMedia([]);
+                setRequestedArray([]);
+                alert(err);
+                return;
+            }
 
-            let tokensToMintMetadata;
             // randomly select tokens based on amount requested 
-            // maybe move this to the s3 function in order to filter by whether or not already minted?
-            // arbitrarily get 25 pieces of metadata, odds are there will be at least the amount selected non-minted
+            // arbitrarily get 50 pieces of metadata, odds are there will be at least the amount selected non-minted
+            let tokensToMintMetadata;
             const metadata = allMetadata.sort(() => Math.random() - Math.random()).slice(0, 50)
             const s3 = new AWS.S3({
                 accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
@@ -119,17 +106,25 @@ export default function MinterPage() {
             
             // if price is 0, we know we're in the giveaway, so we have to call specific function to grab special 
             // json from bucket 
-            if (price.toString() === '0') { tokensToMintMetadata = await getRequestedGiveawayMetadata(user, s3) }
+            if (price.toString() === '0') { 
+                tokensToMintMetadata = await getRequestedGiveawayMetadata(user, s3) 
+                if (tokensToMintMetadata.length > 0) {
+                    setRequestedAmount(tokensToMintMetadata.length)
+                    setRequestedArray(tokensToMintMetadata.map(tmd => {
+                        return "/turtles.gif"
+                    }))
+                } else {
+                    alert('Your giveaway tokens have already been minted, or there are no tokens reserved for this address')
+                }
+            }
             else { tokensToMintMetadata = await getRequestedMetadata(metadata, s3, requestedAmount); }
 
-            console.log('price: ', price);
-            console.log('balance: ', balance);
-
-            const tokensAmount = ethers.BigNumber.from(requestedAmount);
-            const v = price.mul(tokensAmount);
-    
             let metadataTokenPaths = [];
             let l = tokensToMintMetadata.length;
+
+            const tokensAmount = ethers.BigNumber.from(l);
+            const v = price.mul(tokensAmount);
+    
             while (l > 0) {
                 const md = tokensToMintMetadata[l-1]
                 try {
@@ -138,10 +133,10 @@ export default function MinterPage() {
                     await file.saveIPFS();
                     console.log("file.ipfs(), file.hash()): ", [file.ipfs(), file.hash()]);
 
-                    let obj = {}
+                    let obj = {};
                     let f = file.ipfs();
                     setStageMedia(stageMedia => [...stageMedia, f])
-                    
+
                     obj.name = md.metadata.name;
                     obj.image = f;
                     obj.attributes = md.metadata.attributes;
@@ -166,10 +161,12 @@ export default function MinterPage() {
                        tmd.metadata.minted = true;
                        await updateRequestedMetadata(tmd.metadata, s3);
                     })
-                    alert('Transaction complete! Thank you for ', resp)
+                    alert('Transaction complete!', resp)
                     setIsMinting(false)
                     setStageMedia([]);
                 } catch (err) {
+                    setIsMinting(false)
+                    setStageMedia([]);
                     alert(err.data.message)
                 }
             })
@@ -193,8 +190,6 @@ export default function MinterPage() {
     return (
         <div className="minter">
             <div className="minter-image" style={{textAlign: "center"}}>
-                {/* <Image src={"/turtles.gif"} width={500} height={500}/> */}
-                {/* <h1>MINT MACHINE COMING SOON</h1> */}
                 <div>
                     <select onChange={(e) => onSelectAmount(e)}>
                         <option>0</option>

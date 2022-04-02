@@ -9,7 +9,7 @@ import {
 import AWS, { Connect } from 'aws-sdk';
 
 // use for local development. setAbi to Turtleverse.abi. Change env var to reflect local contract
-import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
+// import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
 
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
@@ -29,8 +29,7 @@ export default function Admin() {
         });
         /* uploaded hardhat produced abi to s3 to consume here */
         const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
-        // setAbi(artifact.abi);
-        setAbi(Turtleverse.abi);
+        setAbi(artifact.abi);
     }, [])
 
     async function withdraw() {
@@ -46,7 +45,7 @@ export default function Admin() {
 
         try {
             await tvc.withdraw();
-            alert('ether withdrawn, new balance: ', balance)
+            alert('.1 ether withdrawn')
         } catch(error) { alert(error.message); }
     }
 
@@ -114,7 +113,7 @@ export default function Admin() {
             // const bn = ethers.BigNumber.from(25)
             await tvc.startPublicSale();
             alert('PUBLIC SALE STARTED!')
-        } catch(error) { alert(error.data.message) }
+        } catch(error) { alert(error.message) }
     }
 
     async function stopPublicSale() {
@@ -127,7 +126,7 @@ export default function Admin() {
         try {
             await tvc.pausePublicSale();
             alert('PUBLIC SALE PAUSED!')
-        } catch(error) { alert(error.data.message); }
+        } catch(error) { alert(error.message); }
     }
 
     async function addToLists(e) {
@@ -139,15 +138,22 @@ export default function Admin() {
         const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
         
         const wlv = e.target[0].value;
+        const blv = e.target[1].value;
 
         const whitelistAddresses = (wlv.length > 0) ? wlv.split(',') : [];
+        const blacklistAddresses = (blv.length > 0) ? blv.split(',') : [];
 
         try {
             if (whitelistAddresses.length > 0) {
                 await tvc.addToWhitelist(whitelistAddresses);
-            }
-            alert('addresses added to whitelist(s)')
-        } catch (error) { alert(error.data.message); }
+                alert('Added to whitelist: ', wlv)
+            } 
+            if (blacklistAddresses.length > 0) {
+                await tvc.removeFromWhitelist(blacklistAddresses);
+                alert('Removed from whitelist: ', blv)
+            } 
+
+        } catch (error) { alert(error.message); }
     }
     return (
         <div className="admin">

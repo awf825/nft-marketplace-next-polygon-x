@@ -102,8 +102,6 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         emit GiveawayPaused(block.timestamp);
     }
 
-    /* presale */
-
     function startPresale() external onlyOwner whenGiveawayPaused whenPresalePaused whenSalePaused {
         presaleActive = true;
         emit PresaleStart(block.timestamp);
@@ -113,8 +111,6 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         presaleActive = false;
         emit PresalePaused(block.timestamp);
     }
-
-    /* real sale */ 
 
     function startPublicSale() external onlyOwner whenGiveawayPaused whenPresalePaused whenSalePaused {
         saleActive = true;
