@@ -27,6 +27,19 @@ AWS.config.update({
     secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
 
+const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
+const projectSecret = process.env.NEXT_PUBLIC_INFURA_PROJECT_SECRET
+const auth = 'Basic '+projectId+':'+projectSecret 
+// const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
+const client = ipfsHttpClient({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+    },
+});
+
 export default function MinterPage() {
     const [requestedAmount, setRequestedAmount] = useState(0);
     const [requestedArray, setRequestedArray] = useState([])
@@ -115,6 +128,10 @@ export default function MinterPage() {
                     }))
                 } else {
                     alert('Your giveaway tokens have already been minted, or there are no tokens reserved for this address')
+                    setRequestedAmount(0);
+                    setRequestedArray([]);
+                    setStageMedia([]);
+                    return;
                 }
             }
             else { tokensToMintMetadata = await getRequestedMetadata(metadata, s3, requestedAmount); }
@@ -128,27 +145,37 @@ export default function MinterPage() {
             while (l > 0) {
                 const md = tokensToMintMetadata[l-1]
                 try {
-                    const data = new File([md.turtle.Body], `${md.metadata.name}.png`)
-                    const file = new Moralis.File(data.name, data)
-                    await file.saveIPFS();
-                    console.log("file.ipfs(), file.hash()): ", [file.ipfs(), file.hash()]);
-
+                    const addedImage = await client.add(
+                        new File([md.turtle.Body], `${md.metadata.name}.png`),
+                        {
+                            progress: (p) => console.log(`received: ${p}`)
+                        }
+                    )
+                    const imageUrl = `https://ipfs.infura.io/ipfs/${addedImage.path}`;
+                    setStageMedia(stageMedia => [...stageMedia, imageUrl])
+                 
+                    md.metadata.image = imageUrl;
                     let obj = {};
-                    let f = file.ipfs();
-                    setStageMedia(stageMedia => [...stageMedia, f])
-
-                    obj.name = md.metadata.name;
-                    obj.image = f;
+                    obj.name = '#'+md.metadata.name.split('_')[0];
+                    obj.image = imageUrl;
+                    obj.image_original_url = imageUrl;
+                    obj.image_preview_url = imageUrl;
+                    obj.image_thumbnail_url = imageUrl;
+                    obj.image_url = imageUrl;
                     obj.attributes = md.metadata.attributes;
-                    obj.comboCode = md.metadata.comboCode;
-
-                    const metadata = new Moralis.File(`${md.metadata.name}.json`, { base64 : Buffer.from(JSON.stringify(obj)).toString('base64') });
-                    await metadata.saveIPFS()
-                    console.log('metadata: ', metadata)
+    
+                    const addedMetadata = await client.add(
+                        new File([JSON.stringify(obj)], `${md.metadata.name}.json`),
+                        {
+                            progress: (p) => console.log(`received: ${p}`)
+                        }
+                    )
+                    console.log('addedMetadata: ', addedMetadata);
+                    metadataTokenPaths.push(addedMetadata.path)
                     
-                    metadataTokenPaths.push(metadata._hash)
                 } catch (err) {
-                    console.log(err)
+                    alert(err.message + 'We\'re sorry, please try again later.')
+                    return;
                 }
                 l--;
             }
@@ -171,7 +198,7 @@ export default function MinterPage() {
                 }
             })
             .catch(err => { 
-                console.log(err)
+                alert(err.message)
             });  
         }
     }

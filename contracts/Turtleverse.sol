@@ -25,8 +25,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
     uint8 private _saleLimit;
     address payable private _payout;
 
-    mapping(address => uint) public presalePurchasedAmount; 
-    mapping(address => uint) public salePurchasedAmount;
+    mapping(address => uint) public purchasedAmount;
 
     event AddedToWhitelist(address indexed _address);
     event RemovedFromWhitelist(address indexed _address);
@@ -129,13 +128,12 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
     }
 
     function mintTokens(uint256 tokensAmount, string[] calldata tokenHashes) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
-        _preValidatePurchase(tokensAmount);
+        _preValidatePurchase(tokensAmount, tokenHashes);
         uint256[] memory tokens = new uint256[](tokensAmount);
         for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender); }
         for (uint index = 0; index < tokensAmount; index += 1) { _setTokenURI(tokens[index], tokenHashes[index]); }
 
-        if (presaleActive) { presalePurchasedAmount[msg.sender] += tokensAmount; } 
-        else if (saleActive) { salePurchasedAmount[msg.sender] += tokensAmount; }
+        if (presaleActive || saleActive) { purchasedAmount[msg.sender] += tokensAmount; } 
 
         return tokens;
     }
@@ -147,18 +145,20 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         return newItemId;
     }
 
-    function _preValidatePurchase(uint256 tokensAmount) internal view {
+    function _preValidatePurchase(uint256 tokensAmount, string[] calldata tokenHashes) internal view {
         require(msg.sender != address(0));
+        require(tokenHashes.length == tokensAmount, "Abort: tokens requested is not equal to files uploaded.");
         require(_tokenIds.current() < _maxSupply, "No tokens left!");
         require(tokensAmount > 0, "Must mint at least one token");
+        require(tokensAmount <= 4, "Cannot mint more than 4 tokens at a time");
         if (giveawayActive) {
             require(inWhitelist(msg.sender), "We're sorry, your address isn't whitelisted");
         } else if (presaleActive) {
             require(inWhitelist(msg.sender), "We're sorry, your address isn't whitelisted");
-            require(tokensAmount + presalePurchasedAmount[msg.sender] <= _presaleLimit, "Presale, limited amount of tokens");
+            require(tokensAmount + purchasedAmount[msg.sender] <= _presaleLimit, "Cannot mint more than 4 tokens presale");
             require(presalePriceToMint * tokensAmount <= msg.value, "Insufficient funds: Ether value does not match presale price.");
         } else {
-            require(tokensAmount + salePurchasedAmount[msg.sender] <= _saleLimit, "Cannot mint more than 25 tokens");
+            require(tokensAmount + purchasedAmount[msg.sender] <= _saleLimit, "Cannot mint more than 16 tokens");
             require(priceToMint * tokensAmount <= msg.value, "Insufficient funds: Ether value does not match public sale price.");
         }
     }
@@ -180,8 +180,9 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         return string(abi.encodePacked(base, tokenId.toString()));
     }
 
-    function withdraw() external onlyOwner {
-        require(_maxWithdrawal <= address(this).balance, "Balance is less than .1 eth");
+    function withdraw() external onlyOwner nonReentrant {
+        require(_maxWithdrawal <= address(this).balance, "Balance is less than .5 eth");
+        require(_payout != address(0));
         _payout.transfer(_maxWithdrawal);
     }
     
@@ -192,6 +193,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         returns (address receiver, uint256 royaltyAmount)
     {
         require(_exists(_tokenId), "Nonexistent token for royalty payment");
-        return (address(this), (_salePrice * 1000) / 10000);
+        require(_payout != address(0));
+        return (_payout, (_salePrice * 800) / 10000);
     } 
 }

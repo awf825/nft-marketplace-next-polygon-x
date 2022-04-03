@@ -28,8 +28,11 @@ export const getRequestedGiveawayMetadata = async (user, s3) => {
   const giveawaysJSON = await s3.getObject({ Bucket: 'turtleverse.albums', Key: `${generation}/giveawayStructure.json`}).promise()
   const giveaways = JSON.parse(giveawaysJSON.Body.toString('utf-8'))
   let output = [];
-  if (giveaways[wallet] !== undefined) {
-    const giveawayBatch = giveaways[wallet];
+  const giveaway = giveaways.structure.find(s => {
+    return (s.wallet.toLowerCase() === wallet)
+  })
+  if (giveaway !== undefined) {
+    const giveawayBatch = giveaway.tokens;
     while (giveawayBatch.length > 0) {
       const resp = await s3.getObject({ Bucket: 'turtleverse.albums', Key: `${generation}/metadata/${giveawayBatch[0]}`}).promise()
       const metadata = JSON.parse(resp.Body.toString('utf-8'))
