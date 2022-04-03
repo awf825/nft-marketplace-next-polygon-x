@@ -17,7 +17,7 @@ const wallet = fs.readFileSync(".wallet").toString();
 async function main() {
   const TV = await hre.ethers.getContractFactory("Turtleverse");
   const maxSupply =  hre.ethers.BigNumber.from("10000");
-  const maxWithdrawal = hre.ethers.BigNumber.from("100000000000000000");
+  const maxWithdrawal = hre.ethers.BigNumber.from("500000000000000000");
   const presaleLimit = hre.ethers.BigNumber.from(4);
   const saleLimit = hre.ethers.BigNumber.from(17);
   const tv = await TV.deploy(

@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router';
 import { useMoralis } from 'react-moralis';
-import ConnectButton from "./ConnectButton";
 import MetaMaskSvg from './MetaMaskSvg';
 
 const Nav = styled.nav`
@@ -143,9 +142,6 @@ export default function HeaderElements() {
                           <a onClick={handleConnectWallet}><span className='wallet-nav'>Connect <MetaMaskSvg /></span></a>
                       )
                     }
-                  </Link>
-                  <Link href="/admin">
-                        Admin
                   </Link>
                   {
                     ( user && ( user.attributes.ethAddress === process.env.NEXT_PUBLIC_AIDEN ) )
