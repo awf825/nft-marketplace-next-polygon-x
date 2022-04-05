@@ -10,9 +10,10 @@ import {
     getAbiFromBucket
 } from '../helpers/S3.js'
 
+import { pinFileToIPFS } from '../helpers/Pinata.js'
+
 import AWS from 'aws-sdk'
 import { useMoralis } from 'react-moralis';
-import { Moralis } from 'moralis'
 import { useEffect, useState, useContext } from 'react'
 
 import {
@@ -20,7 +21,7 @@ import {
 } from "../contexts/GalleryContext.js";
 
 // use for local development. setAbi to Turtleverse.abi. Change env var to reflect local contract
-// import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
+import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
 
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
@@ -65,7 +66,8 @@ export default function MinterPage() {
         const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
 
         setAllMetadata(allMetadata);
-        setAbi(artifact.abi);
+        // setAbi(artifact.abi);
+        setAbi(Turtleverse.abi);
     }, [])
 
 
@@ -80,10 +82,6 @@ export default function MinterPage() {
                 https://docs.ethers.io/v5/api/providers/provider/
                 https://docs.ethers.io/v5/api/contract/contract/
                 https://docs.ethers.io/v5/api/utils/bignumber/
-
-                Trying moralis for IPFS, may want to take hook approach, is this main library too clunky ?
-                https://docs.moralis.io/moralis-dapp/files/ipfs
-                https://forum.moralis.io/t/moralis-react-savefile-on-ipfs/1289
             */
             setIsMinting(true)
             const web3Modal = new Web3Modal();
@@ -93,10 +91,10 @@ export default function MinterPage() {
             const addr = process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK;
             const tvc = new ethers.Contract(addr, abi, signer)
             let price;
+
             // if price returns an undefined value, we know there is no sale so we can kill execution
             try {
                 price = await tvc.price();
-                //price = price;
             } catch(err) {
                 setIsMinting(false);
                 setStageMedia([]);
@@ -145,48 +143,57 @@ export default function MinterPage() {
             while (l > 0) {
                 const md = tokensToMintMetadata[l-1]
                 try {
-                    const addedImage = await client.add(
-                        new File([md.turtle.Body], `${md.metadata.name}.png`),
-                        {
-                            progress: (p) => console.log(`received: ${p}`)
-                        }
-                    )
-                    const imageUrl = `https://ipfs.infura.io/ipfs/${addedImage.path}`;
+                    const f = new File([md.turtle.Body], `${md.metadata.name}.png`);
+                    const hash = await pinFileToIPFS(f);
+                    const imageUrl = `https://turtleverse.mypinata.cloud/ipfs/${hash}`
                     setStageMedia(stageMedia => [...stageMedia, imageUrl])
                  
                     md.metadata.image = imageUrl;
                     let obj = {};
                     obj.name = '#'+md.metadata.name.split('_')[0];
                     obj.image = imageUrl;
-                    obj.image_original_url = imageUrl;
-                    obj.image_preview_url = imageUrl;
-                    obj.image_thumbnail_url = imageUrl;
-                    obj.image_url = imageUrl;
                     obj.attributes = md.metadata.attributes;
     
-                    const addedMetadata = await client.add(
-                        new File([JSON.stringify(obj)], `${md.metadata.name}.json`),
-                        {
-                            progress: (p) => console.log(`received: ${p}`)
-                        }
-                    )
-                    console.log('addedMetadata: ', addedMetadata);
-                    metadataTokenPaths.push(addedMetadata.path)
+                    // const addedMetadata = await client.add(
+                    //     new File([JSON.stringify(obj)], `${md.metadata.name}.json`),
+                    //     {
+                    //         progress: (p) => console.log(`received: ${p}`)
+                    //     }
+                    // )
+                    // await client.pin(CID.parse(addedImage.path))
+                    // await client.pin(CID.parse(addedMetadata.path));
+                    // return;
+
+
+
+                    // console.log('addedMetadata: ', addedMetadata);
+                    // metadataTokenPaths.push(addedMetadata.path)
                     
                 } catch (err) {
+                    setIsMinting(false);
+                    setStageMedia([]);
+                    setRequestedArray([]);
                     alert(err.message + 'We\'re sorry, please try again later.')
                     return;
                 }
                 l--;
             }
 
-           tvc.mintTokens(tokensAmount, metadataTokenPaths, { value: v })
+           tvc.mintTokens(tokensAmount, { value: v })
            .then(resp => {
+               //const tokenId = ethers.BigNumber.toNumber(resp.value)
+               debugger
                try {
                    tokensToMintMetadata.forEach(async tmd => {
                        tmd.metadata.transactionHash = resp.hash;
                        tmd.metadata.minted = true;
                        await updateRequestedMetadata(tmd.metadata, s3);
+                       let obj = {};
+                       obj.name = '#'+tmd.metadata.name.split('_')[0];
+                       obj.image = imageUrl;
+                       obj.attributes = tmd.metadata.attributes;
+                       console.log("resp @ mintTokens: ", resp)
+                       await pinFileToIPFS(obj)
                     })
                     alert('Transaction complete!', resp)
                     setIsMinting(false)
@@ -198,6 +205,9 @@ export default function MinterPage() {
                 }
             })
             .catch(err => { 
+                setIsMinting(false);
+                setStageMedia([]);
+                setRequestedArray([]);
                 alert(err.message)
             });  
         }

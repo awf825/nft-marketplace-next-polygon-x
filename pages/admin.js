@@ -45,7 +45,7 @@ export default function Admin() {
 
         try {
             await tvc.withdraw();
-            alert('.1 ether withdrawn')
+            alert('.5 ether withdrawn')
         } catch(error) { alert(error.message); }
     }
 

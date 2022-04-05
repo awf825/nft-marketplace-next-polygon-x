@@ -127,27 +127,22 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         else { return priceToMint; }
     }
 
-    function mintTokens(uint256 tokensAmount, string[] calldata tokenHashes) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
-        _preValidatePurchase(tokensAmount, tokenHashes);
+    // function getCurrentTokens() external returns (uint256) {
+    //     return 
+    // }
+
+    function mintTokens(uint256 tokensAmount) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
+        _preValidatePurchase(tokensAmount);
         uint256[] memory tokens = new uint256[](tokensAmount);
         for (uint index = 0; index < tokensAmount; index += 1) { tokens[index] = _processMint(msg.sender); }
-        for (uint index = 0; index < tokensAmount; index += 1) { _setTokenURI(tokens[index], tokenHashes[index]); }
 
         if (presaleActive || saleActive) { purchasedAmount[msg.sender] += tokensAmount; } 
 
         return tokens;
     }
 
-    function _processMint(address recipient) internal returns (uint256) {
-        _tokenIds.increment();
-        uint256 newItemId = _tokenIds.current();
-        _safeMint(recipient, newItemId);
-        return newItemId;
-    }
-
-    function _preValidatePurchase(uint256 tokensAmount, string[] calldata tokenHashes) internal view {
+    function _preValidatePurchase(uint256 tokensAmount) internal view {
         require(msg.sender != address(0));
-        require(tokenHashes.length == tokensAmount, "Abort: tokens requested is not equal to files uploaded.");
         require(_tokenIds.current() < _maxSupply, "No tokens left!");
         require(tokensAmount > 0, "Must mint at least one token");
         require(tokensAmount <= 4, "Cannot mint more than 4 tokens at a time");
@@ -163,22 +158,15 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         }
     }
 
-    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
-        require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
-        _tokenURIs[tokenId] = _tokenURI;
+    function _processMint(address recipient) internal returns (uint256) {
+        _tokenIds.increment();
+        uint256 newItemId = _tokenIds.current();
+        _safeMint(recipient, newItemId);
+        return newItemId;
     }
 
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
-        string memory _tokenURI = _tokenURIs[tokenId];
-        string memory base = _baseTokenURI;
-        
-        if (bytes(base).length == 0) { return _tokenURI; }
-        if (bytes(_tokenURI).length > 0) { return string(abi.encodePacked(base, _tokenURI)); }
-
-        return string(abi.encodePacked(base, tokenId.toString()));
-    }
+    function setBaseURI(string memory baseURI_) public onlyOwner { _baseTokenURI = baseURI_; }
+    function _baseURI() internal view virtual override returns (string memory) { return _baseTokenURI; }
 
     function withdraw() external onlyOwner nonReentrant {
         require(_maxWithdrawal <= address(this).balance, "Balance is less than .5 eth");
