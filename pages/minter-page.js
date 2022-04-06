@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
-import { create as ipfsHttpClient } from 'ipfs-http-client';
 
 import {
     listAllObjectsFromS3Bucket,
@@ -24,7 +23,7 @@ import {
 } from "../contexts/GalleryContext.js";
 
 // use for local development. setAbi to Turtleverse.abi. Change env var to reflect local contract
-import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
+// import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
 
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
@@ -56,8 +55,8 @@ export default function MinterPage() {
         const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
 
         setAllMetadata(allMetadata);
-        // setAbi(artifact.abi);
-        setAbi(Turtleverse.abi);
+        setAbi(artifact.abi);
+        // setAbi(Turtleverse.abi);
     }, [])
 
 
