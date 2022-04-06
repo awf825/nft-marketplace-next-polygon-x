@@ -23,7 +23,7 @@ import {
 } from "../contexts/GalleryContext.js";
 
 // use for local development. setAbi to Turtleverse.abi. Change env var to reflect local contract
-// import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
+import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
 
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
@@ -35,6 +35,7 @@ export default function MinterPage() {
     const [requestedArray, setRequestedArray] = useState([])
     const [stageMedia, setStageMedia] = useState([])
     const [isMinting, setIsMinting] = useState(false);
+    const [isLoadingTransaction, setIsLoadingTransaction] = useState(false);
 
     const [abi, setAbi] = useState([]);
     const [allMetadata, setAllMetadata] = useState([]);
@@ -56,7 +57,7 @@ export default function MinterPage() {
 
         setAllMetadata(allMetadata);
         setAbi(artifact.abi);
-        // setAbi(Turtleverse.abi);
+        //setAbi(Turtleverse.abi);
     }, [])
 
 
@@ -121,15 +122,17 @@ export default function MinterPage() {
             const tokensAmount = ethers.BigNumber.from(l);
             const v = price.mul(tokensAmount);
             let tx; 
-            let imageUrl;
+            let k = 0;
+            let imageUrls = [];
     
-            while (l > 0) {
-                const md = tokensToMintMetadata[l-1]
+            while (k < l) {
                 try {
+                    let md = tokensToMintMetadata[k]
                     const f = new File([md.turtle.Body], `${md.metadata.name}.png`);
                     const hash = await pinFileToIPFS(f);
-                    imageUrl = `https://turtleverse.mypinata.cloud/ipfs/${hash}`
-                    setStageMedia(stageMedia => [...stageMedia, imageUrl])                    
+                    let imageUrl = `https://turtleverse.mypinata.cloud/ipfs/${hash}`
+                    setStageMedia(stageMedia => [...stageMedia, imageUrl]);
+                    imageUrls.push(imageUrl);                
                 } catch (err) {
                     setIsMinting(false);
                     setStageMedia([]);
@@ -137,21 +140,22 @@ export default function MinterPage() {
                     alert(err.message + 'We\'re sorry, please try again later.')
                     return;
                 }
-                l--;
+                k++;
             }
 
             try {
                 let transaction = await tvc.mintTokens(tokensAmount, { value: v })
                 tx = await transaction.wait();
-            } catch {
+            } catch (err) {
                 setIsMinting(false);
                 setStageMedia([]);
                 setRequestedArray([]);
-                alert('Something went wrong trying to mint your token(s). Please try again later.');
+                alert('Something went wrong trying to mint your token(s). Please try again later: ' + err);
                 return;
             }
 
             try {
+                setIsLoadingTransaction(true)
                 const tokenIds = tx.events.map(ev => {
                     return ev.args.tokenId.toNumber();
                 })
@@ -162,11 +166,17 @@ export default function MinterPage() {
                     await updateRequestedMetadata(tmd.metadata, s3);
                     let obj = {};
                     obj.name = '#'+tmd.metadata.name.split('_')[0];
-                    obj.image = imageUrl;
+                    obj.image = imageUrls[i];
+                    obj.description = "This is a test description of the Turtleverse!";
                     obj.attributes = tmd.metadata.attributes;
                     await pinJSONToIPFS(obj, tokenIds[i])
                 })
+
+                alert('Your transaction is complete!');
+                setIsLoadingTransaction(false)
+                return;
             } catch (err) {
+                setIsLoadingTransaction(false)
                 setIsMinting(false)
                 setStageMedia([]);
                 alert('Something went wrong uploading your token(s) metadata to IPFS. Please reach out to us directly and we\'ll clear this up!');
@@ -203,6 +213,16 @@ export default function MinterPage() {
                 </div>
                 <br/>
             </div>
+            {
+                isLoadingTransaction ?
+                <>
+                    <div className="loading-transaction">
+                        <p>Finalizing transaction, stay tuned for transaction hash and tokenIds...</p>
+                    </div>
+                </>
+                :
+                null
+            }
             {
                 isMinting ?
                 <>
