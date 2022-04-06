@@ -127,10 +127,6 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         else { return priceToMint; }
     }
 
-    // function getCurrentTokens() external returns (uint256) {
-    //     return 
-    // }
-
     function mintTokens(uint256 tokensAmount) external payable whenAnySaleActive nonReentrant returns (uint256[] memory) {
         _preValidatePurchase(tokensAmount);
         uint256[] memory tokens = new uint256[](tokensAmount);

@@ -4,14 +4,16 @@ export async function pinFileToIPFS(file) {
     let hash;
     var data = new FormData();
     data.append('file', file);
+    const pk = process.env.NEXT_PUBLIC_PINATA_API_KEY;
+    const ps = process.env.NEXT_PUBLIC_PINATA_CLIENT_SECRET;
     const base = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
     await axios.post(base,
         data,
         {
             headers: {
                 'Content-Type': 'multipart/form-data;',
-                'pinata_api_key': process.env.NEXT_PUBLIC_PINATA_API_KEY,
-                'pinata_secret_api_key': process.env.NEXT_PUBLIC_PINATA_CLIENT_SECRET
+                'pinata_api_key': pk,
+                'pinata_secret_api_key': ps
             }
         }
     ).then(function (response) {
@@ -33,12 +35,14 @@ export async function pinJSONToIPFS(toSend, filename) {
         },
         pinataContent: toSend
     }
+    const pk = process.env.NEXT_PUBLIC_PINATA_API_KEY;
+    const ps = process.env.NEXT_PUBLIC_PINATA_CLIENT_SECRET;
     return axios
         .post(url, metadata, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'pinata_api_key': process.env.REACT_APP_PINATA_API_KEY,
-                    'pinata_secret_api_key': process.env.REACT_APP_PINATA_CLIENT_SECRET
+                    'pinata_api_key': pk,
+                    'pinata_secret_api_key': ps
                 }
         }).then(function (response) {
             console.log(response)

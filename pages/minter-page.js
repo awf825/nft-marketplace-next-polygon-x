@@ -10,7 +10,10 @@ import {
     getAbiFromBucket
 } from '../helpers/S3.js'
 
-import { pinFileToIPFS } from '../helpers/Pinata.js'
+import { 
+    pinFileToIPFS,
+    pinJSONToIPFS 
+} from '../helpers/Pinata.js'
 
 import AWS from 'aws-sdk'
 import { useMoralis } from 'react-moralis';
@@ -27,19 +30,6 @@ AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
-
-const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
-const projectSecret = process.env.NEXT_PUBLIC_INFURA_PROJECT_SECRET
-const auth = 'Basic '+projectId+':'+projectSecret 
-// const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
-const client = ipfsHttpClient({
-    host: 'ipfs.infura.io',
-    port: 5001,
-    protocol: 'https',
-    headers: {
-        authorization: auth,
-    },
-});
 
 export default function MinterPage() {
     const [requestedAmount, setRequestedAmount] = useState(0);
@@ -77,12 +67,6 @@ export default function MinterPage() {
         if (!isAuthenticated) { alert('You must enable metamask to mint tokens. Please try again after connecting your wallet by clicking the link in the nav burger.'); return; }
         else 
         {
-            /*
-                "A Provider in ethers is a read-only abstraction to access the blockchain data."
-                https://docs.ethers.io/v5/api/providers/provider/
-                https://docs.ethers.io/v5/api/contract/contract/
-                https://docs.ethers.io/v5/api/utils/bignumber/
-            */
             setIsMinting(true)
             const web3Modal = new Web3Modal();
             const connection = await web3Modal.connect();
@@ -134,41 +118,19 @@ export default function MinterPage() {
             }
             else { tokensToMintMetadata = await getRequestedMetadata(metadata, s3, requestedAmount); }
 
-            let metadataTokenPaths = [];
             let l = tokensToMintMetadata.length;
-
             const tokensAmount = ethers.BigNumber.from(l);
             const v = price.mul(tokensAmount);
+            let tx; 
+            let imageUrl;
     
             while (l > 0) {
                 const md = tokensToMintMetadata[l-1]
                 try {
                     const f = new File([md.turtle.Body], `${md.metadata.name}.png`);
                     const hash = await pinFileToIPFS(f);
-                    const imageUrl = `https://turtleverse.mypinata.cloud/ipfs/${hash}`
-                    setStageMedia(stageMedia => [...stageMedia, imageUrl])
-                 
-                    md.metadata.image = imageUrl;
-                    let obj = {};
-                    obj.name = '#'+md.metadata.name.split('_')[0];
-                    obj.image = imageUrl;
-                    obj.attributes = md.metadata.attributes;
-    
-                    // const addedMetadata = await client.add(
-                    //     new File([JSON.stringify(obj)], `${md.metadata.name}.json`),
-                    //     {
-                    //         progress: (p) => console.log(`received: ${p}`)
-                    //     }
-                    // )
-                    // await client.pin(CID.parse(addedImage.path))
-                    // await client.pin(CID.parse(addedMetadata.path));
-                    // return;
-
-
-
-                    // console.log('addedMetadata: ', addedMetadata);
-                    // metadataTokenPaths.push(addedMetadata.path)
-                    
+                    imageUrl = `https://turtleverse.mypinata.cloud/ipfs/${hash}`
+                    setStageMedia(stageMedia => [...stageMedia, imageUrl])                    
                 } catch (err) {
                     setIsMinting(false);
                     setStageMedia([]);
@@ -179,37 +141,38 @@ export default function MinterPage() {
                 l--;
             }
 
-           tvc.mintTokens(tokensAmount, { value: v })
-           .then(resp => {
-               //const tokenId = ethers.BigNumber.toNumber(resp.value)
-               debugger
-               try {
-                   tokensToMintMetadata.forEach(async tmd => {
-                       tmd.metadata.transactionHash = resp.hash;
-                       tmd.metadata.minted = true;
-                       await updateRequestedMetadata(tmd.metadata, s3);
-                       let obj = {};
-                       obj.name = '#'+tmd.metadata.name.split('_')[0];
-                       obj.image = imageUrl;
-                       obj.attributes = tmd.metadata.attributes;
-                       console.log("resp @ mintTokens: ", resp)
-                       await pinFileToIPFS(obj)
-                    })
-                    alert('Transaction complete!', resp)
-                    setIsMinting(false)
-                    setStageMedia([]);
-                } catch (err) {
-                    setIsMinting(false)
-                    setStageMedia([]);
-                    alert(err.data.message)
-                }
-            })
-            .catch(err => { 
+            try {
+                let transaction = await tvc.mintTokens(tokensAmount, { value: v })
+                tx = await transaction.wait();
+            } catch {
                 setIsMinting(false);
                 setStageMedia([]);
                 setRequestedArray([]);
-                alert(err.message)
-            });  
+                alert('Something went wrong trying to mint your token(s). Please try again later.');
+                return;
+            }
+
+            try {
+                const tokenIds = tx.events.map(ev => {
+                    return ev.args.tokenId.toNumber();
+                })
+
+                tokensToMintMetadata.forEach(async (tmd, i) => {
+                    tmd.metadata.transactionHash = tx.transactionHash;
+                    tmd.metadata.minted = true;
+                    await updateRequestedMetadata(tmd.metadata, s3);
+                    let obj = {};
+                    obj.name = '#'+tmd.metadata.name.split('_')[0];
+                    obj.image = imageUrl;
+                    obj.attributes = tmd.metadata.attributes;
+                    await pinJSONToIPFS(obj, tokenIds[i])
+                })
+            } catch (err) {
+                setIsMinting(false)
+                setStageMedia([]);
+                alert('Something went wrong uploading your token(s) metadata to IPFS. Please reach out to us directly and we\'ll clear this up!');
+                return;
+            }
         }
     }
 
