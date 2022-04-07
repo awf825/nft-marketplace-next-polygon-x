@@ -37,7 +37,6 @@ describe("Turtleverse:", function () {
         ));
 
         const maxSupply =  ethers.BigNumber.from(10);
-        const maxWithdrawal = ethers.BigNumber.from("500000000000000000");
         const presaleLimit = ethers.BigNumber.from(3);
         const saleLimit = ethers.BigNumber.from(25);
         tv = await tvFactory.deploy(
@@ -45,7 +44,6 @@ describe("Turtleverse:", function () {
           "NFTV", 
           "https://ipfs.infura.io/ipfs/", 
           maxSupply,
-          maxWithdrawal,
           presaleLimit,
           saleLimit,
           wallet
@@ -166,7 +164,7 @@ describe("Turtleverse:", function () {
         const one = ethers.BigNumber.from(1);
         try {
             let price = await tv.price();
-            await tv.connect(addr1).mintTokens(one, [""], { value: price });
+            await tv.connect(addr1).mintTokens(one, { value: price });
         } catch (err) {
             assert.isNull(err, "Should be able to mint")
         }
@@ -175,7 +173,7 @@ describe("Turtleverse:", function () {
 
         try {
             let price = await tv.price();
-            await tv.connect(addr1).mintTokens(one, [""], { value: price });
+            await tv.connect(addr1).mintTokens(one, { value: price });
         } catch (err) {
             assert.isNotNull(err, "Should NOT be able to mint")
         }
@@ -183,8 +181,8 @@ describe("Turtleverse:", function () {
         await expect(tv.connect(owner).addToWhitelist([addr1.address, addr2.address])).to.emit(tv, 'AddedToWhitelist')
         try {
             let price = await tv.price();
-            await tv.connect(addr1).mintTokens(one, [""], { value: price });
-            await tv.connect(addr2).mintTokens(one, [""], { value: price });
+            await tv.connect(addr1).mintTokens(one, { value: price });
+            await tv.connect(addr2).mintTokens(one, { value: price });
         } catch (err) {
             assert.isNull(err, "Should be able to mint")
         }
@@ -192,14 +190,14 @@ describe("Turtleverse:", function () {
         await expect(tv.connect(owner).removeFromWhitelist([addr1.address, addr2.address])).to.emit(tv, 'RemovedFromWhitelist')
         try {
             let price = await tv.price();
-            await tv.connect(addr1).mintTokens(one, [""], { value: price });
-            await tv.connect(addr2).mintTokens(one, [""], { value: price });
+            await tv.connect(addr1).mintTokens(one, { value: price });
+            await tv.connect(addr2).mintTokens(one, { value: price });
         } catch (err) {
             assert.isNotNull(err, "Should NOT be able to mint")
         }
     })
 
-    it("Should be able to mint during public sale, but need to mint more than one. Token URIs should match those passed in.", async function () {
+    it("Should be able to mint during public sale, but need to mint more than one", async function () {
         // let provider = ethers.getDefaultProvider();
         // const wallet = ethers.Wallet.createRandom().connect(provider);
         const zero = ethers.BigNumber.from(0);
@@ -208,21 +206,8 @@ describe("Turtleverse:", function () {
         let price = await tv.price();
         let tokenURI;
 
-        await tv.connect(owner).mintTokens(one, ["tokenURI1"], { value: price });
-        await expect(tv.connect(owner).mintTokens(zero, [""])).to.be.reverted;
-
-        await tv.connect(owner).mintTokens(one, ["tokenURI2"], { value: price });
-        await tv.connect(owner).mintTokens(one, ["tokenURI3"], { value: price });
-
-        tokenURI = await tv.connect(owner).tokenURI(ethers.BigNumber.from(2))
-        assert.equal(tokenURI, "https://ipfs.infura.io/ipfs/tokenURI2")
-        tokenURI = await tv.connect(owner).tokenURI(ethers.BigNumber.from(3))
-        assert.equal(tokenURI, "https://ipfs.infura.io/ipfs/tokenURI3")
-        
-        tokenURI = await tv.connect(addr1).tokenURI(ethers.BigNumber.from(2))
-        assert.equal(tokenURI, "https://ipfs.infura.io/ipfs/tokenURI2")
-        tokenURI = await tv.connect(addr1).tokenURI(ethers.BigNumber.from(3))
-        assert.equal(tokenURI, "https://ipfs.infura.io/ipfs/tokenURI3")
+        await tv.connect(owner).mintTokens(one, { value: price });
+        await expect(tv.connect(owner).mintTokens(zero)).to.be.reverted;
     })
 
     it("Tokens should not exceed maxSupply (5). Tokens should start at 0, and increment by 1 up to maxSupply.", async function () {
@@ -231,25 +216,40 @@ describe("Turtleverse:", function () {
         let price = await tv.price();
         const one = ethers.BigNumber.from(1);
 
-        currentToken = await tv.getCurrentToken();
-        assert.equal(currentToken, 0)
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        currentToken = await tv.getCurrentToken();
-        assert.equal(currentToken, 1)
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        currentToken = await tv.getCurrentToken();
-        assert.equal(currentToken, 2)
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        currentToken = await tv.getCurrentToken();
-        assert.equal(currentToken, 3)
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        currentToken = await tv.getCurrentToken();
-        assert.equal(currentToken, 4)
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        currentToken = await tv.getCurrentToken();
-        assert.equal(currentToken, 5)
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 0)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 1)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 2)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 3)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 4)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 5)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 6)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 7)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 8)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 9)
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 10)
 
-        await expect(tv.connect(owner).mintTokens(one, [""], { value: price })).to.be.reverted
+        await expect(tv.connect(owner).mintTokens(one, { value: price })).to.be.reverted
     })
 
     it("Royalty should payout to payout address AND royalty amount should be 8%", async function () {
@@ -260,7 +260,7 @@ describe("Turtleverse:", function () {
         const salePrice = ethers.utils.parseEther("10");
         const finalRoyalty = ethers.utils.parseEther("0.8");
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
+        await tv.connect(owner).mintTokens(one, { value: price });
         
         let royaltyInfo = await tv.royaltyInfo(1, salePrice)
         const royaltyReceiver = royaltyInfo.receiver
@@ -270,71 +270,76 @@ describe("Turtleverse:", function () {
         assert.equal(royaltyReceiver, wallet)
     })
 
-    it("Should be able to withdraw to proper payout wallet specified in .wallet. Should be reverted if balance is under .5 eth.", async function () {
-        let contractBalance;
-        let walletBalance;
-        const priceOfOne = ethers.utils.parseEther(".05");
-        const priceOfTwo = ethers.utils.parseEther(".1");
-        const priceOfThree = ethers.utils.parseEther(".15");
-        const priceOfFour = ethers.utils.parseEther(".2");
-        const priceOfFive = ethers.utils.parseEther(".25");
-        const priceOfSix = ethers.utils.parseEther(".3");
-        const priceOfSeven = ethers.utils.parseEther(".35");
-        const priceOfEight = ethers.utils.parseEther(".4");
-        const priceOfNine = ethers.utils.parseEther(".45");
-        const priceOfTen = ethers.utils.parseEther(".5");
+    it("Should set the baseUri to provided url and should be reverted by non-owner.", async function () {
         let provider = ethers.provider;
+        let currentToken;
+        let tokenURI;
         await tv.startPublicSale();
         let price = await tv.price();
         const one = ethers.BigNumber.from(1);
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfOne);
+        await tv.connect(owner).mintTokens(one, { value: price });
+        currentToken = await tv.totalSupply();
+        assert.equal(currentToken.toNumber(), 1)
+        tokenURI = await tv.tokenURI(one);
+        assert.equal(tokenURI, "https://ipfs.infura.io/ipfs/1")
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfTwo);
+        // expect(tv.tokenURI(1)).to.equal("https://ipfs.infura.io/ipfs/1");
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfThree);
+        await tv.connect(owner).setBaseURI("https://newUrl/")
+        tokenURI = await tv.tokenURI(one);
+        assert.equal(tokenURI, "https://newUrl/1")
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfFour);
+        await expect(tv.connect(addr1).setBaseURI("https://noUrl/")).to.be.reverted
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfFive);
+        // expect(tv.tokenURI(one)).to.equal("https://newUrl/1");
+        // expect()
+    })
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfSix);
+    it("Should be able to withdraw larger amounts of ether.", async function () {
+        let contractBalance;
+        let walletBalance;
+        const oneEth = ethers.utils.parseEther("1");
+        const tenEth = ethers.utils.parseEther("10");
+        const hundoEth = ethers.utils.parseEther("100");
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfSeven);
+        let provider = ethers.provider;
+        await tv.startPublicSale();
+        const one = ethers.BigNumber.from(1);
 
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
+        // 1 eth
+        await tv.connect(owner).mintTokens(one, { value: "1000000000000000000" });
         contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfEight);
-
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfNine);
-
-        await tv.connect(owner).mintTokens(one, [""], { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfTen);
-
+        expect(contractBalance).to.equal("1000000000000000000");
         await tv.connect(owner).withdraw();
         contractBalance = await provider.getBalance(tv.address);
         expect(contractBalance).to.equal(0);
         walletBalance = await provider.getBalance(wallet);
-        expect(walletBalance).to.equal(priceOfTen);
+        expect(walletBalance).to.equal("1000000000000000000");
+        console.log("contractBalance after withdrawing 1 eth: ", contractBalance)
+        // 10 eth
+        await tv.connect(owner).mintTokens(one, { value: "10000000000000000000" });
+        contractBalance = await provider.getBalance(tv.address);
+        console.log("contractBalance after mint of 10 eth: ", contractBalance)
 
-        await expect(tv.connect(owner).withdraw()).to.be.reverted
+        expect(contractBalance).to.equal("10000000000000000000");
+        await tv.connect(owner).withdraw();
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(0);
+        walletBalance = await provider.getBalance(wallet);
+        expect(walletBalance).to.equal("11000000000000000000");
+        console.log("contractBalance after withdrawing 10 eth: ", contractBalance)
+        
+        // 100 eth
+        await tv.connect(owner).mintTokens(one, { value: "100000000000000000000" });
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal("100000000000000000000");
+        await tv.connect(owner).withdraw();
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(0);
+        walletBalance = await provider.getBalance(wallet);
+        expect(walletBalance).to.equal("111000000000000000000");
+        console.log("contractBalance after withdrawing 100 eth: ", contractBalance)
     })
 
     // should not be able to mint an existing token id
