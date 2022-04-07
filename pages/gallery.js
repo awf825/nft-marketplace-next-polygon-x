@@ -6,7 +6,6 @@
 */
 
 import { useState, useEffect, useContext } from 'react'
-// import Image from 'next/image'
 import FilterSelects from './components/FilterSelects';
 import LoadingOverlay from './components/LoadingOverlay';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -16,9 +15,6 @@ import {
   setFilteredAppliedGallery
 } from "../contexts/GalleryContext.js";
 
-// const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
-// const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
-// const gateway = 'https://turtleverse.mypinata.cloud/ipfs/
 const initialAttrState = [
   { "Background": '' },
   { "Clothes": '' },
@@ -45,7 +41,9 @@ export default function Gallery() {
   const [gallery, setGallery] = useState([])
 
   useEffect(() => {
-    setGallery(galleryState.appliedGallery)
+    if (galleryState !== undefined) {
+      setGallery(galleryState.appliedGallery)
+    }
   }, [galleryState.appliedGallery])
 
   useEffect(() => {
@@ -196,16 +194,6 @@ export default function Gallery() {
               </div>
             )))
             }
-            {/* {
-              currentGallery.length===0 
-              ?
-              ( areFiltersOn ?
-                <h1 className="gallery-directive" style={{ margin: "5%"}}>No Turtles found with these filters</h1> :
-                <h1 className="gallery-directive" style={{ margin: "5%" }}>SCROLL DOWN TO VIEW OUR TURTLES</h1>
-              ) 
-              :
-              null
-            } */}
           </div>
         </InfiniteScroll>
       </div>
