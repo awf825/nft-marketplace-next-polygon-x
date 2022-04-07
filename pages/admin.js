@@ -20,13 +20,69 @@ export default function Admin() {
     const [galleryState, dispatch] = useContext(GalleryContext);
     const [abi, setAbi] = useState([]);
     useEffect(async () => {
-        const turtleBucket = new AWS.S3({
-            accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
-            secretAccessKey: galleryState.accessParams.Credentials.SecretAccessKey,
-            sessionToken: galleryState.accessParams.Credentials.SessionToken,
-            bucket: 'turtleverse.albums',
-            region: 'ca-central-1'
-        });
+        // const turtleBucket = new AWS.S3({
+        //     accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
+        //     secretAccessKey: galleryState.accessParams.Credentials.SecretAccessKey,
+        //     sessionToken: galleryState.accessParams.Credentials.SessionToken,
+        //     bucket: 'turtleverse.albums',
+        //     region: 'ca-central-1'
+        // });
+        let bucket;
+        const storedParams = localStorage.getItem("stsCredentials");
+        if (storedParams !== null) {
+            const json = JSON.parse(storedParams);
+            try {
+                bucket = new AWS.S3({
+                    accessKeyId: json.Credentials.AccessKeyId,
+                    secretAccessKey: json.Credentials.SecretAccessKey,
+                    sessionToken: json.Credentials.SessionToken,
+                    bucket: 'turtleverse.albums',
+                    region: 'ca-central-1'
+                })
+                setBucket(bucket)
+            } catch (err) {
+                console.log(err.code)
+                if (err.code === "ExpiredToken") {
+                    const sts = new AWS.STS();
+                    sts.assumeRole({
+                        DurationSeconds: 900,
+                        ExternalId: 'turtleverse-assume-s3-access',
+                        RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
+                        RoleSessionName: 'TV-Gallery-View'
+                    }, async (err, data) => {
+                        if (err) throw err;
+                        localStorage.setItem("stsCredentials", JSON.stringify(data));
+                        bucket = new AWS.S3({
+                            accessKeyId: data.Credentials.AccessKeyId,
+                            secretAccessKey: data.Credentials.SecretAccessKey,
+                            sessionToken: data.Credentials.SessionToken,
+                            bucket: 'turtleverse.albums',
+                            region: 'ca-central-1'
+                        })
+                    })
+                    setBucket(bucket)
+                }
+            }
+        } else {
+            const sts = new AWS.STS();
+            sts.assumeRole({
+                DurationSeconds: 900,
+                ExternalId: 'turtleverse-assume-s3-access',
+                RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
+                RoleSessionName: 'TV-Gallery-View'
+            }, async (err, data) => {
+                if (err) throw err;
+                localStorage.setItem("stsCredentials", JSON.stringify(data));
+                bucket = new AWS.S3({
+                    accessKeyId: data.Credentials.AccessKeyId,
+                    secretAccessKey: data.Credentials.SecretAccessKey,
+                    sessionToken: data.Credentials.SessionToken,
+                    bucket: 'turtleverse.albums',
+                    region: 'ca-central-1'
+                })
+                setBucket(bucket)
+            })
+        }
         /* uploaded hardhat produced abi to s3 to consume here */
         const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
         setAbi(artifact.abi);

@@ -37,6 +37,7 @@ export default function MinterPage() {
     const [isMinting, setIsMinting] = useState(false);
     const [isLoadingTransaction, setIsLoadingTransaction] = useState(false);
 
+    const [bucket, setBucket] = useState({})
     const [abi, setAbi] = useState([]);
     const [allMetadata, setAllMetadata] = useState([]);
 
@@ -44,20 +45,70 @@ export default function MinterPage() {
     const { isAuthenticated, user } = useMoralis();
 
     useEffect(async () => {
-        const turtleBucket = new AWS.S3({
-            accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
-            secretAccessKey: galleryState.accessParams.Credentials.SecretAccessKey,
-            sessionToken: galleryState.accessParams.Credentials.SessionToken,
-            bucket: 'turtleverse.albums',
-            region: 'ca-central-1'
-        });
-        const allMetadata = await listAllObjectsFromS3Bucket(turtleBucket, 'turtleverse.albums', `${process.env.NEXT_PUBLIC_GENERATION}/metadata`);
+        let bucket;
+        const storedParams = localStorage.getItem("stsCredentials");
+        if (storedParams !== null) {
+            const json = JSON.parse(storedParams);
+            try {
+                bucket = new AWS.S3({
+                    accessKeyId: json.Credentials.AccessKeyId,
+                    secretAccessKey: json.Credentials.SecretAccessKey,
+                    sessionToken: json.Credentials.SessionToken,
+                    bucket: 'turtleverse.albums',
+                    region: 'ca-central-1'
+                })
+                setBucket(bucket)
+            } catch (err) {
+                console.log(err.code)
+                if (err.code === "ExpiredToken") {
+                    const sts = new AWS.STS();
+                    sts.assumeRole({
+                        DurationSeconds: 900,
+                        ExternalId: 'turtleverse-assume-s3-access',
+                        RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
+                        RoleSessionName: 'TV-Gallery-View'
+                    }, async (err, data) => {
+                        if (err) throw err;
+                        localStorage.setItem("stsCredentials", JSON.stringify(data));
+                        bucket = new AWS.S3({
+                            accessKeyId: data.Credentials.AccessKeyId,
+                            secretAccessKey: data.Credentials.SecretAccessKey,
+                            sessionToken: data.Credentials.SessionToken,
+                            bucket: 'turtleverse.albums',
+                            region: 'ca-central-1'
+                        })
+                    })
+                    setBucket(bucket)
+                }
+            }
+        } else {
+            const sts = new AWS.STS();
+            sts.assumeRole({
+                DurationSeconds: 900,
+                ExternalId: 'turtleverse-assume-s3-access',
+                RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
+                RoleSessionName: 'TV-Gallery-View'
+            }, async (err, data) => {
+                if (err) throw err;
+                localStorage.setItem("stsCredentials", JSON.stringify(data));
+                bucket = new AWS.S3({
+                    accessKeyId: data.Credentials.AccessKeyId,
+                    secretAccessKey: data.Credentials.SecretAccessKey,
+                    sessionToken: data.Credentials.SessionToken,
+                    bucket: 'turtleverse.albums',
+                    region: 'ca-central-1'
+                })
+                setBucket(bucket)
+            })
+        }
+        const allMetadata = await listAllObjectsFromS3Bucket(bucket, 'turtleverse.albums', `${process.env.NEXT_PUBLIC_GENERATION}/metadata`);
         /* uploaded hardhat produced abi to s3 to consume here */
-        const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
+        const artifact = await getAbiFromBucket(bucket, 'turtleverse.albums');
 
         setAllMetadata(allMetadata);
         setAbi(artifact.abi);
         //setAbi(Turtleverse.abi);
+        return;
     }, [])
 
 
@@ -91,18 +142,11 @@ export default function MinterPage() {
             // arbitrarily get 50 pieces of metadata, odds are there will be at least the amount selected non-minted
             let tokensToMintMetadata;
             const metadata = allMetadata.sort(() => Math.random() - Math.random()).slice(0, 50)
-            const s3 = new AWS.S3({
-                accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
-                secretAccessKey: galleryState.accessParams.Credentials.SecretAccessKey,
-                sessionToken: galleryState.accessParams.Credentials.SessionToken,
-                bucket: 'turtleverse.albums',
-                region: 'ca-central-1'
-            })
             
             // if price is 0, we know we're in the giveaway, so we have to call specific function to grab special 
             // json from bucket 
             if (price.toString() === '0') { 
-                tokensToMintMetadata = await getRequestedGiveawayMetadata(user, s3) 
+                tokensToMintMetadata = await getRequestedGiveawayMetadata(user, bucket) 
                 if (tokensToMintMetadata.length > 0) {
                     setRequestedAmount(tokensToMintMetadata.length)
                     setRequestedArray(tokensToMintMetadata.map(tmd => {
@@ -116,7 +160,7 @@ export default function MinterPage() {
                     return;
                 }
             }
-            else { tokensToMintMetadata = await getRequestedMetadata(metadata, s3, requestedAmount); }
+            else { tokensToMintMetadata = await getRequestedMetadata(metadata, bucket, requestedAmount); }
 
             let l = tokensToMintMetadata.length;
             const tokensAmount = ethers.BigNumber.from(l);
@@ -163,7 +207,7 @@ export default function MinterPage() {
                 tokensToMintMetadata.forEach(async (tmd, i) => {
                     tmd.metadata.transactionHash = tx.transactionHash;
                     tmd.metadata.minted = true;
-                    await updateRequestedMetadata(tmd.metadata, s3);
+                    await updateRequestedMetadata(tmd.metadata, bucket);
                     let obj = {};
                     obj.name = '#'+tmd.metadata.name.split('_')[0];
                     obj.image = imageUrls[i];
@@ -207,7 +251,7 @@ export default function MinterPage() {
                         <option>3</option>
                         <option>4</option>
                     </select>
-                    <button type="submit" onClick={() => mint()}>
+                    <button className="mint-button" type="submit" onClick={() => mint()}>
                         MINT
                     </button>
                 </div>
