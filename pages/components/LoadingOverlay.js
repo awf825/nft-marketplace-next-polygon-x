@@ -5,7 +5,7 @@ export default function LoadingOverlay({ isGathering }) {
     return (
         <>
             {
-                (isGathering.loading === true)
+                (isGathering && ( isGathering.loading === true ))
                 ?
                 <div id="overlay-gif" className="loading-overlay mobile-top-margin-sm">
                     <h1>{isGathering.text}</h1>

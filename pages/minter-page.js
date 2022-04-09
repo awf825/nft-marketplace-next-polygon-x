@@ -331,9 +331,9 @@ export default function MinterPage() {
                     :
                     <>
                         <div className="post-sale-info">
-                            <p>Transaction Hash: {localStorage.getItem("tx")}</p>
+                            <p>Transaction Hash: </p>
                             <p>Contract Address: {saleStructure.contract && saleStructure.contract.address}</p>
-                            <p>Token Ids: {localStorage.getItem("tokenIds")}</p>
+                            <p>Token Ids: </p>
                         </div>
                     </>
                 }
