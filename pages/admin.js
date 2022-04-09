@@ -77,7 +77,7 @@ export default function Admin() {
             })
         }
         /* uploaded hardhat produced abi to s3 to consume here */
-        const artifact = await getAbiFromBucket(turtleBucket, 'turtleverse.albums');
+        const artifact = await getAbiFromBucket(bucket, 'turtleverse.albums');
         setAbi(artifact.abi);
     }, [])
 
