@@ -78,7 +78,7 @@ function Marketplace({ Component, pageProps }) {
             if (err.code === "ExpiredToken") {
               const sts = new AWS.STS();
               sts.assumeRole({
-                DurationSeconds: 900,
+                DurationSeconds: 1800,
                 ExternalId: 'turtleverse-assume-s3-access',
                 RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
                 RoleSessionName: 'TV-Gallery-View'
@@ -103,7 +103,7 @@ function Marketplace({ Component, pageProps }) {
     } else {
       const sts = new AWS.STS();
       sts.assumeRole({
-        DurationSeconds: 900,
+        DurationSeconds: 1800,
         ExternalId: 'turtleverse-assume-s3-access',
         RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
         RoleSessionName: 'TV-Gallery-View'
@@ -129,7 +129,7 @@ function Marketplace({ Component, pageProps }) {
   }, [])
 
   useEffect(() => {
-    if (galleryState && galleryState.gallery.length > 0) {
+    if (galleryState && galleryState.gallery && galleryState.gallery.length > 0) {
       const interval = setInterval(async () => {
         if (galleryState.appliedGallery.length >= 10000) { return }
         else {

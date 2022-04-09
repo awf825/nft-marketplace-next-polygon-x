@@ -62,7 +62,7 @@ export const getRequestedMetadata = async (requested, s3, n) => {
       const resp = await s3.getObject(params).promise();
       const metadata = JSON.parse(resp.Body.toString('utf-8'))
       console.log('metadata.minted @ getdata: ', metadata.minted)
-      if (metadata.minted === false) {
+      if (metadata.minted === false && metadata.isGiveaway === false) {
         metadata.key = requested[i].Key
         const png = await s3.getObject({ Bucket: 'turtleverse.albums', Key: metadata.image.split('turtleverse.albums/')[1]}).promise()
         output.push({

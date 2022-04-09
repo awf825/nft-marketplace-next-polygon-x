@@ -157,6 +157,7 @@ select {
     font-style:italic;
     font-size: 40px;
     color: black;
+    z-index: 9001;
     text-align: center;
 }
 .gallery-directive
