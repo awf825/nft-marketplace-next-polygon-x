@@ -1,5 +1,7 @@
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
+import Select from 'react-select';
+import Image from 'next/image';
 
 import {
     listAllObjectsFromS3Bucket,
@@ -29,6 +31,50 @@ AWS.config.update({
     secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
 
+const customStyles = {
+    menu: (provided, state) => ({
+      ...provided,
+      width: state.selectProps.width,
+      color: '#000',
+      padding: 20,
+    }),
+  
+    control: (_, { selectProps: { display }}) => ({
+      backgroundColor: "#000",
+      color: "#fff",
+      borderTop: "1px solid white",
+      borderBottom: "1px solid white",
+      borderBottom: '1px white',
+      display: "flex",
+      width: "100%"
+    }),
+
+    placeholder: () => ({
+    //   fontSize: "30px"
+      fontWeight: "800",
+      fontStyle: "italic",
+      fontSize: "18px",
+      textTransform: "uppercase"
+    }),
+
+    indicatorSeparator: () => ({
+        display: "none"
+    }),
+
+    input: () => ({
+        display: "none"
+    }),
+
+    singleValue: () => ({
+        //   fontSize: "30px"
+          color: "#ADD8E6",
+          fontWeight: "800",
+          fontStyle: "italic",
+          fontSize: "28px",
+          textTransform: "uppercase"
+    }),
+}
+
 export default function MinterPage() {
     const [requestedAmount, setRequestedAmount] = useState(0);
     const [requestedArray, setRequestedArray] = useState([])
@@ -43,6 +89,11 @@ export default function MinterPage() {
     const [isGathering, setIsGathering] = useState({
         loading: false,
         text: ""
+    })
+    const [confirmationObject, setConfirmationObject] = useState({
+        hash: "",
+        contract: "",
+        tokenIds: []
     })
     const [setTxHash, txHash] = useState("");
     const [setTokenIds, tokenIds] = useState([]);
@@ -160,6 +211,11 @@ export default function MinterPage() {
         else 
         {
             setIsMinting(true)
+            setConfirmationObject({
+                hash: "",
+                contract: "",
+                tokenIds: []
+            })
             // randomly select tokens based on amount requested 
             // arbitrarily get 50 pieces of metadata, odds are there will be at least the amount selected non-minted
             // may have to increase this number as sale goes on, or just rethink this scheme...
@@ -231,8 +287,8 @@ export default function MinterPage() {
                     return ev.args.tokenId.toNumber()
                 })
 
-                localStorage.setItem("tokenIds", tokenIds);
-                localStorage.setItem("tx", tx.transactionHash);
+                // localStorage.setItem("tokenIds", tokenIds);
+                // localStorage.setItem("tx", tx.transactionHash);
 
                 tokensToMintMetadata.forEach(async (tmd, i) => {
                     tmd.metadata.transactionHash = tx.transactionHash;
@@ -245,12 +301,16 @@ export default function MinterPage() {
                     obj.attributes = tmd.metadata.attributes;
                     await pinJSONToIPFS(obj, tokenIds[i])
                 })
-
                 setIsGathering({
                     loading: false,
                     text: ""
                 })
-                setIsMinting(false)
+                setConfirmationObject({
+                    hash: tx.transactionHash,
+                    contract: saleStructure.contract.address,
+                    tokenIds: tokenIds
+                })
+                //setIsMinting(false)
                 alert(
                     `
                     Your transaction is complete! 
@@ -274,10 +334,10 @@ export default function MinterPage() {
     function onSelectAmount(e) { 
         console.log('saleStructure: ', saleStructure)
         var a = []
-        for (let i = 0; i < e.target.value; i++) {
+        for (let i = 0; i < e.value; i++) {
             a.push("/turtles.gif")
         }
-        setRequestedAmount(e.target.value);
+        setRequestedAmount(e.value);
         // initialize empty array that is same length as requested amount, and full of default turtle gifs
         setRequestedArray(a);
         setStageMedia([]);
@@ -292,30 +352,36 @@ export default function MinterPage() {
                 :
                 null
             }
-            <div className="minter-image" style={{textAlign: "center"}}>
-                <div>
+                <div className="minter-controls-wrapper">
                     {
                         ( ( Object.keys(saleStructure).length > 0 ) && ( saleStructure.price.toString() !== '0' ) ) 
                         ?
-                        <select onChange={(e) => onSelectAmount(e)}>
-                            <option>0</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                        </select>
+                        <div>
+                            <Select          
+                                onChange={(e) => onSelectAmount(e)}
+                                placeholder={"# Of Tokens"}
+                                options={[
+                                    { value: 0, label: "Zero" },
+                                    { value: 1, label: "One" },
+                                    { value: 2, label: "Two" },
+                                    { value: 3, label: "Three" },
+                                    { value: 4, label: "Four" }
+                                ]}
+                                styles={customStyles} 
+                            />
+                        </div>
                         : 
                         null
                     }
-                    <button className="mint-button" type="submit" onClick={() => mint()}>
-                        MINT
-                    </button>
+                    <div className="mint-button">
+                        <Image src={"/TV_Logo_black.png"} width={65} height={65}></Image>
+                        <button onClick={() => mint()}>MINT</button>
+                    </div>
                 </div>
                 <br/>
-            </div>
             <div>
                 {
-                    isMinting ?
+                    isMinting  ?
                     <>
                         <div className="minting-stage">
                             {
@@ -327,15 +393,20 @@ export default function MinterPage() {
                                 })
                             }
                         </div>
-                    </>
-                    :
-                    <>
                         <div className="post-sale-info">
-                            <p>Transaction Hash: </p>
+                            <p>
+                                Here is the information from your last completed transaction. Please save this information 
+                                for identiying your nft on marketplaces, importing it into your MetaMask wallet, and indexing
+                                it on Etherscan.
+                            </p>
+                            <br/>
+                            <p>Transaction Hash: {confirmationObject && confirmationObject.hash}</p>
                             <p>Contract Address: {saleStructure.contract && saleStructure.contract.address}</p>
-                            <p>Token Ids: </p>
+                            <p>Token Ids: {confirmationObject && confirmationObject.tokenIds.map(t => { return <span> {t} | </span> })}</p>
                         </div>
                     </>
+                    :
+                    null
                 }
             </div>
         </div>

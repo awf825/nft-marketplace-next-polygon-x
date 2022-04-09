@@ -134,9 +134,6 @@ export default function HeaderElements() {
                   <Link href="/minter-page">
                       Mint
                   </Link>
-                  <Link href="/admin">
-                        Admin
-                    </Link>
                   <Link href="#">
                     {
                       user ? (

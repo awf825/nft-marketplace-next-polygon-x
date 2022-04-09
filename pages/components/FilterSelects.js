@@ -46,17 +46,7 @@ const customStyles = {
           fontSize: "28px",
           textTransform: "uppercase"
     }),
-
-
-
-  
-    // singleValue: (provided, state) => {
-    //   // const opacity = state.isDisabled ? 0.5 : 1;
-    //   // const transition = 'opacity 300ms';
-  
-    //   return { ...provided };
-    // }
-  }
+}
 
 const backgroundFilterOptions = [
     { value: 'Background-A1', label: 'Orange Creamsicle' },

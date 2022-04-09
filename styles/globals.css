@@ -110,8 +110,8 @@ select {
 .tv-text-header, 
 .vis-blurb-header, 
 .fndr-header, 
-.rdmp-header,
-.minter-image { font-size: 80px; padding: 0 4.8% 0 4.8%; }
+.rdmp-header { font-size: 80px; padding: 0 4.8% 0 4.8%; }
+
 .logo {
     margin: -.5% auto;
     text-align: left;
@@ -361,6 +361,33 @@ form > input {
 }
 
 .mint-button {
+    display: flex;
+    background-color: white;
+}
+
+.mint-button > button {
+    color: black;
+    font-weight: 800;
+    font-style: "italic";
+    font-size: 27px;
+    padding: 3px !important;
+    margin: 5px 12px !important;
+}
+
+.minter-controls-wrapper {
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+.post-sale-info {
+    text-align: center;
+    font-weight: 800;
+    font-size: 18px;
+    font-style: italic;
+}
+
+/* .mint-button {
     background-color: #1c87c9 !important;
     -webkit-border-radius: 60px;
     border-radius: 135px;
@@ -400,7 +427,7 @@ form > input {
     transform: skewX(-10deg);
     height: 205px;
     font-size: 75px;
-}
+} */
 
 @media only screen and (max-width: 1220px) {
     .tv-text-header, 
