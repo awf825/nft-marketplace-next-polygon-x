@@ -6,7 +6,7 @@ import {
     GalleryContext,
 } from "../contexts/GalleryContext.js";
 
-import AWS, { Connect } from 'aws-sdk';
+import AWS from 'aws-sdk';
 
 // use for local development. setAbi to Turtleverse.abi. Change env var to reflect local contract
 // import Turtleverse from '../artifacts/contracts/Turtleverse.sol/Turtleverse.json';
@@ -20,13 +20,6 @@ export default function Admin() {
     const [galleryState, dispatch] = useContext(GalleryContext);
     const [abi, setAbi] = useState([]);
     useEffect(async () => {
-        // const turtleBucket = new AWS.S3({
-        //     accessKeyId: galleryState.accessParams.Credentials.AccessKeyId,
-        //     secretAccessKey: galleryState.accessParams.Credentials.SecretAccessKey,
-        //     sessionToken: galleryState.accessParams.Credentials.SessionToken,
-        //     bucket: 'turtleverse.albums',
-        //     region: 'ca-central-1'
-        // });
         let bucket;
         const storedParams = localStorage.getItem("stsCredentials");
         if (storedParams !== null) {
@@ -94,10 +87,10 @@ export default function Admin() {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
-        let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK);
+        let balance = await provider.getBalance(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS);
         balance = balance.toString();
 
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
 
         try {
             await tvc.withdraw();
@@ -110,7 +103,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
 
         try {
             await tvc.startGiveaway();
@@ -123,7 +116,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
         
         try {
             await tvc.pauseGiveaway();
@@ -136,7 +129,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
         
         try {
             // const bn = ethers.BigNumber.from(3)
@@ -150,7 +143,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
         
         try {
             await tvc.pausePresale();
@@ -163,7 +156,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
         
         try {
             // const bn = ethers.BigNumber.from(25)
@@ -177,7 +170,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
         
         try {
             await tvc.pausePublicSale();
@@ -191,7 +184,7 @@ export default function Admin() {
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
-        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK, abi, signer)
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
         
         const wlv = e.target[0].value;
         const blv = e.target[1].value;

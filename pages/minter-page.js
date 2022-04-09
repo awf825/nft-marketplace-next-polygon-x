@@ -123,7 +123,7 @@ export default function MinterPage() {
             const connection = await web3Modal.connect();
             const provider = new ethers.providers.Web3Provider(connection);
             const signer = provider.getSigner();
-            const addr = process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS_RINK;
+            const addr = process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS;
             const tvc = new ethers.Contract(addr, abi, signer)
             let price;
 

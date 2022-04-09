@@ -15,20 +15,16 @@ const wallet = fs.readFileSync(".wallet").toString();
   npx hardhat run scripts/deploy.js --network localhost
 */
 async function main() {
-  const contract = "Turtleverse_dev";
-  if (contract === "Turtleverse_dev") { return; }
-  const TV = await hre.ethers.getContractFactory("Turtleverse_dev");
-  const maxSupply =  hre.ethers.BigNumber.from("10000");
+  const TV = await hre.ethers.getContractFactory("Turtleverse");
+  const maxWithdrawal = hre.ethers.BigNumber.from("500000000000000000");
   const presaleLimit = hre.ethers.BigNumber.from(4);
-  const saleLimit = hre.ethers.BigNumber.from(17);
   const tv = await TV.deploy(
-    "The Turtleverse",
+    "NFTurtleverse",
     "NFTV", 
     "https://2f68ucdu28.execute-api.us-east-1.amazonaws.com/dev/d00dwHEREsTHEturt13s/", 
-    maxSupply,
     presaleLimit,
-    saleLimit,
-    wallet
+    wallet,
+    maxWithdrawal
   );
   await tv.deployed()
   console.log("deployed tv to:", tv.address)
