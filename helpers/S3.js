@@ -91,7 +91,7 @@ export const updateRequestedMetadata = async (requested, s3) => {
 }
 
 export const getAbiFromBucket = async (s3, bucket) => {
-  const resp = await s3.getObject({ Bucket: bucket, Key: 'abi/Turtleverse.json' }).promise()
+  const resp = await s3.getObject({ Bucket: bucket, Key: `${process.env.NEXT_PUBLIC_GENERATION}/abi/Turtleverse.json` }).promise()
   const payload = JSON.parse(resp.Body.toString('utf-8'))
   return payload
 }
