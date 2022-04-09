@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1  (utils/Strings.sol)
 
 pragma solidity ^0.8.0;
@@ -1524,6 +1523,7 @@ interface IERC2981 is IERC165 {
         view
         returns (address receiver, uint256 royaltyAmount);
 }
+
 pragma solidity ^0.8.0;
 
 contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
@@ -1584,6 +1584,11 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
 
     function totalSupply() public view virtual returns (uint256) {
         return _tokenIds.current();
+    }
+
+    function setMaxWithdrawal(uint256 amount) external onlyOwner {
+        require(amount > 0, "Withdrawal amount must be greater than 0");
+        _maxWithdrawal = amount;
     }
 
     function addToWhitelist(address[] memory addresses) external onlyOwner {
@@ -1677,7 +1682,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         return newItemId;
     }
 
-    function setBaseURI(string memory baseURI_) public onlyOwner { _baseTokenURI = baseURI_; }
+    function setBaseURI(string memory baseURI_) external onlyOwner { _baseTokenURI = baseURI_; }
     function _baseURI() internal view virtual override returns (string memory) { return _baseTokenURI; }
 
     function withdraw() external onlyOwner nonReentrant {

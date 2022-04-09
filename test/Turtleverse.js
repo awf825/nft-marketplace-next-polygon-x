@@ -207,48 +207,6 @@ describe("Turtleverse:", function () {
         await tv.connect(owner).mintTokens(one, { value: price })
     })
 
-    // it("Tokens should not exceed maxSupply (10). Tokens should start at 0, and increment by 1 up to maxSupply.", async function () {
-    //     let currentToken;
-    //     await tv.startPublicSale();
-    //     let price = await tv.price();
-    //     const one = ethers.BigNumber.from(1);
-
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 0)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 1)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 2)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 3)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 4)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 5)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 6)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 7)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 8)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 9)
-    //     await tv.connect(owner).mintTokens(one, { value: price });
-    //     currentToken = await tv.totalSupply();
-    //     assert.equal(currentToken.toNumber(), 10)
-
-    //     await expect(tv.connect(owner).mintTokens(one, { value: price })).to.be.reverted
-    // })
-
     it("Royalty should payout to payout address AND royalty amount should be 10%", async function () {
         await tv.startPublicSale();
         let price = await tv.price();
@@ -356,6 +314,48 @@ describe("Turtleverse:", function () {
         expect(walletBalance).to.equal(priceOfTen);
     })
 
+    it("Should change max withdrawal amount. Will revert if called by nonowner. Will revert if 0.", async function () {
+        let walletBalance;
+        let provider = ethers.provider;
+        const one = ethers.BigNumber.from(1); 
+        const newMax = ethers.BigNumber.from("1000000000000000000");
+        const fiveEth = ethers.utils.parseEther("5");
+        const fourFiveEth = ethers.utils.parseEther("4.5");
+        const threeFiveEth = ethers.utils.parseEther("3.5");
+        const twoEth = ethers.utils.parseEther("2");
+        const oneEth = ethers.utils.parseEther("1");
+
+        await expect(tv.connect(addr1).setMaxWithdrawal(newMax)).to.be.reverted;
+
+        await tv.startPublicSale();
+    
+        walletBalance = await provider.getBalance(wallet);
+        console.log(walletBalance)
+        
+        await tv.connect(owner).mintTokens(one, { value: fiveEth });
+
+        walletBalance = await provider.getBalance(wallet);
+        console.log(walletBalance)
+
+        await tv.connect(owner).withdraw();
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(fourFiveEth);
+
+        walletBalance = await provider.getBalance(wallet);
+        console.log(walletBalance)
+
+        expect(walletBalance).to.equal(oneEth);
+        
+        await tv.connect(owner).setMaxWithdrawal(newMax);
+        await tv.connect(owner).withdraw();
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(threeFiveEth);
+        walletBalance = await provider.getBalance(wallet);
+        expect(walletBalance).to.equal(twoEth);
+
+        await expect(tv.connect(owner).setMaxWithdrawal("0")).to.be.reverted;
+    })
+    
     // it("Should be able to withdraw larger amounts of ether.", async function () {
     //     let contractBalance;
     //     let walletBalance;

@@ -134,6 +134,9 @@ export default function HeaderElements() {
                   <Link href="/minter-page">
                       Mint
                   </Link>
+                  <Link href="/admin">
+                        Admin
+                    </Link>
                   <Link href="#">
                     {
                       user ? (
@@ -160,7 +163,7 @@ export default function HeaderElements() {
                 <Link href="/minter-page">
                     Mint
                 </Link>
-                <Link href="javascript:void(0)">
+                <Link href="#">
                   {
                     user ? (
                         <a onClick={handleDisconnectWallet}><span className="wallet-nav"> Disconnect <MetaMaskSvg /></span></a>
