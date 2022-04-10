@@ -28,7 +28,7 @@ export async function pinJSONToIPFS(toSend, filename) {
     const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
     const metadata = {
         pinataMetadata: {
-            name: filename,
+            name: filename+".json",
             keyvalues: {
                 isMetadata: "1"
             }

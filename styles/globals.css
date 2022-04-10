@@ -385,49 +385,8 @@ form > input {
     font-weight: 800;
     font-size: 18px;
     font-style: italic;
+    margin: 0 5rem 0 5rem;
 }
-
-/* .mint-button {
-    background-color: #1c87c9 !important;
-    -webkit-border-radius: 60px;
-    border-radius: 135px;
-    border: none;
-    color: #eeeeee;
-    cursor: pointer;
-    display: inline-block;
-    font-family: sans-serif;
-    font-size: 20px;
-    padding: 5px 15px;
-    text-align: center;
-    text-decoration: none;
-    -webkit-box-shadow: 0px 6px 0px #1c87c9, 0px 3px 15px rgba(0,0,0,.4);
-    -moz-box-shadow: 0px 6px 0px #1c87c9, 0px 3px 15px rgba(0,0,0,.4);
-    box-shadow: 0px 6px 0px #1c87c9, 0px 3px 15px rgba(0,0,0,.4);
-    border: 1px solid #1c87c9;
-
-}
-
-@keyframes glowing {
-    0% {
-        background-color: #2ba805;
-        box-shadow: 0 0 3px #2ba805;
-    }
-    50% {
-        background-color: #49e819;
-        box-shadow: 0 0 10px #49e819;
-    }
-    100% {
-        background-color: #2ba805;
-        box-shadow: 0 0 3px #2ba805;
-    }
-}
-
-.mint-button {
-    animation: glowing 1300ms infinite;
-    transform: skewX(-10deg);
-    height: 205px;
-    font-size: 75px;
-} */
 
 @media only screen and (max-width: 1220px) {
     .tv-text-header, 
@@ -592,9 +551,26 @@ form > input {
     .minter-image > h1 {
         font-size: 24px;
     }
+    .post-sale-info {
+        font-size: 14px !important;
+        margin: 0px 1rem 0 1rem !important;
+    }
+    /* .minter-controls-wrapper {
+        margin-top: 2rem;
+    }
     /* .rdmp-li::after {
         font-size: 79px;
         padding: 1.5%;
         margin: -2% 1% 0% 1%;
     } */
+}
+
+@media only screen and (max-width: 648px) {
+    .minter-controls-wrapper {
+        margin-top: 2rem;
+    }
+    .post-sale-info {
+        font-size: 8px !important;
+        margin: 0px 1rem 0 1rem;
+    }
 }

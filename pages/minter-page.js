@@ -105,7 +105,7 @@ export default function MinterPage() {
         setIsGathering(
             {
                 loading: true,
-                text: "Please wait while we gather the smart contract..."
+                text: "Please wait, you may be prompted to connect your wallet..."
             }
         )
         let bucket;
@@ -205,7 +205,7 @@ export default function MinterPage() {
     }, [])
 
     async function mint() {
-        if (requestedAmount === 0) { alert('Must select at least one token.'); return; }
+        if (( requestedAmount === 0 ) && (saleStructure.price.toString() !== '0')) { alert('Must select at least one token.'); return; }
         if (requestedAmount > 4) { alert('Cannot mint more than 4 tokens at once.'); return; }
         if (!isAuthenticated) { alert('You must enable metamask to mint tokens. Please try again after connecting your wallet by clicking the link in the nav burger.'); return; }
         else 
@@ -270,14 +270,15 @@ export default function MinterPage() {
                 let transaction = await saleStructure.contract.mintTokens(tokensAmount, { value: v })
                 setIsGathering({
                     loading: true,
-                    text: "Please take note of the contract address, transaction hash, and tokenIds we are about to provide for you..."
+                    text: "Finalizing transaction..."
                 })
                 tx = await transaction.wait();
             } catch (err) {
+                console.error(err)
                 setIsMinting(false);
                 setStageMedia([]);
                 setRequestedArray([]);
-                alert('Something went wrong trying to mint your token(s) to the blockchain. Please try again later.');
+                alert('Something went wrong trying to mint your token(s) to the blockchain. Please try again later.'+"\n"+err);
                 return;
             }
 
