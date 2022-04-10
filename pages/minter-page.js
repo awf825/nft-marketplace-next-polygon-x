@@ -390,7 +390,7 @@ export default function MinterPage() {
                                     let src;
                                     if (stageMedia[i] !== undefined) { src = stageMedia[i] } 
                                     else { src = x }
-                                    return <div key={i} className="minting-stage-tile"><img src={src} alt={src} width={300} height={300}/></div>
+                                    return <div key={i+1} className="minting-stage-tile"><img src={src} alt={src} width={300} height={300}/></div>
                                 })
                             }
                         </div>
@@ -403,7 +403,7 @@ export default function MinterPage() {
                             <br/>
                             <p>Transaction Hash: {confirmationObject && confirmationObject.hash}</p>
                             <p>Contract Address: {saleStructure.contract && saleStructure.contract.address}</p>
-                            <p>Token Ids: {confirmationObject && confirmationObject.tokenIds.map(t => { return <span> {t} | </span> })}</p>
+                            <p>Token Ids: {confirmationObject && confirmationObject.tokenIds.map((t,i) => { return <span key={i+1}> {t} | </span> })}</p>
                         </div>
                     </>
                     :
