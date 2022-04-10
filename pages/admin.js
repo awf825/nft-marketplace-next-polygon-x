@@ -204,6 +204,44 @@ export default function Admin() {
 
         } catch (error) { alert(error.message); }
     }
+
+    async function setBaseURI(e) {
+        e.preventDefault();
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
+        
+        const u = e.target[0].value;
+        console.log(u)
+        try {
+            if (u.length > 0) {
+                await tvc.setBaseURI(u);
+                alert('New Base URI set: ', u)
+            } 
+
+        } catch (error) { alert(error.message); }
+    }
+
+    async function setMaxWithdrawal(e) {
+        e.preventDefault();
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const tvc = new ethers.Contract(process.env.NEXT_PUBLIC_TV_CONTRACT_ADDRESS, abi, signer)
+        
+        const max = e.target[0].value;
+        console.log(u)
+        try {
+            if (max.length > 0) {
+                await tvc.setMaxWithdrawal(max);
+                alert('New Base URI set: ', u)
+            } 
+        } catch (error) { alert(error.message); }
+    }
+
     return (
         <div className="admin">
             <div className="admin-btns">
@@ -220,6 +258,14 @@ export default function Admin() {
                     <input id="white" type="text" placeholder="whitelist address"/>
                     <input id="remove" type="text" placeholder="remove from whitelist"/>
                     <button type="submit">SUBMIT</button>
+                </form>
+                <form onSubmit={(e) => setBaseURI(e)}>
+                    <input id="u" type="text" placeholder="new Base URI"/>
+                    <button type="submit">RESET</button>
+                </form>
+                <form onSubmit={(e) => setMaxWithdrawal(e)}>
+                    <input id="max" type="text" placeholder="new max withdrawal in wei"/>
+                    <button type="submit">RESET</button>
                 </form>
             </div>
         </div>
