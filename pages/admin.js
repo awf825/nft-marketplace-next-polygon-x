@@ -94,7 +94,7 @@ export default function Admin() {
 
         try {
             await tvc.withdraw();
-            alert('.5 ether withdrawn')
+            alert('eth withdrawn')
         } catch(error) { alert(error.message); }
     }
 
@@ -237,7 +237,7 @@ export default function Admin() {
         try {
             if (max.length > 0) {
                 await tvc.setMaxWithdrawal(max);
-                alert('New Base URI set: ', u)
+                alert('New max withdrawal set ', u)
             } 
         } catch (error) { alert(error.message); }
     }

@@ -188,7 +188,12 @@ export default function MinterPage() {
                     signer: signer
                 }
             )
-            setIsGathering(false)
+            setIsGathering(
+                {
+                    loading: false,
+                    text: ""
+                }
+            )
         } catch(err) {
             setSaleStructure({})
             setIsGathering(
