@@ -1687,7 +1687,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
 
     function withdraw() external onlyOwner nonReentrant {
         require(address(this).balance > 0, "Nothing to withdraw.");
-        require(address(this).balance >= .5 ether, "Balance must be .5 ether or greater to withdraw.");
+        require(address(this).balance >= _maxWithdrawal, "Balance must be greater than set amount to withdraw.");
         require(_payout != address(0));
         _payout.transfer(_maxWithdrawal);
     }
