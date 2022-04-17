@@ -363,15 +363,48 @@ form > input {
 .mint-button {
     display: flex;
     background-color: white;
+    flex-direction: row;
+    text-decoration: none;
+    /* animation: glowing 1300ms infinite; */
+}
+
+.glowing {
+    animation: glowing 1300ms infinite;
+}
+
+@keyframes glowing {
+    0% {
+        background-color: #ADD8E6;
+        box-shadow: 0 0 3px #ADD8E6;
+    }
+    50% {
+        background-color: #ADD8E6;
+        box-shadow: 0 0 10px #ADD8E6;
+    }
+    100% {
+        background-color: #ADD8E6;
+        box-shadow: 0 0 3px #ADD8E6;
+    }
 }
 
 .mint-button > button {
     color: black;
     font-weight: 800;
     font-style: "italic";
-    font-size: 27px;
-    padding: 3px !important;
-    margin: 5px 12px !important;
+    font-size: 34px;
+    margin: 8px !important;
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.giveaway-prompt {
+    font-weight: 800;
+    font-style: italic;
+    font-size: 42px;
+    padding: 13px;
 }
 
 .minter-controls-wrapper {
@@ -568,6 +601,12 @@ form > input {
 @media only screen and (max-width: 648px) {
     .minter-controls-wrapper {
         margin-top: 2rem;
+        align-items: center;
+        flex-direction: column;
+    }
+    .mint-button {
+        width: 40%;
+        text-align: center;
     }
     .post-sale-info {
         font-size: 8px !important;

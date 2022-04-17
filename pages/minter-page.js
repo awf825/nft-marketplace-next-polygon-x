@@ -81,6 +81,7 @@ export default function MinterPage() {
     const [stageMedia, setStageMedia] = useState([])
     const [isMinting, setIsMinting] = useState(false);
     const [isLoadingTransaction, setIsLoadingTransaction] = useState(false);
+    const [glowing, setGlowing] = useState(false)
 
     const [bucket, setBucket] = useState({})
     const [abi, setAbi] = useState([]);
@@ -194,6 +195,9 @@ export default function MinterPage() {
                     text: ""
                 }
             )
+            if (price.toString() === '0') {
+                setGlowing(true)
+            }
         } catch(err) {
             setSaleStructure({})
             setIsGathering(
@@ -261,6 +265,7 @@ export default function MinterPage() {
                     setStageMedia(stageMedia => [...stageMedia, imageUrl]);
                     imageUrls.push(imageUrl);  
                 } catch (err) {
+                    setGlowing(false);
                     setIsMinting(false);
                     setStageMedia([]);
                     setRequestedArray([]);
@@ -324,6 +329,7 @@ export default function MinterPage() {
                 );
                 return;
             } catch (err) {
+                setGlowing(false)
                 setIsLoadingTransaction(false)
                 setIsMinting(false)
                 setStageMedia([]);
@@ -338,6 +344,7 @@ export default function MinterPage() {
     }
 
     function onSelectAmount(e) { 
+        setGlowing(true)
         console.log('saleStructure: ', saleStructure)
         var a = []
         for (let i = 0; i < e.value; i++) {
@@ -377,11 +384,20 @@ export default function MinterPage() {
                             />
                         </div>
                         : 
-                        null
+                        <div className="giveaway-prompt">
+                            <p>CLAIM GIVEAWAY:</p>
+                        </div>
                     }
-                    <div className="mint-button">
-                        <Image src={"/TV_Logo_black.png"} width={65} height={65}></Image>
-                        <button onClick={() => mint()}>MINT</button>
+                    <div className={`mint-button ${glowing ? "glowing" : ""}`}>
+                        {/* <Image src={"/TV_Logo_black.png"} width={65} height={65}></Image> */}
+                        <button onClick={() => mint()}>
+                            <div className="button-wrapper">
+                                <Image src={"/TV_Logo_black.png"} width={65} height={65}></Image>
+                                <div style={{padding: "5px"}}>
+                                    MINT
+                                </div>
+                            </div>
+                        </button>
                     </div>
                 </div>
                 <br/>

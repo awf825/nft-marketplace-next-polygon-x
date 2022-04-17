@@ -123,7 +123,6 @@ const paintFilterOptions = [
     { value: 'Paint-G1', label: 'Teardrop Tattoo'},
     { value: 'Paint-G2', label: '2022 Tattoo'},
     { value: 'Paint-G3', label: 'Band-Aid'},
-    { value: 'Paint-G4', label: 'Nose Stud'},
     { value: 'Paint-G5', label: 'Turtleverse Tattoo'},
     { value: 'Paint-G6', label: 'Eye Black'},
     { value: 'Paint-G1', label: 'None'}    

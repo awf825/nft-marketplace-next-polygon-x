@@ -43,15 +43,12 @@ export default function Gallery() {
   useEffect(() => {
     if (galleryState !== undefined) {
       setGallery(galleryState.appliedGallery)
+      if (currentGallery.length === 0) {
+        setCurrentGallery(galleryState.appliedGallery.slice(0,20))
+      }
     }
   }, [galleryState.appliedGallery])
-
-  useEffect(() => {
-    if (currentGallery.length === 0) {
-      setCurrentGallery(gallery.slice(0,20))
-    }
-  }, [gallery])
-
+  
   const getMoreData = () => {
     /*
       Logic is in place to get more data when filters are off. 
@@ -180,19 +177,33 @@ export default function Gallery() {
           dataLength={currentGallery.length}
           next={getMoreData}
           hasMore={hasMore}
-          loader={<h4 style={{ textAlign: "center"}}>LOADING...</h4>}
+          loader={<h4 style={{ textAlign: "center"}}>KEEP SCROLLING DOWN TO VIEW THE GALLERY!</h4>}
         >
           <div className="gallery-items-wrapper">
-            {currentGallery && currentGallery.map(((item, index) => (
-              <div key={index} className="gallery-item mobile-top-margin-sm">
-                <img
-                  src={item.signed}
-                  width="175"
-                  height="175"
-                />
-                <h3>#{item.name.split("_")[0]}</h3>
-              </div>
-            )))
+            {
+              currentGallery.length > 0 
+              ?
+              currentGallery.map(((item, index) => (
+                <div key={index} className="gallery-item mobile-top-margin-sm">
+                  <img
+                    src={item.signed}
+                    width="175"
+                    height="175"
+                  />
+                  <h3>#{item.name.split("_")[0]}</h3>
+                </div>
+              )))
+              :
+              gallery.map(((item, index) => (
+                <div key={index} className="gallery-item mobile-top-margin-sm">
+                  <img
+                    src={item.signed}
+                    width="175"
+                    height="175"
+                  />
+                  <h3>#{item.name.split("_")[0]}</h3>
+                </div>
+              )))
             }
           </div>
         </InfiniteScroll>
