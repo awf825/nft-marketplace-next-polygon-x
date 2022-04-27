@@ -70,7 +70,7 @@ const Menu = styled.ul`
   }
   @media only screen and (max-width: 797px) {
      width: 40%;
-     height: 40%;
+     height: 45%;
   }
 `;
 

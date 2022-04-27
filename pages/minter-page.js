@@ -288,7 +288,7 @@ export default function MinterPage() {
                 setIsMinting(false);
                 setStageMedia([]);
                 setRequestedArray([]);
-                alert('Something went wrong trying to mint your token(s) to the blockchain. Please try again later.'+"\n"+err);
+                alert('Something went wrong trying to mint your token(s). Please try again later.'+"\n"+err);
                 return;
             }
 
@@ -308,7 +308,7 @@ export default function MinterPage() {
                     let obj = {};
                     obj.name = '#'+tmd.metadata.name.split('_')[0];
                     obj.image = imageUrls[i];
-                    obj.description = "This is a test description of the Turtleverse!";
+                    obj.description = "The world today is all about doing things quickly; we often find ourselves in constant motion, never stopping to think about what it is that we're doing or why we started doing it in the first place. This go-go-go state of mind had led to anxiety and stress for many of us around the world. We wanted to create an NFT project that could serve as a reminder that the quick way isn't always the right way and that, when it comes to living our best lives, 'slow and steady, wins the race...' #WAGMI";
                     obj.attributes = tmd.metadata.attributes;
                     await pinJSONToIPFS(obj, tokenIds[i])
                 })

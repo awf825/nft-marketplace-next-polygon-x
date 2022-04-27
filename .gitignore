@@ -2,6 +2,7 @@
 /.archive
 /contracts
 /artifacts
+/scripts
 
 # dependencies
 /node_modules
