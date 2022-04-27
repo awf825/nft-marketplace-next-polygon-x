@@ -3,6 +3,8 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router';
+import { useMoralis } from 'react-moralis';
+import MetaMaskSvg from './MetaMaskSvg';
 
 const Nav = styled.nav`
   width: 100%;
@@ -68,7 +70,7 @@ const Menu = styled.ul`
   }
   @media only screen and (max-width: 797px) {
      width: 40%;
-     height: 40%;
+     height: 45%;
   }
 `;
 
@@ -88,8 +90,10 @@ export default function HeaderElements() {
     const router = useRouter();
     const [open, setOpen] = useState(false)
     const [isHome, setIsHome] = useState(true)
+    const { isAuthenticated, authenticate, user, logout } = useMoralis();
 
     useEffect(() => {
+      // if (user) { console.log('moralis user: ', user.attributes.ethAddress) }
       const p = window.location.pathname;
       if (p === "/") {
         setIsHome(true)
@@ -98,6 +102,15 @@ export default function HeaderElements() {
       }
       //console.log('window.location @ sideeffect: ', window.location)
     }, [router.pathname])
+
+    function handleConnectWallet() {
+        authenticate();
+    }
+
+    function handleDisconnectWallet() {
+        console.log(user.attributes)
+        logout();
+    }
 
     return (
         <div className="nav-wrapper">
@@ -121,6 +134,24 @@ export default function HeaderElements() {
                   <Link href="/minter-page">
                       Mint
                   </Link>
+                  <Link href="#">
+                    {
+                      user ? (
+                          <a onClick={handleDisconnectWallet}><span className="wallet-nav"> Disconnect <MetaMaskSvg /></span></a>
+                      ) : (
+                          <a onClick={handleConnectWallet}><span className='wallet-nav'>Connect <MetaMaskSvg /></span></a>
+                      )
+                    }
+                  </Link>
+                  {
+                    ( user && ( user.attributes.ethAddress === process.env.NEXT_PUBLIC_AIDEN ) )
+                    ? 
+                    <Link href="/admin">
+                        Admin
+                    </Link>
+                    : 
+                    null
+                  }
               </Menu> 
               :
               <Menu open={open}>
@@ -129,70 +160,26 @@ export default function HeaderElements() {
                 <Link href="/minter-page">
                     Mint
                 </Link>
+                <Link href="#">
+                  {
+                    user ? (
+                        <a onClick={handleDisconnectWallet}><span className="wallet-nav"> Disconnect <MetaMaskSvg /></span></a>
+                    ) : (
+                        <a onClick={handleConnectWallet}><span className="wallet-nav">Connect <MetaMaskSvg /></span></a>
+                    )
+                  }
+                </Link>
+                {
+                    ( user && ( user.attributes.ethAddress === process.env.NEXT_PUBLIC_AIDEN ) )
+                    ? 
+                    <Link href="/admin">
+                        Admin
+                    </Link>
+                    : 
+                    null
+                }
               </Menu> 
             }
         </div>
     )
 }
-
-// import { useMoralis } from 'react-moralis';
-// import { Twitter, Discord } from 'react-bootstrap-icons';
-// import MetaMaskSvg from './MetaMaskSvg';
-// import { useState, useRef } from 'react'
-// import Image from 'next/image'
-
-
-// export default function HeaderElements() {
-//     const [open, setOpen] = useState(false)
-//     // const [open, setBurgerOpen] = useState(false)
-
-//     return (
-//         <div className="header">
-//             <Burger open={open}/>
-//             {/* 
-//             {
-//                 open 
-//                 ?
-//                 <div className="navburger-open">
-//                     <button onClick={() =>  setOpen(false)}>CLOSE</button>
-//                 </div>
-//                 :
-//                 <div className="navburger-closed">
-
-//                 </div>
-//             */}
-//             <SlidingMenu open={open}/>
-//         </div>
-//     )
-//     // return (
-//     //     <div></div>
-//     // )
-//     // const { authenticate, isAuthenticated, logout, user } = useMoralis();
-//     // return ( 
-//         //     <div className='header'>
-//         //         <div className="logo">
-//         //             <Image src="/TV_Logo_white.png" alt="tv-white" width="75" height="75" style={{ textAlign: 'left !important'}}/>
-//         //         </div>
-//     //         <div className="header-icons">
-//     //             <div>
-//     //                 <a href="https://www.npmjs.com/package/react-sticky-header" target="_blank" rel="noreferrer" ><Twitter /></a>
-//     //             </div>
-//     //             <div>
-//     //                 <a href="https://www.npmjs.com/package/react-bootstrap-icons" target="_blank" rel="noreferrer" ><Discord /></a>
-//     //             </div>
-//     //             <div>
-//     //                 {
-//     //                     isAuthenticated ? <button onClick={() => logout()}><MetaMaskSvg /></button> : 
-//     //                     <button onClick={() => authenticate()}><MetaMaskSvg /></button>
-//     //                 }
-//     //             </div>
-//     //             <div>
-//     //                 {
-//     //                     isAuthenticated ? "DISCONNECT METAMASK >>>" : "CONNECT METAMASK >>>"
-//     //                 }
-//     //             </div>
-//     //         </div>
-//     //     </div>
-    
-//     // )
-// }

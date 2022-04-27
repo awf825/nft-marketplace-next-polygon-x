@@ -15,32 +15,21 @@ const wallet = fs.readFileSync(".wallet").toString();
   npx hardhat run scripts/deploy.js --network localhost
 */
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
-
-  const Biz = await hre.ethers.getContractFactory("Biz");
-  const biz = await Biz.deploy(wallet);
-  await biz.deployed()
-  console.log("deployed biz to:", biz.address)
-
-  const TurtleMinter = await hre.ethers.getContractFactory("TurtleMinter");
-  const turtleMinter = await TurtleMinter.deploy(biz.address);
-  await turtleMinter.deployed()
-  console.log("deployed turtleMinter to:", turtleMinter.address)
-
-  // const Market = await hre.ethers.getContractFactory("NFTMarket");
-  // const market = await Market.deploy();
-  // await market.deployed()
-  // console.log("deployed market to:", market.address)
-
-  // const NFT = await hre.ethers.getContractFactory("NFT");
-  // const nft = await NFT.deploy(market.address);
-  // await nft.deployed()
-  // console.log("deployed nft to:", nft.address)
+  const TV = await hre.ethers.getContractFactory("Turtleverse");
+  const maxWithdrawal = hre.ethers.BigNumber.from("200000000000000000");
+  const presaleLimit = hre.ethers.BigNumber.from(4);
+  const tv = await TV.deploy(
+    "NFTurtleverse",
+    "NFTV", 
+    "https://2f68ucdu28.execute-api.us-east-1.amazonaws.com/dev/d00dwHEREsTHEturt13s/", 
+    presaleLimit,
+    wallet,
+    maxWithdrawal
+  );
+  await tv.deployed()
+  console.log("deployed tv to:", tv.address)
+  let owner = await tv.owner();
+  console.log("tv.owner: ", owner)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

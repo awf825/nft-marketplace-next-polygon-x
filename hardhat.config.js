@@ -7,11 +7,8 @@
 */
 
 require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-etherscan");
 require('dotenv').config({ path: "./.env" });
-
-const fs = require("fs");
-// const privatePayload = fs.readFileSync(".secret").toString();
-// const [privateKey, alchemyApiId] = privatePayload.split("@");
 
 module.exports = {
   // the name of app, config different networks here
@@ -28,14 +25,13 @@ module.exports = {
       url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_RINKEBY}`,
       accounts: [process.env.METAMASK_PRIVATE_KEY_TEST]
     }
-    // mumbai: {
-    //   url: `https://polygon-mumbai.infura.io/v3/${projectId}`,
-    //   accounts: [privateKey]
-    // },
     // mainnet: {
     //   url: `https://polygon-mainnet.infura.io/v3/${projectId}`,
     //   accounts: [privateKey]
     // }
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY
   },
   solidity: "0.8.4",
 };

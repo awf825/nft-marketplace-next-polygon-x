@@ -8,13 +8,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/react": "^1.8.6",
+    "@emotion/react": "^11.8.1",
+    "@emotion/styled": "^11.8.1",
     "@ethersproject/bytes": "^5.5.0",
     "@ethersproject/contracts": "^5.5.0",
     "@ethersproject/providers": "^5.5.1",
     "@nomiclabs/hardhat-ethers": "^2.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^4.4.1",
-    "@usedapp/core": "^0.7.2",
+    "@usedapp/core": "^0.7.3",
     "@walletconnect/web3-provider": "^1.7.0",
     "antd": "^4.17.4",
     "aws-sdk": "^2.1066.0",
@@ -26,6 +29,7 @@
     "hardhat": "^2.8.0",
     "ipfs-http-client": "^50.1.2",
     "moralis": "^0.0.176",
+    "multiformats": "^9.6.4",
     "next": "12.0.7",
     "nft.storage": "^5.2.0",
     "react": "17.0.2",
@@ -42,6 +46,7 @@
     "web3modal": "^1.9.4"
   },
   "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "autoprefixer": "^10.4.0",
     "eslint": "8.4.1",
     "eslint-config-next": "12.0.7",

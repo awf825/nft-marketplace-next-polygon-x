@@ -6,7 +6,6 @@
 */
 
 import { useState, useEffect, useContext } from 'react'
-// import Image from 'next/image'
 import FilterSelects from './components/FilterSelects';
 import LoadingOverlay from './components/LoadingOverlay';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -15,10 +14,6 @@ import {
   GalleryContext,
   setFilteredAppliedGallery
 } from "../contexts/GalleryContext.js";
-
-// const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
-// const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET
-// const gateway = 'https://turtleverse.mypinata.cloud/ipfs/'
 
 const initialAttrState = [
   { "Background": '' },
@@ -46,15 +41,14 @@ export default function Gallery() {
   const [gallery, setGallery] = useState([])
 
   useEffect(() => {
-    setGallery(galleryState.appliedGallery)
-  }, [galleryState.appliedGallery])
-
-  useEffect(() => {
-    if (currentGallery.length === 0) {
-      setCurrentGallery(gallery.slice(0,20))
+    if (galleryState !== undefined) {
+      setGallery(galleryState.appliedGallery)
+      if (currentGallery.length === 0) {
+        setCurrentGallery(galleryState.appliedGallery.slice(0,20))
+      }
     }
-  }, [gallery])
-
+  }, [galleryState.appliedGallery])
+  
   const getMoreData = () => {
     /*
       Logic is in place to get more data when filters are off. 
@@ -183,30 +177,34 @@ export default function Gallery() {
           dataLength={currentGallery.length}
           next={getMoreData}
           hasMore={hasMore}
-          loader={<h4 style={{ textAlign: "center"}}>LOADING...</h4>}
+          loader={<h4 style={{ textAlign: "center"}}>KEEP SCROLLING DOWN TO VIEW THE GALLERY!</h4>}
         >
           <div className="gallery-items-wrapper">
-            {currentGallery && currentGallery.map(((item, index) => (
-              <div key={index} className="gallery-item mobile-top-margin-sm">
-                <img
-                  src={item.signed}
-                  width="175"
-                  height="175"
-                />
-                <h3>#{item.name.split("_")[0]}</h3>
-              </div>
-            )))
-            }
-            {/* {
-              currentGallery.length===0 
+            {
+              currentGallery.length > 0 
               ?
-              ( areFiltersOn ?
-                <h1 className="gallery-directive" style={{ margin: "5%"}}>No Turtles found with these filters</h1> :
-                <h1 className="gallery-directive" style={{ margin: "5%" }}>SCROLL DOWN TO VIEW OUR TURTLES</h1>
-              ) 
+              currentGallery.map(((item, index) => (
+                <div key={index} className="gallery-item mobile-top-margin-sm">
+                  <img
+                    src={item.signed}
+                    width="175"
+                    height="175"
+                  />
+                  <h3>#{item.name.split("_")[0]}</h3>
+                </div>
+              )))
               :
-              null
-            } */}
+              gallery.map(((item, index) => (
+                <div key={index} className="gallery-item mobile-top-margin-sm">
+                  <img
+                    src={item.signed}
+                    width="175"
+                    height="175"
+                  />
+                  <h3>#{item.name.split("_")[0]}</h3>
+                </div>
+              )))
+            }
           </div>
         </InfiniteScroll>
       </div>

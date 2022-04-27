@@ -1,17 +1,35 @@
 @tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* @tailwind components;
+@tailwind utilities; */
+
+#minter {
+    font-size: 60% !important;
+}
 
 body { 
     background-color: black; 
     color: white;
 }
+
+button {
+    padding: 8px;
+    margin: 5px 5px;
+    color: red;
+    background-color: white !important;
+}
+
 svg {
     height: 2em;
     width: 2em;
+    margin-left: 8px;
 }
 select {
     color: #000
+}
+.wallet-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .hidden {
     display: none !important;
@@ -67,7 +85,8 @@ select {
 .founders, 
 .roadmap, 
 .gallery,
-.vis-blurb-row { color: white; margin: 0 5% 0 5%; }
+.vis-blurb-row,
+.admin { color: white; margin: 0 5% 0 5%; }
 
 .header,
 .tv-blurb, 
@@ -78,7 +97,9 @@ select {
 .tv-text-header,
 .vis-blurb-row,
 .rdmp-header,
-.gallery { display: flex; }
+.gallery,
+.admin,
+.minting-stage { display: flex; }
 
 .tv-text-header, .rdmp-header {
     align-items: center;
@@ -89,8 +110,8 @@ select {
 .tv-text-header, 
 .vis-blurb-header, 
 .fndr-header, 
-.rdmp-header,
-.minter-image { font-size: 80px; padding: 0 4.8% 0 4.8%; }
+.rdmp-header { font-size: 80px; padding: 0 4.8% 0 4.8%; }
+
 .logo {
     margin: -.5% auto;
     text-align: left;
@@ -136,6 +157,7 @@ select {
     font-style:italic;
     font-size: 40px;
     color: black;
+    z-index: 9001;
     text-align: center;
 }
 .gallery-directive
@@ -156,7 +178,6 @@ select {
 .tv-text-blurb {
     font-size: 20px;
     word-spacing: 0.4em;
-    /* padding: 0px 55px 0px 55px; */
     width: 60%;
     text-align: justify;
 }
@@ -168,9 +189,7 @@ select {
     width: 12.5%;
 }
 .turtle-img-blurb { width: 20% !important; }
-/* next images appear as span tags */
-/* .vis-blurb { width: 60%; } */
-/* .vis-img { width: 40%; } */
+
 .vision {
     margin-top: 3%
 }
@@ -208,7 +227,6 @@ select {
 .fndr-text {
     width: 80%;
     margin-top: -1%;
-    /* position: relative; */
 }
 .fndr-img {
     width: 20%;
@@ -221,8 +239,6 @@ select {
     text-align: left;
     font-size: 20px;
     padding: 21px;
-    /* padding: 34px 0 34px 21px;
-    margin-left: 2%; */
 }
 .fndr-ul > li::before {
     content: " • ";
@@ -233,7 +249,6 @@ select {
     padding-bottom: 2%;
 }
 .fndr-discord {
-    /* font-size: 21px; */
     margin: -1.5% 0% 2% 1.7%;
     padding-left: 1%;
     width: 30%;
@@ -261,14 +276,6 @@ select {
     margin: 3%;
     font-size: 24px;
 }
-/* .rdmp-li:after {
-    content: 'l';
-    color: #fff;
-    font-size: 60px;
-    position: absolute;
-    padding: 1%;
-    margin: -1% 0 0% 0.5%;
-} */
 
 .attr-lines {
     width: 50%;
@@ -290,17 +297,9 @@ select {
     padding-left: 15.5%;
 }
 
-/* .gallery {
-    margin: 5% 0 5% 0 !important;
-} */
-
 .filter-selects-wrapper {
     width: 25%;
 }
-/* 
-.iscroll-wrapper {
-    width: 75%;
-} */
 
 .iscroll-wrapper {
     width: 100%;
@@ -330,6 +329,96 @@ select {
     font-weight: 800;
     font-style: "italic";
     font-size: 23px;
+}
+
+.minter form {
+    color: black;
+}
+
+.admin > * {
+    margin: 13px 13px;
+}
+.admin-btns {
+    display: flex;
+    flex-direction: column;
+}
+.admin-lists > form {
+    display: flex;
+    flex-direction: column;
+}
+
+form > input {
+    padding: 5px;
+    margin: 8px auto;
+    color: pink;
+    width: 500%;
+}
+
+.minting-stage {
+    padding: 13px;
+    margin: 13px;
+    justify-content: center;
+}
+
+.mint-button {
+    display: flex;
+    background-color: white;
+    flex-direction: row;
+    text-decoration: none;
+    /* animation: glowing 1300ms infinite; */
+}
+
+.glowing {
+    animation: glowing 1300ms infinite;
+}
+
+@keyframes glowing {
+    0% {
+        background-color: #ADD8E6;
+        box-shadow: 0 0 3px #ADD8E6;
+    }
+    50% {
+        background-color: #ADD8E6;
+        box-shadow: 0 0 10px #ADD8E6;
+    }
+    100% {
+        background-color: #ADD8E6;
+        box-shadow: 0 0 3px #ADD8E6;
+    }
+}
+
+.mint-button > button {
+    color: black;
+    font-weight: 800;
+    font-style: "italic";
+    font-size: 34px;
+    margin: 8px !important;
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.giveaway-prompt {
+    font-weight: 800;
+    font-style: italic;
+    font-size: 42px;
+    padding: 13px;
+}
+
+.minter-controls-wrapper {
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+.post-sale-info {
+    text-align: center;
+    font-weight: 800;
+    font-size: 18px;
+    font-style: italic;
+    margin: 0 5rem 0 5rem;
 }
 
 @media only screen and (max-width: 1220px) {
@@ -495,9 +584,32 @@ select {
     .minter-image > h1 {
         font-size: 24px;
     }
+    .post-sale-info {
+        font-size: 14px !important;
+        margin: 0px 1rem 0 1rem !important;
+    }
+    /* .minter-controls-wrapper {
+        margin-top: 2rem;
+    }
     /* .rdmp-li::after {
         font-size: 79px;
         padding: 1.5%;
         margin: -2% 1% 0% 1%;
     } */
+}
+
+@media only screen and (max-width: 648px) {
+    .minter-controls-wrapper {
+        margin-top: 2rem;
+        align-items: center;
+        flex-direction: column;
+    }
+    .mint-button {
+        width: 40%;
+        text-align: center;
+    }
+    .post-sale-info {
+        font-size: 8px !important;
+        margin: 0px 1rem 0 1rem;
+    }
 }

@@ -46,17 +46,7 @@ const customStyles = {
           fontSize: "28px",
           textTransform: "uppercase"
     }),
-
-
-
-  
-    // singleValue: (provided, state) => {
-    //   // const opacity = state.isDisabled ? 0.5 : 1;
-    //   // const transition = 'opacity 300ms';
-  
-    //   return { ...provided };
-    // }
-  }
+}
 
 const backgroundFilterOptions = [
     { value: 'Background-A1', label: 'Orange Creamsicle' },
@@ -133,7 +123,6 @@ const paintFilterOptions = [
     { value: 'Paint-G1', label: 'Teardrop Tattoo'},
     { value: 'Paint-G2', label: '2022 Tattoo'},
     { value: 'Paint-G3', label: 'Band-Aid'},
-    { value: 'Paint-G4', label: 'Nose Stud'},
     { value: 'Paint-G5', label: 'Turtleverse Tattoo'},
     { value: 'Paint-G6', label: 'Eye Black'},
     { value: 'Paint-G1', label: 'None'}    
