@@ -1536,8 +1536,6 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
     EnumerableSet.AddressSet private _whitelist;
 
     string private _baseTokenURI;
-    uint256 private _maxWithdrawal;
-    uint8 private _presaleLimit;
     address payable private _payout;
 
     mapping(address => uint) public purchasedAmount;
@@ -1572,23 +1570,14 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
         string memory name_,
         string memory symbol_,
         string memory baseURI_,
-        uint8 presaleLimit_,
-        address payable payout_,
-        uint256 maxWithdrawal_
+        address payable payout_
     ) ERC721(name_, symbol_) {
         _baseTokenURI = baseURI_;
-        _presaleLimit = presaleLimit_;
         _payout = payout_;
-        _maxWithdrawal = maxWithdrawal_;
     }
 
     function totalSupply() public view virtual returns (uint256) {
         return _tokenIds.current();
-    }
-
-    function setMaxWithdrawal(uint256 amount) external onlyOwner {
-        require(amount > 0, "Withdrawal amount must be greater than 0");
-        _maxWithdrawal = amount;
     }
 
     function addToWhitelist(address[] memory addresses) external onlyOwner {
@@ -1668,7 +1657,7 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
             require(inWhitelist(msg.sender), "We're sorry, your address isn't whitelisted");
         } else if (presaleActive) {
             require(inWhitelist(msg.sender), "We're sorry, your address isn't whitelisted");
-            require(tokensAmount + purchasedAmount[msg.sender] <= _presaleLimit, "Cannot mint more than 4 tokens presale");
+            require(tokensAmount + purchasedAmount[msg.sender] <= 4, "Cannot mint more than 4 tokens presale");
             require(presalePriceToMint * tokensAmount <= msg.value, "Insufficient funds: Ether value does not match presale price.");
         } else {
             require(priceToMint * tokensAmount <= msg.value, "Insufficient funds: Ether value does not match public sale price.");
@@ -1686,10 +1675,9 @@ contract Turtleverse is ERC721, IERC2981, Ownable, ReentrancyGuard {
     function _baseURI() internal view virtual override returns (string memory) { return _baseTokenURI; }
 
     function withdraw() external onlyOwner nonReentrant {
-        require(address(this).balance > 0, "Nothing to withdraw.");
-        require(address(this).balance >= _maxWithdrawal, "Balance must be greater than set amount to withdraw.");
         require(_payout != address(0));
-        _payout.transfer(_maxWithdrawal);
+        require(address(this).balance > 0, "Nothing to withdraw.");
+        _payout.transfer(address(this).balance);
     }
     
     function royaltyInfo(uint256 _tokenId, uint256 _salePrice)

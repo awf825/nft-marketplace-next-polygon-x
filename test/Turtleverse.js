@@ -37,14 +37,14 @@ describe("Turtleverse:", function () {
         ));
 
         const presaleLimit = ethers.BigNumber.from(3);
-        const maxWithdrawal = ethers.BigNumber.from("500000000000000000"); // .5 eth
+        //const maxWithdrawal = ethers.BigNumber.from("500000000000000000"); // .5 eth
         tv = await tvFactory.deploy(
           "The Turtleverse",
           "NFTV", 
           "https://ipfs.infura.io/ipfs/", 
           presaleLimit,
-          wallet,
-          maxWithdrawal
+          wallet
+          //maxWithdrawal
         );
         await tv.deployed();
     })
@@ -249,161 +249,78 @@ describe("Turtleverse:", function () {
         // expect()
     })
 
-    it("Should be able to withdraw to proper payout wallet specified in constructor. Should be reverted if balance is under .5 eth.", async function () {
+    it("Should be able to withdraw entire balance", async function () {
         let contractBalance;
         let walletBalance;
-        const priceOfOne = ethers.utils.parseEther(".05");
-        const priceOfTwo = ethers.utils.parseEther(".1");
-        const priceOfThree = ethers.utils.parseEther(".15");
-        const priceOfFour = ethers.utils.parseEther(".2");
-        const priceOfFive = ethers.utils.parseEther(".25");
-        const priceOfSix = ethers.utils.parseEther(".3");
-        const priceOfSeven = ethers.utils.parseEther(".35");
-        const priceOfEight = ethers.utils.parseEther(".4");
-        const priceOfNine = ethers.utils.parseEther(".45");
-        const priceOfTen = ethers.utils.parseEther(".5");
+        const oneEth = ethers.utils.parseEther("1");
+        const fiveEth = ethers.utils.parseEther("5");
+        const sixEth = ethers.utils.parseEther("6");
+        const tenEth = ethers.utils.parseEther("10");
+        const sixteenEth = ethers.utils.parseEther("16");
+        const hundredEth = ethers.utils.parseEther("100");
+        const hundredSixteenEth = ethers.utils.parseEther("116");
+
+        let i = 20;
+        let j = 100;
+        let k = 200;
+        let m = 2000;
+
         let provider = ethers.provider;
         await tv.startPublicSale();
         let price = await tv.price();
         const one = ethers.BigNumber.from(1);
 
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfOne);
+        while (i > 0) {
+            await tv.connect(owner).mintTokens(one, { value: price });
+            i--;
+        }
 
-        await tv.connect(owner).mintTokens(one, { value: price });
         contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfTwo);
-
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfThree);
-
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfFour);
-
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfFive);
-
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfSix);
-
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfSeven);
-
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfEight);
-
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfNine);
-
-        await tv.connect(owner).mintTokens(one, { value: price });
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(priceOfTen);
-
+        expect(contractBalance).to.equal(oneEth);
         await tv.connect(owner).withdraw();
         contractBalance = await provider.getBalance(tv.address);
         expect(contractBalance).to.equal(0);
         walletBalance = await provider.getBalance(wallet);
-        expect(walletBalance).to.equal(priceOfTen);
-    })
-
-    it("Should change max withdrawal amount. Will revert if called by nonowner. Will revert if 0.", async function () {
-        let walletBalance;
-        let provider = ethers.provider;
-        const one = ethers.BigNumber.from(1); 
-        const newMax = ethers.BigNumber.from("1000000000000000000");
-        const fiveEth = ethers.utils.parseEther("5");
-        const fourFiveEth = ethers.utils.parseEther("4.5");
-        const threeFiveEth = ethers.utils.parseEther("3.5");
-        const twoEth = ethers.utils.parseEther("2");
-        const oneEth = ethers.utils.parseEther("1");
-
-        await expect(tv.connect(addr1).setMaxWithdrawal(newMax)).to.be.reverted;
-
-        await tv.startPublicSale();
-    
-        walletBalance = await provider.getBalance(wallet);
-        console.log(walletBalance)
-        
-        await tv.connect(owner).mintTokens(one, { value: fiveEth });
-
-        walletBalance = await provider.getBalance(wallet);
-        console.log(walletBalance)
-
-        await tv.connect(owner).withdraw();
-        contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(fourFiveEth);
-
-        walletBalance = await provider.getBalance(wallet);
-        console.log(walletBalance)
-
         expect(walletBalance).to.equal(oneEth);
-        
-        await tv.connect(owner).setMaxWithdrawal(newMax);
+
+        while (j > 0) {
+            await tv.connect(owner).mintTokens(one, { value: price });
+            j--;
+        }
+
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(fiveEth);
         await tv.connect(owner).withdraw();
         contractBalance = await provider.getBalance(tv.address);
-        expect(contractBalance).to.equal(threeFiveEth);
+        console.log(contractBalance);
+        expect(contractBalance).to.equal(0);
         walletBalance = await provider.getBalance(wallet);
-        expect(walletBalance).to.equal(twoEth);
+        expect(walletBalance).to.equal(sixEth);
 
-        await expect(tv.connect(owner).setMaxWithdrawal("0")).to.be.reverted;
+        while (k > 0) {
+            await tv.connect(owner).mintTokens(one, { value: price });
+            k--;
+        }
+
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(tenEth);
+        await tv.connect(owner).withdraw();
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(0);
+        walletBalance = await provider.getBalance(wallet);
+        expect(walletBalance).to.equal(sixteenEth);
+
+        while (m > 0) {
+            await tv.connect(owner).mintTokens(one, { value: price });
+            m--;
+        }
+
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(hundredEth);
+        await tv.connect(owner).withdraw();
+        contractBalance = await provider.getBalance(tv.address);
+        expect(contractBalance).to.equal(0);
+        walletBalance = await provider.getBalance(wallet);
+        expect(walletBalance).to.equal(hundredSixteenEth); 
     })
-    
-    // it("Should be able to withdraw larger amounts of ether.", async function () {
-    //     let contractBalance;
-    //     let walletBalance;
-    //     const oneEth = ethers.utils.parseEther("1");
-    //     const tenEth = ethers.utils.parseEther("10");
-    //     const hundoEth = ethers.utils.parseEther("100");
-
-    //     let provider = ethers.provider;
-    //     await tv.startPublicSale();
-    //     const one = ethers.BigNumber.from(1);
-
-    //     // 1 eth
-    //     await tv.connect(owner).mintTokens(one, { value: "1000000000000000000" });
-    //     contractBalance = await provider.getBalance(tv.address);
-    //     expect(contractBalance).to.equal("1000000000000000000");
-    //     await tv.connect(owner).withdraw();
-    //     contractBalance = await provider.getBalance(tv.address);
-    //     expect(contractBalance).to.equal(0);
-    //     walletBalance = await provider.getBalance(wallet);
-    //     expect(walletBalance).to.equal("1000000000000000000");
-    //     console.log("contractBalance after withdrawing 1 eth: ", contractBalance)
-    //     // 10 eth
-    //     await tv.connect(owner).mintTokens(one, { value: "10000000000000000000" });
-    //     contractBalance = await provider.getBalance(tv.address);
-    //     console.log("contractBalance after mint of 10 eth: ", contractBalance)
-
-    //     expect(contractBalance).to.equal("10000000000000000000");
-    //     await tv.connect(owner).withdraw();
-    //     contractBalance = await provider.getBalance(tv.address);
-    //     expect(contractBalance).to.equal(0);
-    //     walletBalance = await provider.getBalance(wallet);
-    //     expect(walletBalance).to.equal("11000000000000000000");
-    //     console.log("contractBalance after withdrawing 10 eth: ", contractBalance)
-        
-    //     // 100 eth
-    //     await tv.connect(owner).mintTokens(one, { value: "100000000000000000000" });
-    //     contractBalance = await provider.getBalance(tv.address);
-    //     expect(contractBalance).to.equal("100000000000000000000");
-    //     await tv.connect(owner).withdraw();
-    //     contractBalance = await provider.getBalance(tv.address);
-    //     expect(contractBalance).to.equal(0);
-    //     walletBalance = await provider.getBalance(wallet);
-    //     expect(walletBalance).to.equal("111000000000000000000");
-    //     console.log("contractBalance after withdrawing 100 eth: ", contractBalance)
-    // })
-
-    // should not be able to mint an existing token id
-    // url hash should be a certain length 
-
-    // value mist equal .025 for presale, .05 for public sale 
 });
