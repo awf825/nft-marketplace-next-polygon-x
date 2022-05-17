@@ -3,6 +3,7 @@
 /contracts
 /artifacts
 /scripts
+/upload
 
 # dependencies
 /node_modules

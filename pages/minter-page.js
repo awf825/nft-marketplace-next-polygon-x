@@ -302,15 +302,15 @@ export default function MinterPage() {
                 // localStorage.setItem("tx", tx.transactionHash);
 
                 tokensToMintMetadata.forEach(async (tmd, i) => {
-                    tmd.metadata.transactionHash = tx.transactionHash;
-                    tmd.metadata.minted = true;
-                    await updateRequestedMetadata(tmd.metadata, bucket);
                     let obj = {};
                     obj.name = '#'+tmd.metadata.name.split('_')[0];
                     obj.image = imageUrls[i];
                     obj.description = "The world today is all about doing things quickly; we often find ourselves in constant motion, never stopping to think about what it is that we're doing or why we started doing it in the first place. This go-go-go state of mind had led to anxiety and stress for many of us around the world. We wanted to create an NFT project that could serve as a reminder that the quick way isn't always the right way and that, when it comes to living our best lives, 'slow and steady, wins the race...' #WAGMI";
                     obj.attributes = tmd.metadata.attributes;
                     await pinJSONToIPFS(obj, tokenIds[i])
+                    tmd.metadata.transactionHash = tx.transactionHash;
+                    tmd.metadata.minted = true;
+                    await updateRequestedMetadata(tmd.metadata, bucket);
                 })
                 setIsGathering({
                     loading: false,
