@@ -31,11 +31,15 @@ export const getRequestedGiveawayMetadata = async (user, s3) => {
   const giveaway = giveaways.structure.find(s => {
     return (s.wallet.toLowerCase() === wallet)
   })
+  console.log('giveaway: ', giveaway);
   if (giveaway !== undefined) {
+    console.log('giveaway !== undefined');
     const giveawayBatch = giveaway.tokens;
     while (giveawayBatch.length > 0) {
+      console.log('giveawayBatch.length > 0');
       const resp = await s3.getObject({ Bucket: 'turtleverse.albums', Key: `${generation}/metadata/${giveawayBatch[0]}`}).promise()
       const metadata = JSON.parse(resp.Body.toString('utf-8'))
+      console.log('giveaway metadata: ', metadata)
       metadata.key = `${generation}/metadata/${giveawayBatch[0]}`;
       if (metadata.minted === false) {
         const png = await s3.getObject({ Bucket: 'turtleverse.albums', Key: metadata.image.split('turtleverse.albums/')[1]}).promise()

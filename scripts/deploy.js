@@ -16,15 +16,11 @@ const wallet = fs.readFileSync(".wallet").toString();
 */
 async function main() {
   const TV = await hre.ethers.getContractFactory("Turtleverse");
-  const maxWithdrawal = hre.ethers.BigNumber.from("200000000000000000");
-  const presaleLimit = hre.ethers.BigNumber.from(4);
   const tv = await TV.deploy(
     "NFTurtleverse",
     "NFTV", 
     "https://2f68ucdu28.execute-api.us-east-1.amazonaws.com/dev/d00dwHEREsTHEturt13s/", 
-    presaleLimit,
-    wallet,
-    maxWithdrawal
+    wallet
   );
   await tv.deployed()
   console.log("deployed tv to:", tv.address)
