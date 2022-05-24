@@ -290,11 +290,15 @@ select {
     margin: 3% auto;
 }
 
+#officialLinks {
+    display: flex;
+}
+
 #officialLinks div {
-    display: inline-block;
-    width: 33.333%;
+    display: flex;
+    width: 25%;
     margin: 13px auto;
-    padding-left: 15.5%;
+    justify-content: center;
 }
 
 .filter-selects-wrapper {
@@ -567,10 +571,6 @@ form > input {
 
     .attr-lines {
         text-align: right;
-    }
-
-    #officialLinks div {
-        padding-left: 12.5%;
     }
 }
 

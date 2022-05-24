@@ -365,7 +365,7 @@ export default function MinterPage() {
                 :
                 null
             }
-                <div className="minter-controls-wrapper">
+                <div className={`minter-controls-wrapper ${isMinting ? "hidden" : ""}`}>
                     {
                         ( ( Object.keys(saleStructure).length > 0 ) && ( saleStructure.price.toString() !== '0' ) ) 
                         ?

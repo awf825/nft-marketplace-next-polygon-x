@@ -14,7 +14,7 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                1000 whitelist members - 5 random members receive a free mint
+                                1000 whitelist members - 5 turtle owners are airdropped a free turtle
                             </p>
                         </div>
                     </li>
@@ -25,7 +25,7 @@ export default function Roadmap() {
                         </div>
                         <div className="rdmp-li-blurb">
                             <p>
-                                2000 whitelist members - 5 additional random members receive a free mint
+                                2000 whitelist members - 5 additional random turtle owners are airdropped a free turtle
                             </p>
                         </div>
                     </li>
