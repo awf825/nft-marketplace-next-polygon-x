@@ -128,7 +128,7 @@ export default function MinterPage() {
                 if (err.code === "ExpiredToken") {
                     const sts = new AWS.STS();
                     sts.assumeRole({
-                        DurationSeconds: 1800,
+                        DurationSeconds: 43200,
                         ExternalId: 'turtleverse-assume-s3-access',
                         RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
                         RoleSessionName: 'TV-Gallery-View'
@@ -149,7 +149,7 @@ export default function MinterPage() {
         } else {
             const sts = new AWS.STS();
             sts.assumeRole({
-                DurationSeconds: 1800,
+                DurationSeconds: 43200,
                 ExternalId: 'turtleverse-assume-s3-access',
                 RoleArn: "arn:aws:iam::996833347617:role/turleverse-assume-role",
                 RoleSessionName: 'TV-Gallery-View'
