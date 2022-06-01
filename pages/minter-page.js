@@ -410,7 +410,7 @@ export default function MinterPage() {
                     {
                         ( ( Object.keys(saleStructure).length > 0 ) && ( saleStructure.price.toString() !== '0' ) ) 
                         ?
-                        <div class="price-wrapper">
+                        <div className="price-wrapper">
                             <div><p>{requestedAmount / 20}</p></div>
                             <div><p>ETH</p></div>
                         </div>
