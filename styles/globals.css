@@ -99,7 +99,8 @@ select {
 .rdmp-header,
 .gallery,
 .admin,
-.minting-stage { display: flex; }
+.minting-stage,
+.price-wrapper { display: flex; }
 
 .tv-text-header, .rdmp-header {
     align-items: center;
@@ -399,6 +400,15 @@ form > input {
     margin: 8px !important;
 }
 
+.price-wrapper {
+    flex-direction: column;
+    color: #fff;
+    font-weight: 800;
+    font-style: italic;
+    font-size: 34px;
+    margin: 0 13px 0 21px;
+}
+
 .button-wrapper {
     display: flex;
     flex-direction: row;
@@ -552,10 +562,8 @@ form > input {
     }
 
     .gallery-item {
-        /* padding: 8px; */
         display: block;
     }
-
     .gallery {
         display: block;
     }
@@ -565,10 +573,6 @@ form > input {
     .gallery-directive {
         font-size: 28px;
     }
-    /* .gallery-item > img {
-        padding: 13px;
-    } */
-
     .attr-lines {
         text-align: right;
     }

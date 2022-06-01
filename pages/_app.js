@@ -36,6 +36,13 @@ AWS.config.update({
   secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
 })
 
+const tagManagerArgs = {
+  gtmId: "GTM-TMNJPSP",
+  events: {
+    mint: "mint"
+  }
+}
+
 function Marketplace({ Component, pageProps }) {
   const appliedGalleryIdx = useRef(0);
   const [bucket, setBucket] = useState({})
@@ -51,7 +58,14 @@ function Marketplace({ Component, pageProps }) {
     }
   )
 
-  useEffect(() => { GTM.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM }); }, [])
+  useEffect(() => { 
+    GTM.initialize({ 
+        gtmId: process.env.NEXT_PUBLIC_GTM,
+        events: {
+          mint: "mint"
+        }
+    }); 
+  }, [])
 
   useEffect(async () => {
     // need to add logic here to reconcile whether or not the gallery is actually loading or not.

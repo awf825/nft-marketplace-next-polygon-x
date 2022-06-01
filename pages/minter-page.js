@@ -26,6 +26,8 @@ import {
 
 import LoadingOverlay from './components/LoadingOverlay';
 
+import GTM from "react-gtm-module";
+
 AWS.config.update({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY
@@ -322,6 +324,12 @@ export default function MinterPage() {
                     tokenIds: tokenIds
                 })
                 //setIsMinting(false)
+                GTM.dataLayer({
+                    dataLayer: {
+                        event: "mint",
+                        tokens: requestedAmount
+                    }
+                });
                 alert(
                     `
                     Your transaction is complete! 
@@ -399,6 +407,16 @@ export default function MinterPage() {
                             </div>
                         </button>
                     </div>
+                    {
+                        ( ( Object.keys(saleStructure).length > 0 ) && ( saleStructure.price.toString() !== '0' ) ) 
+                        ?
+                        <div class="price-wrapper">
+                            <div><p>{requestedAmount / 20}</p></div>
+                            <div><p>ETH</p></div>
+                        </div>
+                        :
+                        null
+                    }
                 </div>
                 <br/>
             <div>
