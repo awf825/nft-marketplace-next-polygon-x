@@ -468,7 +468,7 @@ form > input {
         margin-top: 23px !important;
     }
     .mobile-top-margin-lg {
-        margin-top: 40px;
+        margin-top: 40px !important;
     }
     .founders, 
     .roadmap, 

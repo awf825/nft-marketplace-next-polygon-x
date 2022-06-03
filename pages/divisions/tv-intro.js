@@ -33,7 +33,7 @@ export default function TVIntro() {
                     <Image src="/B11.png" alt="tv-white" width="115" height="115" />
                 </div>
             </div>
-            <div className="gallery-row gallery-row-one mobile-top-margin-sm">
+            <div className="gallery-row gallery-row-one mobile-top-margin-lg">
                 <div className="turtle-img-gallery-outer">
                     <Image className="turtle-img-gallery-one" src="/B2.png" alt="tv-white" width="115" height="115" />
                 </div>
