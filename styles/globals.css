@@ -377,6 +377,18 @@ form > input {
     animation: glowing 1300ms infinite;
 }
 
+.tv-text-blurb a {
+    font-weight: 800;
+    font-style: italic;
+    float: right;
+    margin-top: 0.5em;
+}
+
+.tv-text-blurb a:hover {
+    text-decoration: underline;
+    color: #ADD8E6;
+}
+
 @keyframes glowing {
     0% {
         background-color: #ADD8E6;

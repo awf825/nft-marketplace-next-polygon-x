@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function TVIntro() {
     return (
@@ -22,9 +23,11 @@ export default function TVIntro() {
                     <Image src="/B13.png" alt="tv-white" width="115" height="115" />
                 </div>
                 <div className="tv-text-blurb">
-                    The TurtleVerse is a collection of 10,000 1/1 Turtles, each one algorithmically generated from 
-                    over 160 unique traits — e.g. props, expressions, colors, etc. — so that no turtle is the same.
-                    Turtles range in rarity, so cross your fingers!
+                    <p>
+                        The TurtleVerse is a collection of 10,000 1/1 Turtles, each one algorithmically generated from 
+                        over 160 unique traits — e.g. props, expressions, colors, etc. — so that no turtle is the same.
+                        Turtles range in rarity, so cross your fingers! <a href="/minter-page">CLICK HERE TO MINT</a>
+                    </p>
                 </div>
                 <div className="turtle-img-blurb hidden-mobile">
                     <Image src="/B11.png" alt="tv-white" width="115" height="115" />
