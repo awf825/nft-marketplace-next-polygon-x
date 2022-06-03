@@ -26,7 +26,7 @@ export default function TVIntro() {
                     <p>
                         The TurtleVerse is a collection of 10,000 1/1 Turtles, each one algorithmically generated from 
                         over 160 unique traits — e.g. props, expressions, colors, etc. — so that no turtle is the same.
-                        Turtles range in rarity, so cross your fingers! <a href="/minter-page">CLICK HERE TO MINT</a>
+                        Turtles range in rarity, so cross your fingers! <Link href="/minter-page">CLICK HERE TO MINT</Link>
                     </p>
                 </div>
                 <div className="turtle-img-blurb hidden-mobile">
