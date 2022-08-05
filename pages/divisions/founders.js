@@ -34,7 +34,7 @@ export default function Founders() {
                     </ul>
                 </div>
                 <div className="fndr-img">
-                    <Image layout="responsive" src="/Aiden.png" alt="tv-white" width="350" height="350" />
+                    <Image layout="responsive" src="/Hexenberg.jpg" alt="tv-white" width="350" height="350" />
                 </div>
             </div>
             <div className="discord-divider">
